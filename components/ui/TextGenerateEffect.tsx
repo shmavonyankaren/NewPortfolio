@@ -34,7 +34,8 @@ export const TextGenerateEffect = ({
       "span",
       {
         opacity: 1,
-        transform: "translateY(0px)",
+        // Use 3D transform for better GPU acceleration on Safari/iOS
+        transform: "translate3d(0, 0, 0)",
       },
       {
         duration: duration ?? 0.8,
@@ -52,10 +53,14 @@ export const TextGenerateEffect = ({
             key={word + idx}
             className={cn(
               idx > 3 ? "text-purple-300" : "dark:text-white text-black",
-              "opacity-0 will-change-transform will-change-opacity"
+              // Remove will-change to avoid rendering issues on Safari
+              "opacity-0"
             )}
             style={{
-              transform: "translateY(8px)",
+              // Initial offset using 3D transform for GPU acceleration
+              transform: "translate3d(0, 8px, 0)",
+              WebkitBackfaceVisibility: "hidden",
+              WebkitPerspective: 1000,
             }}
           >
             {word}{" "}
