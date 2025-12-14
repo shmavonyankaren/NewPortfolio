@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const BackgroundGradientAnimation = ({
   gradientBackgroundStart = "rgb(108, 0, 162)",
@@ -99,10 +99,19 @@ export const BackgroundGradientAnimation = ({
     }
   };
 
-  const isSafari = useMemo(
-    () => /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
-    []
-  );
+  const [isSafari, setIsSafari] = useState(false);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      const detected = /^((?!chrome|android).)*safari/i.test(
+        navigator.userAgent
+      );
+      if (detected !== isSafari) {
+        setIsSafari(detected);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div

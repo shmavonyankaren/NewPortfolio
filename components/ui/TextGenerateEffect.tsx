@@ -1,13 +1,13 @@
 "use client";
-import { useEffect } from "react";
-import { motion, stagger, useAnimate } from "motion/react";
+import { useEffect, useMemo } from "react";
+import { motion, useAnimate, stagger } from "framer-motion";
 import { cn } from "@/lib/utils/index";
 
 export const TextGenerateEffect = ({
   words,
   className,
   filter = true,
-  duration = 0.5,
+  duration = 0.8,
 }: {
   words: string;
   className?: string;
@@ -15,39 +15,52 @@ export const TextGenerateEffect = ({
   duration?: number;
 }) => {
   const [scope, animate] = useAnimate();
-  const wordsArray = words.split(" ");
+
+  // Split words once; stable across renders
+  const wordsArray = useMemo(() => words.split(" "), [words]);
+
+  // Respect prefers-reduced-motion: skip animations for accessibility
   useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const shouldReduce = media.matches;
+
+    if (shouldReduce) {
+      animate("span", { opacity: 1, transform: "none" }, { duration: 0 });
+      return;
+    }
+
+    // Smooth, modern staggered reveal with slight upward motion and blur fade
     animate(
       "span",
       {
         opacity: 1,
-        filter: filter ? "blur(0px)" : "none",
+        transform: "translateY(0px)",
       },
       {
-        duration: duration ? duration : 1,
-        delay: stagger(0.2),
+        duration: duration ?? 0.8,
+        delay: stagger(0.06),
+        ease: [0.22, 1, 0.36, 1], // Use 'ease' instead of 'easing' for framer-motion
       }
     );
   }, [animate, duration, filter]);
 
   const renderWords = () => {
     return (
-      <motion.div ref={scope}>
-        {wordsArray.map((word, idx) => {
-          return (
-            <motion.span
-              key={word + idx}
-              className={` ${
-                idx > 3 ? "text-purple-300" : "dark:text-white text-black"
-              } opacity-0`}
-              style={{
-                filter: filter ? "blur(10px)" : "none",
-              }}
-            >
-              {word}{" "}
-            </motion.span>
-          );
-        })}
+      <motion.div ref={scope} aria-label={words}>
+        {wordsArray.map((word, idx) => (
+          <motion.span
+            key={word + idx}
+            className={cn(
+              idx > 3 ? "text-purple-300" : "dark:text-white text-black",
+              "opacity-0 will-change-transform will-change-opacity"
+            )}
+            style={{
+              transform: "translateY(8px)",
+            }}
+          >
+            {word}{" "}
+          </motion.span>
+        ))}
       </motion.div>
     );
   };
@@ -55,7 +68,7 @@ export const TextGenerateEffect = ({
   return (
     <div className={cn("font-bold", className)}>
       <div className="my-2">
-        <div className=" dark:text-white text-black  leading-snug tracking-wide">
+        <div className="dark:text-white text-black leading-snug tracking-wide">
           {renderWords()}
         </div>
       </div>

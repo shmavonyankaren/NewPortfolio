@@ -45,7 +45,14 @@ const Footer = () => {
       </div>
       <div className="flex mt-16 md:flex-row flex-col justify-between items-center">
         <p className="md:text-base text-sm md:font-normal font-light">
-          © {new Date().getFullYear()} Karen Shmavonyan. All rights reserved.
+          ©
+          <time
+            suppressHydrationWarning
+            dateTime={new Date().getFullYear().toLocaleString()}
+          >
+            {new Date().getFullYear()}
+          </time>
+          Karen Shmavonyan. All rights reserved.
         </p>
 
         <div className="flex items-center md:gap-3 gap-6">
