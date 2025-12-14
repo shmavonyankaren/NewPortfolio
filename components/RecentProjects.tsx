@@ -123,7 +123,7 @@ const RecentProjects = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center text-purple-300 hover:text-purple-400 px-4 py-2 sm:px-4 sm:py-2 rounded-xl"
+                    className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center text-purple-300 hover:text-purple-400 py-2 sm:px-4 sm:py-2 rounded-xl"
                   >
                     <GoArrowUpRight className="mr-2" size={20} />
                     <span className="text-xs sm:text-sm">Check Live Site</span>
