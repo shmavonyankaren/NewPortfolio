@@ -37,7 +37,7 @@ const RecentProjects = () => {
             >
               {/* Project Image */}
               <CardItem
-                translateZ="55"
+                translateZ="60"
                 className="relative  flex items-center justify-center w-full overflow-hidden h-[20vh] lg:h-[40vh] mb-10  rounded-2xl lg:rounded-3xl"
               >
                 <div

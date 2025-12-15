@@ -1,20 +1,21 @@
 "use client";
 
-// import * as Sentry from "@sentry/nextjs";
+import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 interface GlobalErrorProps {
-  error: React.ComponentType;
+  error: Error;
 }
 
-export default function GlobalError({ error: Error }: GlobalErrorProps) {
-  //   useEffect(() => {
-  //     // Sentry.captureException(error);
-  //   }, []);
+export default function GlobalError({ error }: GlobalErrorProps) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
 
   return (
     <html>
       <body>
-        <Error />
+        <h2>Something went wrong!</h2>
+        <pre>{error.message}</pre>
       </body>
     </html>
   );
