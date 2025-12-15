@@ -7,8 +7,6 @@ import { FaGithub } from "react-icons/fa";
 import { CardContainer, CardBody, CardItem } from "./ui/3d-card";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import WithIntersection from "./lazy/WithIntersection";
 
 const RecentProjectsContent = () => {
   const router = useRouter();
@@ -138,20 +136,6 @@ const RecentProjectsContent = () => {
   );
 };
 
-const LazyRecentProjectsContent = dynamic(async () => RecentProjectsContent, {
-  ssr: false,
-  loading: () => (
-    <div className="flex flex-wrap gap-6 justify-center mt-10">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div
-          key={i}
-          className="animate-pulse bg-white/5 border border-white/10 rounded-2xl h-[260px] w-[320px]"
-        />
-      ))}
-    </div>
-  ),
-});
-
 const RecentProjects = () => {
   return (
     <div className="py-20">
@@ -159,21 +143,7 @@ const RecentProjects = () => {
         A small selection of{" "}
         <span className="text-purple-300">recent projects</span>
       </h1>
-      <WithIntersection
-        rootMargin="120px"
-        fallback={
-          <div className="flex flex-wrap gap-6 justify-center mt-10">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse bg-white/5 border border-white/10 rounded-2xl h-[260px] w-[320px]"
-              />
-            ))}
-          </div>
-        }
-      >
-        <LazyRecentProjectsContent />
-      </WithIntersection>
+      <RecentProjectsContent />
     </div>
   );
 };

@@ -37,7 +37,7 @@ const GridGlobe = () => {
             observer?.disconnect();
           }
         },
-        { rootMargin: "200px" }
+        { rootMargin: "600px" }
       );
 
       observer.observe(containerRef.current);
