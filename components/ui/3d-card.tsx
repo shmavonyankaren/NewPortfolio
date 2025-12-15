@@ -27,8 +27,23 @@ export const CardContainer = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMouseEntered, setIsMouseEntered] = useState(false);
+  const [isTouchViewport, setIsTouchViewport] = useState(false);
+
+  useEffect(() => {
+    const updateIsTouch = () => {
+      if (typeof window === "undefined") return;
+      const prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
+      const isNarrow = window.innerWidth < 768;
+      setIsTouchViewport(prefersCoarse || isNarrow);
+    };
+
+    updateIsTouch();
+    window.addEventListener("resize", updateIsTouch);
+    return () => window.removeEventListener("resize", updateIsTouch);
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isTouchViewport) return;
     if (!containerRef.current) return;
     const { left, top, width, height } =
       containerRef.current.getBoundingClientRect();
@@ -38,6 +53,7 @@ export const CardContainer = ({
   };
 
   const handleMouseEnter = () => {
+    if (isTouchViewport) return;
     setIsMouseEntered(true);
     if (!containerRef.current) return;
   };
@@ -55,7 +71,7 @@ export const CardContainer = ({
           containerClassName
         )}
         style={{
-          perspective: "1000px",
+          perspective: isTouchViewport ? "none" : "1000px",
         }}
       >
         <div
@@ -68,7 +84,8 @@ export const CardContainer = ({
             className
           )}
           style={{
-            transformStyle: "preserve-3d",
+            transformStyle: isTouchViewport ? undefined : "preserve-3d",
+            transform: isTouchViewport ? "none" : undefined,
           }}
           {...props}
         >

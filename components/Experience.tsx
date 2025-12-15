@@ -22,7 +22,8 @@ const Experience = () => {
   return (
     <div className="py-20 w-full">
       <h1 className="heading">
-        My <span className="text-purple-300">work experience</span>
+        My <span className="text-purple-300">Work Experience</span> and
+        <span className="text-purple-300"> Education</span>
       </h1>
 
       <div className="w-full mt-12 grid lg:grid-cols-4 grid-cols-1 gap-10">

@@ -1,11 +1,67 @@
 "use client";
 import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
 
 const World = dynamic(() => import("./Globe").then((m) => m.World), {
   ssr: false,
 });
 
 const GridGlobe = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    const prefersCoarsePointer = () =>
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(pointer: coarse)").matches;
+
+    const isNarrow = () =>
+      typeof window !== "undefined" ? window.innerWidth < 1024 : false;
+
+    const isEligible = () => !prefersCoarsePointer() && !isNarrow();
+
+    let observer: IntersectionObserver | null = null;
+    let cancelled = false;
+
+    const setupObserver = () => {
+      if (shouldRender) return;
+      if (!isEligible()) return;
+      if (!containerRef.current) return;
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          if (!cancelled && entry.isIntersecting) {
+            setShouldRender(true);
+            observer?.disconnect();
+          }
+        },
+        { rootMargin: "200px" }
+      );
+
+      observer.observe(containerRef.current);
+    };
+
+    setupObserver();
+
+    const handleResize = () => {
+      if (!shouldRender) {
+        observer?.disconnect();
+        observer = null;
+        setupObserver();
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      cancelled = true;
+      observer?.disconnect();
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [shouldRender]);
+
   const globeConfig = {
     pointSize: 4,
     globeColor: "#062056",
@@ -359,7 +415,10 @@ const GridGlobe = () => {
   return (
     // remove dark:bg-black bg-white h-screen md:h-auto  w-full flex-row py-20
     // change absolute -left-5 top-36, add w-full h-full md:top-40
-    <div className="flex items-center justify-center absolute -left-5 top-36 md:top-40 w-full h-full">
+    <div
+      ref={containerRef}
+      className="flex items-center justify-center absolute -left-5 top-36 md:top-40 w-full h-full"
+    >
       {/* remove h-full md:h-[40rem] */}
       <div className="max-w-7xl mx-auto w-full relative overflow-hidden h-96 px-4">
         {/* remove these text divs */}
@@ -388,7 +447,11 @@ const GridGlobe = () => {
         <div className="absolute w-full bottom-0 inset-x-0 h-40 bg-linear-to-b pointer-events-none select-none from-transparent dark:to-black to-white z-40" />
         {/* remove -bottom-20 */}
         <div className="absolute w-full h-72 md:h-full z-10">
-          <World data={sampleArcs} globeConfig={globeConfig} />
+          {shouldRender ? (
+            <World data={sampleArcs} globeConfig={globeConfig} />
+          ) : (
+            <div className="w-full h-full bg-linear-to-b from-transparent via-black/10 to-black/30 dark:via-white/5 animate-pulse" />
+          )}
         </div>
       </div>
     </div>
