@@ -16,11 +16,11 @@ const RecentProjectsContent = () => {
       {projects.map((item) => (
         <CardContainer
           key={item.id}
-          className="lg:min-h-145 h-110 min-w-80 flex justify-center items-center md:flex-none md:w-160 max-w-154"
+          className="min-w-80 flex justify-center items-center md:flex-none md:w-160 max-w-154"
           containerClassName="pb-20"
         >
           <CardBody
-            className="h-full w-full flex flex-wrap  p-6 rounded-2xl shadow-[0_8px_16px_rgb(0_0_0/0.4)] border border-white/10 group-hover/pin:border-white/20 transition duration-700 cursor-pointer group"
+            className="h-auto w-full flex flex-col p-6 rounded-2xl shadow-[0_8px_16px_rgb(0_0_0/0.4)] border border-white/10 group-hover/pin:border-white/20 transition duration-700 cursor-pointer group"
             onClick={() => router.push(`/projects/${item.id}`)}
             role="button"
             tabIndex={0}
@@ -82,7 +82,7 @@ const RecentProjectsContent = () => {
             {/* Tech Icons and Actions */}
             <CardItem
               translateZ="25"
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-7 mb-3 w-full"
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-5 w-full"
             >
               <div className="flex items-center">
                 {item.iconLists.map((icon, index) => (
@@ -106,7 +106,7 @@ const RecentProjectsContent = () => {
               </div>
 
               {/* Actions: keep inside card on iPhone widths */}
-              <div className="w-full max-w-full flex  sm:flex-row sm:flex-wrap justify-center items-stretch gap-3">
+              <div className="w-full max-w-full flex  sm:flex-row sm:flex-wrap  justify-center items-stretch gap-3">
                 <a
                   href={item.gitHubLink}
                   target="_blank"

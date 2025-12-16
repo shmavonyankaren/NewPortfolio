@@ -14,6 +14,7 @@ export const InfiniteMovingCards = ({
   items: {
     quote: string;
     name: string;
+    img: string;
     title: string;
   }[];
   direction?: "left" | "right";
@@ -104,8 +105,8 @@ export const InfiniteMovingCards = ({
                 {/* add this div for the profile img */}
                 <div className="me-3">
                   <Image
-                    src="/profile.svg"
-                    alt="profile"
+                    src={item.img ? item.img : "/profile.svg"}
+                    alt={item.name}
                     width={32}
                     height={32}
                   />

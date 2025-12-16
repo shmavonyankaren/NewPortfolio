@@ -11,22 +11,11 @@ const GridGlobe = () => {
   const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
-    const prefersCoarsePointer = () =>
-      typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(pointer: coarse)").matches;
-
-    const isNarrow = () =>
-      typeof window !== "undefined" ? window.innerWidth < 1024 : false;
-
-    const isEligible = () => !prefersCoarsePointer() && !isNarrow();
-
     let observer: IntersectionObserver | null = null;
     let cancelled = false;
 
     const setupObserver = () => {
       if (shouldRender) return;
-      if (!isEligible()) return;
       if (!containerRef.current) return;
 
       observer = new IntersectionObserver(

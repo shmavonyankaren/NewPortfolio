@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { FloatingNav } from "@/components/ui/FloatingNavbar";
 import { navItems } from "@/data";
-
+import SentryFeedbackWidget from "@/components/ReportBugButton";
 const inter = Inter({ subsets: ["latin"] });
 
 // const geistMono = Geist_Mono({
@@ -42,6 +42,7 @@ export default function RootLayout({
             <FloatingNav navItems={navItems} />
           </header>
           {children}
+          <SentryFeedbackWidget />
         </ThemeProvider>
       </body>
     </html>

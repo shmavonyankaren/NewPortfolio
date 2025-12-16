@@ -102,7 +102,7 @@ export const projects: ProjectItem[] = [
     id: 3,
     title: "YouTube Clone application",
     des: "A YouTube clone application that mimics the core functionalities of YouTube, including video browsing, searching, and playback, providing users with a familiar video streaming experience.",
-    img: "/assets/images/YouTubeClone.png",
+    img: "/assets/images/YoutubeClone.png",
     iconLists: ["/re.svg", "/tail.svg", "/ts.svg", "/three.svg", "/c.svg"],
     link: "https://my-youtube-karen.netlify.app/",
     gitHubLink: "https://github.com/shmavonyankaren/youtube-clone.git",
@@ -121,24 +121,26 @@ export const projects: ProjectItem[] = [
 export const testimonials: QuoteItem[] = [
   {
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: "Michael Johnson",
-    title: "Director of AlphaStream Technologies",
-    img: "",
+      "I think that great programming is not all that dissimilar to great art. Once you start thinking in concepts of programming it makes you a better person…as does learning a foreign language, as does learning math, as does learning how to read.",
+    name: "Jack Dorsey",
+    title: "Creator, Twitter and Founder & CEO, Square",
+    img: "/assets/images/insight1.png",
   },
   {
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: "Michael Johnson",
-    title: "Director of AlphaStream Technologies",
-    img: "",
+      "Learning to write programs stretches your mind, and helps you think better, creates a way of thinking about things that I think is helpful in all domains",
+    name: "Bill Gates",
+    title:
+      "Co-Chairman, Bill & Melinda Gates Foundation and Co-Founder, Microsoft",
+    img: "/assets/images/insight2.png",
   },
   {
     quote:
-      "Collaborating with Adrian was an absolute pleasure. His professionalism, promptness, and dedication to delivering exceptional results were evident throughout our project. Adrian's enthusiasm for every facet of development truly stands out. If you're seeking to elevate your website and elevate your brand, Adrian is the ideal partner.",
-    name: "Michael Johnson",
-    title: "Director of AlphaStream Technologies",
-    img: "",
+      "I believe technology should give us superpowers. Everyone should have the opportunity to learn to think, analyze, and create with technology. It’s a new literacy. It’s a new superpower.",
+    name: "Hilary Mason",
+    title:
+      "Founder, Fast Forward Labs and Data Scientist in Residence, Accel Partners",
+    img: "/assets/images/insight3.png",
   },
   {
     quote:
