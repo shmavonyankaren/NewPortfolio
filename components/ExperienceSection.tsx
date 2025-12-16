@@ -137,7 +137,7 @@ const Experience = () => {
                 <div className="w-full sm:w-full md:w-full xl:w-4/6">
                   <div className="flex items-start">
                     <div className="expText flex flex-row sm:flex-row gap-4 sm:gap-6 md:gap-10 lg:gap-12 xl:gap-20 ml-2 sm:ml-4 md:ml-8 lg:ml-12 xl:ml-16">
-                      <div className="timeline-logo flex-shrink-0">
+                      <div className="timeline-logo shrink-0">
                         <Image
                           id="logo-element"
                           width={50}
