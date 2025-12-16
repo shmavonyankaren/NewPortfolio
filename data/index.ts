@@ -274,7 +274,7 @@ export const expCards = [
   {
     review:
       "Adrian’s work on Appwrite’s mobile app brought a high level of quality and efficiency. He delivered solutions that enhanced our mobile experience & meet our product goals.",
-    imgPath: "/exp3.svg",
+    imgPath: "/exp4.svg",
     logoPath: "/assets/images/logo3.png",
     title: "React Native Developer",
     date: "March 2019 - May 2020",

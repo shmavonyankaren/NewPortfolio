@@ -19,3 +19,12 @@
 //     },
 //   });
 // }
+
+export default function GET() {
+  return new Response(JSON.stringify({ message: "GET method not supported" }), {
+    status: 405,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
