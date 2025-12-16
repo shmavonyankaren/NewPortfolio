@@ -9,7 +9,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { ModeToggle } from "../ModeToggle";
+// import { ModeToggle } from "../ModeToggle";
 
 type NavItem = {
   name: string;

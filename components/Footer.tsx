@@ -61,7 +61,7 @@ const Footer = () => {
               href={info.link}
               target="_blank"
               key={info.id}
-              className="w-10 h-10 cursor-pointer flex justify-center items-center backdrop-filter backdrop-blur-lg saturate-180 bg-linear-to-r from-[#161a31] to-[#06091f] rounded-lg border border-white/10 hover:border-purple-500/50 hover:bg-black/70 transition-all"
+              className="w-10 h-10 cursor-pointer flex justify-center items-center backdrop-filter backdrop-blur-lg saturate-180 bg-linear-to-r from-[#161a31] to-[#06091f] rounded-lg border border-white/10 hover:border-white/20 hover:from-[#161a31]/90 hover:to-[#06091f]/90 transition-all"
             >
               <Image width={20} height={20} src={info.img} alt="icons" />
             </a>

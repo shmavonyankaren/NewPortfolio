@@ -32,7 +32,7 @@ const RecentProjectsContent = () => {
           >
             {/* Project Image */}
             <CardItem
-              translateZ="60"
+              translateZ="65"
               className="relative  flex items-center justify-center w-full overflow-hidden h-[20vh] lg:h-[40vh] mb-10  rounded-2xl lg:rounded-3xl"
             >
               <div

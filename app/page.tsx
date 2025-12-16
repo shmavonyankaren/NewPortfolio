@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Clients from "@/components/Clients";
 import Approach from "@/components/Approach";
 import Experience from "@/components/Experience";
+import ExperienceSection from "@/components/ExperienceSection";
 import RecentProjects from "@/components/RecentProjects";
 
 const Home = () => {
@@ -14,7 +15,8 @@ const Home = () => {
         <Grid />
         <RecentProjects />
         <Clients />
-        <Experience />
+        {/* <Experience /> */}
+        <ExperienceSection />
         {/* <Approach /> */}
         <Footer />
       </div>
