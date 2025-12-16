@@ -8,7 +8,6 @@ import { expCards } from "../data";
 // import TitleHeader from "../components/TitleHeader";
 import GlowCard from "./GlowCard";
 import Image from "next/image";
-import { pow } from "three/tsl";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -102,14 +101,8 @@ const Experience = () => {
       id="experience"
       className="flex justify-center items-center md:mt-40 mt-20 section-padding xl:px-0"
     >
-      <div className="w-full h-full md:px-20 px-5">
-        {/* <h1 className="text-center text-4xl font-bold">
-          Professional Work Experience
-        </h1>
-        <h2 className="text-center text-xl font-semibold text-purple-400 mt-3">
-          💼 My Career Overview
-        </h2> */}
-        <h1 className="heading flex flex-col text-center gap-3">
+      <div className="w-full h-full px-4 sm:px-5 md:px-10 lg:px-20">
+        <h1 className="heading flex flex-col text-center gap-2 sm:gap-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
           💼 🎓
           <p>
             My <span className="text-purple-300"> Work Experience</span>
@@ -119,17 +112,17 @@ const Experience = () => {
             <span className="text-purple-300"> Education</span>
           </p>
         </h1>
-        <div className="mt-32 relative">
+        <div className="mt-12 sm:mt-16 md:mt-24 lg:mt-32 relative">
           {/* Central Timeline - visible across all cards */}
           <div className="experience-timeline-container">
             <div className="timeline" />
             <div className="gradient-line" />
           </div>
 
-          <div className="relative z-50 xl:space-y-32 space-y-10">
+          <div className="relative z-50 space-y-8 sm:space-y-10 md:space-y-16 xl:space-y-32">
             {expCards.map((card, index) => (
               <div key={card.title} className="exp-card-wrapper">
-                <div className="xl:w-2/6">
+                <div className="w-full sm:w-full md:w-full xl:w-2/6 mb-6 md:mb-0">
                   <GlowCard card={card} index={index}>
                     <div>
                       <Image
@@ -141,10 +134,10 @@ const Experience = () => {
                     </div>
                   </GlowCard>
                 </div>
-                <div className="xl:w-4/6 ">
+                <div className="w-full sm:w-full md:w-full xl:w-4/6">
                   <div className="flex items-start">
-                    <div className="expText flex xl:gap-20 md:gap-12 gap-10 ml-8 md:ml-16">
-                      <div className="timeline-logo">
+                    <div className="expText flex flex-row sm:flex-row gap-4 sm:gap-6 md:gap-10 lg:gap-12 xl:gap-20 ml-2 sm:ml-4 md:ml-8 lg:ml-12 xl:ml-16">
+                      <div className="timeline-logo flex-shrink-0">
                         <Image
                           id="logo-element"
                           width={50}
@@ -154,18 +147,23 @@ const Experience = () => {
                         />
                       </div>
 
-                      <div>
-                        <h1 className="font-semibold text-3xl">{card.title}</h1>
-                        <p className="my-5 text-white-50">
+                      <div className="flex-1 min-w-0">
+                        <h1 className="font-semibold text-xl sm:text-2xl md:text-3xl">
+                          {card.title}
+                        </h1>
+                        <p className="my-3 sm:my-4 md:my-5 text-white-50 text-sm sm:text-base">
                           🗓️&nbsp;{card.date}
                         </p>
-                        <p className="text-[#839CB5] italic">
+                        <p className="text-[#839CB5] italic text-sm md:text-base">
                           Responsibilities
                         </p>
-                        <ul className="list-disc ms-5 mt-5 flex flex-col gap-5 text-white-50">
+                        <ul className="list-disc ms-5 mt-3 sm:mt-4 md:mt-5 flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5 text-white-50">
                           {card.responsibilities.map(
                             (responsibility, index) => (
-                              <li key={index} className="text-lg">
+                              <li
+                                key={index}
+                                className="text-sm sm:text-base md:text-lg"
+                              >
                                 {responsibility}
                               </li>
                             )
