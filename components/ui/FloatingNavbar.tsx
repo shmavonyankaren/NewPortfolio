@@ -1,5 +1,5 @@
 "use client";
-import { JSX, useState, useEffect } from "react";
+import { JSX, useState, useEffect, useRef } from "react";
 import {
   motion,
   AnimatePresence,
@@ -25,6 +25,7 @@ type FloatingNavbarProps = {
 export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
   const { scrollYProgress } = useScroll();
   const pathName = usePathname();
+  const prevDirectionRef = useRef(0);
 
   // set true for the initial state so that nav bar is visible in the hero section
   const [visible, setVisible] = useState(true);
@@ -37,8 +38,9 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     // Check if current is not undefined and is a number
     if (typeof current === "number") {
-      const prev = scrollYProgress.getPrevious?.() ?? 0;
+      const prev = prevDirectionRef.current;
       const direction = current - prev;
+      prevDirectionRef.current = current;
 
       if (scrollYProgress.get() < 0.05) {
         // also set true for the initial state
@@ -80,6 +82,8 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
           backgroundColor: "rgba(17, 25, 40, 0.75)",
           borderRadius: "12px",
           border: "1px solid rgba(255, 255, 255, 0.125)",
+          willChange: "auto",
+          backfaceVisibility: "hidden",
         }}
       >
         {navItems.map((navItem: NavItem, idx: number) => {

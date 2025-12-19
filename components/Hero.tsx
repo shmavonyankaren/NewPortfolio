@@ -6,19 +6,48 @@ import TextGenerateEffect from "./TextGenerateEffect";
 import MagicButton from "./ui/MagicButton";
 import { FaLocationArrow } from "react-icons/fa";
 import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
+
 function Hero() {
+  const [animateSpotlights, setAnimateSpotlights] = useState(false);
+
+  useEffect(() => {
+    // Defer spotlight animations to avoid blocking main thread during page load
+    const id =
+      typeof requestIdleCallback !== "undefined"
+        ? requestIdleCallback(() => setAnimateSpotlights(true), {
+            timeout: 1000,
+          })
+        : setTimeout(() => setAnimateSpotlights(true), 300);
+
+    return () => {
+      if (typeof cancelIdleCallback !== "undefined") {
+        cancelIdleCallback(id as number);
+      } else {
+        clearTimeout(id as NodeJS.Timeout);
+      }
+    };
+  }, []);
+
   return (
     <div className="pb-20 pt-36">
       <div>
-        <Spotlight
-          className="-top-40 -left-10 md:-left-32 md:-top-20 h-screen"
-          fill="white"
-        />
-        <Spotlight
-          className="top-10 left-full w-[50vw] h-[80vh]"
-          fill="purple"
-        />
-        <Spotlight className="left-80 top-28 h-[80vh] w-[50vw]" fill="blue" />
+        {animateSpotlights && (
+          <>
+            <Spotlight
+              className="-top-40 -left-10 md:-left-32 md:-top-20 h-screen"
+              fill="white"
+            />
+            <Spotlight
+              className="top-10 left-full w-[50vw] h-[80vh]"
+              fill="purple"
+            />
+            <Spotlight
+              className="left-80 top-28 h-[80vh] w-[50vw]"
+              fill="blue"
+            />
+          </>
+        )}
       </div>
       <GridBackground />
       <div className="flex justify-center relative my-20 z-10">

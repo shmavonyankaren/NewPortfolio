@@ -198,15 +198,34 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    /* Optimize scrolling performance */
+    scroll-padding-top: 4rem;
+    /* Prevent layout thrashing */
+    scroll-behavior: smooth;
   }
   button {
     @apply active:outline-none;
+  }
+  /* Optimize images to prevent layout shift */
+  img {
+    @apply block;
+    contain: layout style paint;
   }
 }
 
 @layer utilities {
   .heading {
     @apply font-bold text-4xl md:text-5xl text-center;
+  }
+  
+  /* Reduce animations on low-end devices or when user prefers reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -239,6 +258,8 @@ body {
   transition: border-color 1s ease-in-out;
   min-width: auto;
   width: 100%;
+  contain: layout style paint;
+  will-change: auto;
 }
 
 @media (min-width: 640px) {
@@ -314,6 +335,8 @@ body {
   transform: translate(-50%, -50%);
   filter: blur(10px);
   filter: saturate(200);
+  will-change: auto;
+  backfaceVisibility: hidden;
 }
 
 /* Experience Timeline Container */
@@ -328,6 +351,8 @@ body {
   height: 100%;
   z-index: 10; /* ensure timeline sits under logo */
   min-height: 600px;
+  will-change: auto;
+  contain: layout;
 }
 
 /* Timeline vertical line - the animated element */
@@ -360,6 +385,7 @@ body {
   );
   pointer-events: none;
   filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+  will-change: transform;
 }
 
 @media (max-width: 1279px) {

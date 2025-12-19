@@ -3,7 +3,7 @@
 import { expCards } from "@/data";
 // import { WorkExperienceAndEducation } from "@/lib/types";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 
 type GlowCardProps = {
   card: (typeof expCards)[0];
@@ -14,9 +14,10 @@ type GlowCardProps = {
 const GlowCard = ({ card, index, children }: GlowCardProps) => {
   // refs for all the cards
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const lastAngleRef = useRef<number>(0);
 
-  // when mouse moves over a card, rotate the glow effect
-  const handleMouseMove =
+  // when mouse moves over a card, rotate the glow effect - with debouncing
+  const handleMouseMove = useCallback(
     (index: number) => (e: React.MouseEvent<HTMLDivElement>) => {
       // get the current card
       const card = cardRefs.current[index];
@@ -33,9 +34,14 @@ const GlowCard = ({ card, index, children }: GlowCardProps) => {
       // adjust the angle so that it's between 0 and 360
       angle = (angle + 360) % 360;
 
-      // set the angle as a CSS variable
-      card.style.setProperty("--start", String(angle + 60));
-    };
+      // only update if angle changed significantly (debounce by 3 degrees)
+      if (Math.abs(angle - lastAngleRef.current) > 3) {
+        lastAngleRef.current = angle;
+        card.style.setProperty("--start", String(angle + 60));
+      }
+    },
+    []
+  );
 
   // return the card component with the mouse move event
   return (

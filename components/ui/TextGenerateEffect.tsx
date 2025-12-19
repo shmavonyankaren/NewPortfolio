@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils/index";
+import React from "react";
 
 export const TextGenerateEffect = ({
   words,
@@ -13,6 +14,7 @@ export const TextGenerateEffect = ({
   className?: string;
   duration?: number;
 }) => {
+  const [startAnimation, setStartAnimation] = React.useState(false);
   const wordsArray = useMemo(() => words.split(" "), [words]);
 
   const isIOS =
@@ -23,11 +25,27 @@ export const TextGenerateEffect = ({
       ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
       : false;
 
+  // Defer animation start to avoid blocking on page load
+  React.useEffect(() => {
+    const id =
+      typeof requestIdleCallback !== "undefined"
+        ? requestIdleCallback(() => setStartAnimation(true), { timeout: 800 })
+        : setTimeout(() => setStartAnimation(true), 200);
+
+    return () => {
+      if (typeof cancelIdleCallback !== "undefined") {
+        cancelIdleCallback(id as number);
+      } else {
+        clearTimeout(id as NodeJS.Timeout);
+      }
+    };
+  }, []);
+
   const containerVariants = {
     hidden: {},
     show: {
       transition: {
-        staggerChildren: isIOS ? 0.08 : 0.06,
+        staggerChildren: isIOS ? 0.05 : 0.04,
         when: "beforeChildren",
       },
     },
@@ -42,8 +60,8 @@ export const TextGenerateEffect = ({
         duration: shouldReduceMotion
           ? 0
           : isIOS
-          ? Math.min(duration, 0.9)
-          : duration,
+          ? Math.min(duration, 0.6)
+          : Math.min(duration, 0.7),
         ease: [0.22, 1, 0.36, 1],
       },
     },
@@ -57,7 +75,7 @@ export const TextGenerateEffect = ({
             aria-label={words}
             variants={containerVariants}
             initial="hidden"
-            animate="show"
+            animate={startAnimation ? "show" : "hidden"}
           >
             {wordsArray.map((word, idx) => (
               <motion.span

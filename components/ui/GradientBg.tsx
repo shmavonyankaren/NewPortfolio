@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 export const BackgroundGradientAnimation = ({
   gradientBackgroundStart = "rgb(108, 0, 162)",
@@ -70,6 +70,7 @@ export const BackgroundGradientAnimation = ({
   ]);
 
   useEffect(() => {
+    if (!interactive) return;
     let rafId: number;
     const animate = () => {
       if (!interactiveRef.current) {
@@ -89,15 +90,36 @@ export const BackgroundGradientAnimation = ({
       rafId = requestAnimationFrame(animate);
     }
     return () => cancelAnimationFrame(rafId);
-  }, [tgX, tgY]);
+  }, [tgX, tgY, interactive]);
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (interactiveRef.current) {
+  const lastUpdateRef = useRef({ x: 0, y: 0, time: 0 });
+
+  const handleMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!interactive || !interactiveRef.current) return;
+
+      const now = Date.now();
+      // Only update every 16ms (60fps) to reduce state updates
+      if (now - lastUpdateRef.current.time < 16) return;
+      lastUpdateRef.current.time = now;
+
       const rect = interactiveRef.current.getBoundingClientRect();
-      setTgX(event.clientX - rect.left);
-      setTgY(event.clientY - rect.top);
-    }
-  };
+      const newX = event.clientX - rect.left;
+      const newY = event.clientY - rect.top;
+
+      // Only update if position changed significantly (>2px)
+      if (
+        Math.abs(newX - lastUpdateRef.current.x) > 2 ||
+        Math.abs(newY - lastUpdateRef.current.y) > 2
+      ) {
+        lastUpdateRef.current.x = newX;
+        lastUpdateRef.current.y = newY;
+        setTgX(newX);
+        setTgY(newY);
+      }
+    },
+    [interactive]
+  );
 
   const [isSafari, setIsSafari] = useState(false);
 
@@ -119,8 +141,12 @@ export const BackgroundGradientAnimation = ({
         "w-full h-full absolute overflow-hidden top-0 left-0 bg-[linear-gradient(40deg,var(--gradient-background-start),var(--gradient-background-end))]",
         containerClassName
       )}
+      style={{
+        contain: "layout style paint",
+        willChange: interactive ? "transform" : "auto",
+      }}
     >
-      <svg className="hidden">
+      <svg className="hidden" style={{ display: "none" }}>
         <defs>
           <filter id="blurMe">
             <feGaussianBlur
@@ -141,9 +167,13 @@ export const BackgroundGradientAnimation = ({
       <div className={cn("", className)}>{children}</div>
       <div
         className={cn(
-          "gradients-container h-full w-full blur-lg",
-          isSafari ? "blur-2xl" : "filter-[url(#blurMe)_blur(40px)]"
+          "gradients-container h-full w-full",
+          isSafari ? "blur-2xl" : "blur-lg"
         )}
+        style={{
+          contain: "layout style paint",
+          willChange: "transform",
+        }}
       >
         <div
           className={cn(
@@ -198,8 +228,12 @@ export const BackgroundGradientAnimation = ({
             className={cn(
               `absolute [background:radial-gradient(circle_at_center,rgba(var(--pointer-color),0.8)_0,rgba(var(--pointer-color),0)_50%)_no-repeat]`,
               `[mix-blend-mode:var(--blending-value)] w-full h-full -top-1/2 -left-1/2`,
-              `opacity-70`
+              `opacity-70 pointer-events-auto`
             )}
+            style={{
+              willChange: "transform",
+              contain: "layout style paint",
+            }}
           ></div>
         )}
       </div>

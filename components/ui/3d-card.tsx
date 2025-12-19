@@ -50,6 +50,7 @@ export const CardContainer = ({
     const x = (e.clientX - left - width / 2) / 25;
     const y = (e.clientY - top - height / 2) / 25;
     containerRef.current.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    containerRef.current.style.willChange = "transform";
   };
 
   const handleMouseEnter = () => {
@@ -62,6 +63,7 @@ export const CardContainer = ({
     if (!containerRef.current) return;
     setIsMouseEntered(false);
     containerRef.current.style.transform = `rotateY(0deg) rotateX(0deg)`;
+    containerRef.current.style.willChange = "auto";
   };
   return (
     <MouseEnterContext.Provider value={[isMouseEntered, setIsMouseEntered]}>
@@ -86,6 +88,7 @@ export const CardContainer = ({
           style={{
             transformStyle: isTouchViewport ? undefined : "preserve-3d",
             transform: isTouchViewport ? "none" : undefined,
+            backfaceVisibility: "hidden",
           }}
           {...props}
         >
@@ -109,6 +112,7 @@ export const CardBody = ({ children, className, ...rest }: CardBodyProps) => {
       )}
       style={{
         transformStyle: "preserve-3d",
+        backfaceVisibility: "hidden",
       }}
       {...rest}
     >

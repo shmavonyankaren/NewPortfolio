@@ -63,6 +63,7 @@ interface WorldProps {
 export function Globe({ globeConfig, data }: WorldProps) {
   const globeRef = useRef<ThreeGlobe | null>(null);
   const groupRef = useRef<Group | null>(null);
+  const ringIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const config = useMemo(
     () => ({
@@ -148,9 +149,10 @@ export function Globe({ globeConfig, data }: WorldProps) {
         ) === i
     );
 
+    // Optimize hex polygon resolution: 2 instead of 3 for better performance
     globe
       .hexPolygonsData(countries.features)
-      .hexPolygonResolution(3)
+      .hexPolygonResolution(2)
       .hexPolygonMargin(0.7)
       .showAtmosphere(config.showAtmosphere)
       .atmosphereColor(config.atmosphereColor)
@@ -189,7 +191,12 @@ export function Globe({ globeConfig, data }: WorldProps) {
       .ringPropagationSpeed(RING_PROPAGATION_SPEED)
       .ringRepeatPeriod((config.arcTime * config.arcLength) / config.rings);
 
-    const interval = setInterval(() => {
+    // Increase ring update interval from 2000ms to 3500ms for fewer updates
+    if (ringIntervalRef.current) {
+      clearInterval(ringIntervalRef.current);
+    }
+
+    ringIntervalRef.current = setInterval(() => {
       if (!globeRef.current) return;
       const newNumbersOfRings = genRandomNumbers(
         0,
@@ -206,10 +213,12 @@ export function Globe({ globeConfig, data }: WorldProps) {
         }));
 
       globeRef.current.ringsData(ringsData);
-    }, 2000);
+    }, 3500);
 
     return () => {
-      clearInterval(interval);
+      if (ringIntervalRef.current) {
+        clearInterval(ringIntervalRef.current);
+      }
     };
   }, [config, data]);
 
@@ -220,9 +229,11 @@ export function WebGLRendererConfig() {
   const { gl, size } = useThree();
 
   useEffect(() => {
-    gl.setPixelRatio(window.devicePixelRatio);
+    gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     gl.setSize(size.width, size.height);
     gl.setClearColor(0xffaaff, 0);
+    // Enable power preference for better performance
+    gl.info.autoReset = false;
   }, [gl, size.height, size.width]);
 
   return null;
@@ -233,20 +244,18 @@ export function World(props: WorldProps) {
   const scene = new Scene();
   scene.fog = new Fog(0xffffff, 400, 2000);
   return (
-    <Canvas scene={scene} camera={new PerspectiveCamera(50, aspect, 180, 1800)}>
+    <Canvas
+      scene={scene}
+      camera={new PerspectiveCamera(50, aspect, 180, 1800)}
+      dpr={[1, 1.5]}
+      performance={{ min: 0.5, max: 0.8 }}
+    >
       <WebGLRendererConfig />
-      <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
+      <ambientLight color={globeConfig.ambientLight} intensity={0.5} />
+      {/* Reduced from 3 lights to 1 directional + ambient */}
       <directionalLight
         color={globeConfig.directionalLeftLight}
         position={new Vector3(-400, 100, 400)}
-      />
-      <directionalLight
-        color={globeConfig.directionalTopLight}
-        position={new Vector3(-200, 500, 200)}
-      />
-      <pointLight
-        color={globeConfig.pointLight}
-        position={new Vector3(-200, 500, 200)}
         intensity={0.8}
       />
       <Globe {...props} />

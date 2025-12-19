@@ -13,7 +13,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Experience = () => {
   useGSAP(() => {
-    // Animate timeline cards
+    // Optimize ScrollTrigger settings
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
+    // Animate timeline cards with throttling
     gsap.utils.toArray(".timeline-card").forEach((card) => {
       gsap.from(card as Element, {
         xPercent: -100,
@@ -24,6 +27,7 @@ const Experience = () => {
         scrollTrigger: {
           trigger: card as Element,
           start: "top 80%",
+          invalidateOnRefresh: true,
         },
       });
     });
@@ -53,8 +57,13 @@ const Experience = () => {
     // Initial alignment
     alignGradientLine();
 
-    // Re-align on resize
-    window.addEventListener("resize", alignGradientLine);
+    // Re-align on resize with throttle
+    let resizeTimeout: NodeJS.Timeout;
+    const throttledAlign = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(alignGradientLine, 150);
+    };
+    window.addEventListener("resize", throttledAlign);
 
     // Animate the gradient line from top to bottom
     const gradientLine = document.querySelector(".gradient-line");
@@ -86,13 +95,16 @@ const Experience = () => {
         scrollTrigger: {
           trigger: text as Element,
           start: "top 60%",
+          invalidateOnRefresh: true,
         },
       });
     }, "<");
 
     // Clean up on unmount
     return () => {
-      window.removeEventListener("resize", alignGradientLine);
+      clearTimeout(resizeTimeout);
+      window.removeEventListener("resize", throttledAlign);
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
 

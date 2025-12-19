@@ -27,10 +27,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html
+      lang="en"
+      suppressHydrationWarning={true}
+      style={{ scrollBehavior: "smooth" }}
+    >
       <body
         // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         className={inter.className}
+        style={{
+          scrollBehavior: "smooth",
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
+          overscrollBehavior: "none",
+        }}
       >
         <ThemeProvider
           attribute="class"

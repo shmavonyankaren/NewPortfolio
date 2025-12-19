@@ -74,6 +74,7 @@ export const InfiniteMovingCards = ({
           start && "animate-scroll ",
           pauseOnHover && "hover:paused"
         )}
+        style={{ willChange: "transform", backfaceVisibility: "hidden" }}
       >
         {items.map((item, idx) => (
           <li
@@ -88,6 +89,8 @@ export const InfiniteMovingCards = ({
               background: "rgb(4,7,29)",
               backgroundColor:
                 "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
+              willChange: "auto",
+              backfaceVisibility: "hidden",
             }}
             // change to idx cuz we have the same name
             key={idx}
