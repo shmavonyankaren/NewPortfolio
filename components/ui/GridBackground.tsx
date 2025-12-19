@@ -16,7 +16,7 @@ export function GridBackground() {
       />
       {/* Simplified gradient - removed expensive mask */}
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#000319]"
+        className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[#000319]"
         style={{
           backgroundColor: "#000319",
           willChange: "auto",
