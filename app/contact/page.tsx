@@ -6,8 +6,8 @@ function ContactPage() {
       <div className="w-full h-full md:px-20 px-5">
         <h1 className="text-4xl font-bold text-white mb-8">Contact Me</h1>
         <p className="text-lg text-gray-300 mb-6">
-          I'm currently open to new opportunities and collaborations. Feel free
-          to reach out to me via the following methods:
+          I&apos;m currently open to new opportunities and collaborations. Feel
+          free to reach out to me via the following methods:
         </p>
         <ul className="list-disc list-inside text-gray-300 mb-6">
           <li>
