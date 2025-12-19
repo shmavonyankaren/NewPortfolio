@@ -9,7 +9,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-// import { ModeToggle } from "../ModeToggle";
+import { ModeToggle } from "../ModeToggle";
 
 type NavItem = {
   name: string;
@@ -70,18 +70,10 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
           duration: 0.2,
         }}
         className={cn(
-          // change rounded-full to rounded-lg
-          // remove dark:border-white/[0.2] dark:bg-black bg-white border-transparent
-          // change  pr-2 pl-8 py-2 to px-10 py-5
-
-          "bg-linear-to-r from-[#161a31] to-[#06091f] flex max-w-fit md:min-w-[70vw] lg:min-w-fit fixed z-5000 top-10 inset-x-0 mx-auto px-10 py-3 rounded-lg border border-black/.1 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] items-center justify-center space-x-4",
+          "bg-white/80 dark:bg-[linear-gradient(90deg,rgba(22,26,49,1)_0%,rgba(6,9,31,1)_100%)] flex max-w-fit md:min-w-[70vw] lg:min-w-fit fixed z-5000 top-4 md:top-10 inset-x-0 mx-auto px-4 md:px-8 lg:px-10 py-2 md:py-3 rounded-lg border border-gray-200 dark:border-white/[0.125] shadow-lg items-center justify-center gap-2 md:gap-4 backdrop-blur-md",
           className
         )}
         style={{
-          backdropFilter: "blur(16px) saturate(180%)",
-          backgroundColor: "rgba(17, 25, 40, 0.75)",
-          borderRadius: "12px",
-          border: "1px solid rgba(255, 255, 255, 0.125)",
           willChange: "auto",
           backfaceVisibility: "hidden",
         }}
@@ -99,19 +91,17 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
               className={cn(
                 `${
                   isActive
-                    ? "border text-sm font-medium relative border-neutral-200 dark:border-white/20 text-black dark:text-white px-4 py-2 rounded-full"
-                    : "relative dark:text-neutral-50 items-center  flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
+                    ? "border text-xs sm:text-sm font-medium relative border-purple-400 dark:border-white/20 text-purple-700 dark:text-white bg-purple-50 dark:bg-transparent px-2 sm:px-3 md:px-4 py-1.5 md:py-2 rounded-full whitespace-nowrap"
+                    : "relative text-gray-700 dark:text-neutral-50 items-center flex gap-1 hover:text-purple-600 dark:hover:text-neutral-300 text-xs sm:text-sm"
                 }`
               )}
             >
-              <span className="block sm:hidden">{navItem.icon}</span>
-              {/* add !cursor-pointer */}
-              {/* remove hidden sm:block for the mobile responsive */}
-              <span className="text-sm cursor-pointer!">{navItem.name}</span>
+              <span className="hidden sm:block">{navItem.icon}</span>
+              <span className="cursor-pointer">{navItem.name}</span>
             </Link>
           );
         })}
-        {/* <ModeToggle /> */}
+        <ModeToggle />
         {/* remove this login btn */}
         {/* <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
           <span>Login</span>

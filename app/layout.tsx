@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { FloatingNav } from "@/components/ui/FloatingNavbar";
 import { navItems } from "@/data";
 import SentryFeedbackWidget from "@/components/ReportBugButton";
+import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 // const geistMono = Geist_Mono({
@@ -44,7 +45,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
@@ -52,6 +53,8 @@ export default function RootLayout({
             <FloatingNav navItems={navItems} />
           </header>
           {children}
+          {/* <Footer /> */}
+
           <SentryFeedbackWidget />
         </ThemeProvider>
       </body>
