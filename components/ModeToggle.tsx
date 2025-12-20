@@ -35,19 +35,19 @@ export function ModeToggle() {
       >
         <DropdownMenuItem
           onClick={() => setTheme("light")}
-          className="text-gray-700 hover:bg-red-500 hover:text-purple-700 dark:text-gray-200 dark:hover:bg-purple-500/20 dark:hover:text-purple-300 cursor-pointer rounded-lg"
+          className="text-gray-700 hover:bg-purple-100! focus:bg-purple-100! hover:text-purple-700! focus:text-purple-700! dark:text-gray-200 dark:hover:bg-purple-500/20! dark:focus:bg-purple-500/20! dark:hover:text-purple-300! dark:focus:text-purple-300! cursor-pointer rounded-lg"
         >
           Light
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
-          className="text-gray-700 hover:bg-purple-100 hover:text-purple-700 dark:text-gray-200 dark:hover:bg-purple-500/20 dark:hover:text-purple-300 cursor-pointer rounded-lg"
+          className="text-gray-700 hover:bg-purple-100! focus:bg-purple-100! hover:text-purple-700! focus:text-purple-700! dark:text-gray-200 dark:hover:bg-purple-500/20! dark:focus:bg-purple-500/20! dark:hover:text-purple-300! dark:focus:text-purple-300! cursor-pointer rounded-lg"
         >
           Dark
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("system")}
-          className="text-gray-700 hover:bg-purple-100 hover:text-purple-700 dark:text-gray-200 dark:hover:bg-purple-500/20 dark:hover:text-purple-300 cursor-pointer rounded-lg"
+          className="text-gray-700 hover:bg-purple-100! focus:bg-purple-100! hover:text-purple-700! focus:text-purple-700! dark:text-gray-200 dark:hover:bg-purple-500/20! dark:focus:bg-purple-500/20! dark:hover:text-purple-300! dark:focus:text-purple-300! cursor-pointer rounded-lg"
         >
           System
         </DropdownMenuItem>

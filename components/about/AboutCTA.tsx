@@ -16,7 +16,7 @@ const AboutCTA = () => {
           <Link
             href="/assets/resume/Karen_Shmavonyan_Resume.pdf"
             download="Karen_Shmavonyan_Resume.pdf"
-            className="px-6 sm:px-8 py-2 sm:py-3 bg-white text-purple-600 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-gradient-to-r hover:from-white hover:to-purple-50 text-sm sm:text-base"
+            className="px-6 sm:px-8 py-2 sm:py-3 bg-white text-purple-600 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-linear-to-r hover:from-white hover:to-purple-50 text-sm sm:text-base"
           >
             Download Resume
           </Link>
