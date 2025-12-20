@@ -11,7 +11,10 @@ const Clients = () => {
     <section id="testimonials" className="py-20">
       <h1 className="heading">
         Insights from
-        <span className="text-purple-300"> famous people</span>
+        <span className="text-purple-500 dark:text-purple-300">
+          {" "}
+          famous people
+        </span>
       </h1>
 
       <div className="flex flex-col items-center max-lg:mt-10">

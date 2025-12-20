@@ -20,13 +20,11 @@ const Footer = () => {
 
       <div className="flex flex-col items-center">
         <h1 className="heading lg:max-w-[45vw]">
-          Ready to take <span className="text-purple-300">your</span> digital
-          presence to the next level?
+          Ready to take{" "}
+          <span className="text-purple-500 dark:text-purple-300">your</span>{" "}
+          digital presence to the next level?
         </h1>
-        <p
-          className="text-[#bec1dd]
- md:mt-10 my-5 text-center"
-        >
+        <p className="text-white-200 md:mt-10 my-5 text-center">
           Reach out to me today and let&apos;s discuss how I can help you
           achieve your goals.
         </p>
@@ -61,7 +59,7 @@ const Footer = () => {
               href={info.link}
               target="_blank"
               key={info.id}
-              className="w-10 h-10 cursor-pointer flex justify-center items-center backdrop-filter backdrop-blur-lg saturate-180 bg-linear-to-r from-[#161a31] to-[#06091f] rounded-lg border border-white/10 hover:border-white/20 hover:from-[#161a31]/90 hover:to-[#06091f]/90 transition-all"
+              className="w-10 h-10 cursor-pointer flex justify-center items-center backdrop-filter backdrop-blur-lg saturate-180 bg-gradient-to-r from-[#161a31] to-[#06091f] rounded-lg border border-black/[0.1] hover:border-white/[0.2] transition-all"
             >
               <Image width={20} height={20} src={info.img} alt="icons" />
             </a>

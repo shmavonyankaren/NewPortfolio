@@ -117,11 +117,18 @@ const Experience = () => {
         <h1 className="heading flex flex-col text-center gap-2 sm:gap-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
           💼 🎓
           <p>
-            My <span className="text-purple-300"> Work Experience</span>
+            My{" "}
+            <span className="text-purple-500 dark:text-purple-300">
+              {" "}
+              Work Experience
+            </span>
           </p>
           <p>
             and
-            <span className="text-purple-300"> Education</span>
+            <span className="text-purple-500 dark:text-purple-300">
+              {" "}
+              Education
+            </span>
           </p>
         </h1>
         <div className="mt-12 sm:mt-16 md:mt-24 lg:mt-32 relative">
