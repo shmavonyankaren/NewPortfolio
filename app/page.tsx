@@ -9,7 +9,7 @@ import RecentProjects from "@/components/RecentProjects";
 
 const Home = () => {
   return (
-    <main className="relative bg-[#000319]  flex justify-center items-center flex-col overflow-hidden mx-auto sm:px-10 lg:px-10 px-5">
+    <main className="relative bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)] dark:bg-[#000319] flex justify-center items-center flex-col overflow-hidden mx-auto sm:px-10 lg:px-10 px-5">
       <div className="max-w-7xl w-full">
         <Hero />
         <Grid />

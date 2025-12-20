@@ -1,39 +1,25 @@
 import React from "react";
+import { ContactHeader } from "@/components/contact/ContactHeader";
+import { QuickActions } from "@/components/contact/QuickActions";
+import { ContactForm } from "@/components/contact/ContactForm";
+
+const EMAIL = "2003.karen.shmavonyan@gmail.com";
+const PHONE = "+37495726678";
+const CV_LINK = "/assets/resume/Karen_Shmavonyan_Resume.pdf";
 
 function ContactPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center pt-20 pb-10 bg-[#000319]">
-      <div className="w-full h-full md:px-20 px-5">
-        <h1 className="text-4xl font-bold text-white mb-8">Contact Me</h1>
-        <p className="text-lg text-gray-300 mb-6">
-          I&apos;m currently open to new opportunities and collaborations. Feel
-          free to reach out to me via the following methods:
-        </p>
-        <ul className="list-disc list-inside text-gray-300 mb-6">
-          <li>
-            Email:
-            <a
-              href="mailto:2003.karen.shmavonyan@gmail.com"
-              className="text-purple-400 hover:underline ml-2"
-            >
-              Email Me
-            </a>
-          </li>
-          <li>
-            Phone:
-            <a
-              href="tel: +(374)-95-72-66-78"
-              className="text-purple-400 hover:underline ml-2"
-            >
-              Call Me
-            </a>
-          </li>
-        </ul>
-        <p className="text-lg text-gray-300">
-          I look forward to connecting with you!
-        </p>
-      </div>
-    </div>
+    <main className="pt-8 min-h-screen bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)] dark:bg-[#000319] text-gray-900 dark:text-white flex justify-center items-center flex-col overflow-hidden mx-auto sm:px-10 lg:px-10 px-5">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-16 sm:py-20 md:py-24">
+        <div className="flex flex-col gap-10 sm:gap-12">
+          <ContactHeader />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <QuickActions email={EMAIL} phone={PHONE} cvLink={CV_LINK} />
+            <ContactForm email={EMAIL} />
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
 

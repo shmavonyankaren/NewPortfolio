@@ -62,7 +62,7 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
 
         {/* Title */}
         <CardItem translateZ="30" className="w-full">
-          <h1 className="font-bold lg:text-2xl md:text-xl text-base line-clamp-1 text-white">
+          <h1 className="font-bold lg:text-2xl md:text-xl text-base line-clamp-1 text-slate-900 dark:text-white">
             {item.title}
           </h1>
         </CardItem>
@@ -70,11 +70,11 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
         {/* Description */}
         <CardItem translateZ="20" className="w-full">
           <p
-            className="lg:text-xl lg:font-normal font-light text-sm line-clamp-2"
-            style={{
-              color: "#BEC1DD",
-              margin: "1vh 0",
-            }}
+            className="lg:text-xl dark:text-[#BEC1DD] text-slate-700 lg:font-normal font-light text-sm line-clamp-2 mt-2"
+            // style={{
+            //   color: "#BEC1DD",
+            //   margin: "1vh 0",
+            // }}
           >
             {item.des}
           </p>
@@ -89,7 +89,7 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
             {item.iconLists.map((icon, index) => (
               <div
                 key={index}
-                className="border border-white/20 bg-linear-to-r from-[#161a31] to-[#06091f] rounded-full  lg:w-10 lg:h-10 w-8 h-8 flex justify-center items-center"
+                className="border border-white/20 bg-back/90 shadow-lg  bg-linear-to-r from-[#161a31] to-[#06091f] rounded-full  lg:w-10 lg:h-10 w-8 h-8 flex justify-center items-center"
                 style={{
                   transform: `translateX(-${5 * index + 2}px)`,
                 }}
@@ -114,7 +114,7 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center text-gray-300 hover:text-gray-400 px-4 py-2 sm:px-4 sm:py-2 rounded-xl"
+              className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center text-gray-600 dark:text-gray-300 dark:hover:text-gray-400 hover:text-gray-800 px-4 py-2 sm:px-4 sm:py-2 rounded-xl"
             >
               <FaGithub className="mr-2" size={20} />
               <span className="text-xs sm:text-sm">Check Code</span>
@@ -124,7 +124,10 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center text-purple-300 hover:text-purple-400 py-2 sm:px-4 sm:py-2 rounded-xl"
+              className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center
+              text-purple-600 dark:text-purple-300
+               dark:hover:text-purple-400
+               hover:text-purple-800 py-2 sm:px-4 sm:py-2 rounded-xl"
             >
               <GoArrowUpRight className="mr-2" size={20} />
               <span className="text-xs sm:text-sm">Check Live Site</span>
@@ -153,7 +156,9 @@ const RecentProjects = () => {
     <div className="py-20">
       <h1 className="heading">
         A small selection of{" "}
-        <span className="text-purple-300">recent projects</span>
+        <span className="text-purple-500 dark:text-purple-300">
+          recent projects
+        </span>
       </h1>
       <RecentProjectsContent />
     </div>

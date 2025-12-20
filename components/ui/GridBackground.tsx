@@ -10,7 +10,9 @@ export function GridBackground() {
         className={cn(
           "absolute inset-0",
           "bg-size-[100px_100px]",
-          "bg-[linear-gradient(to_right,#060a1c_3px,transparent_3px),linear-gradient(to_bottom,#060a1c_3px,transparent_3px)]"
+          "bg-[linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)]",
+
+          "dark:bg-[linear-gradient(to_right,#060a1c_3px,transparent_3px),linear-gradient(to_bottom,#060a1c_3px,transparent_3px)]"
         )}
         style={{ willChange: "auto", backfaceVisibility: "hidden" }}
       />

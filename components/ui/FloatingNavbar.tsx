@@ -70,7 +70,7 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
           duration: 0.2,
         }}
         className={cn(
-          "bg-white/80 dark:bg-[linear-gradient(90deg,rgba(22,26,49,1)_0%,rgba(6,9,31,1)_100%)] flex max-w-fit md:min-w-[70vw] lg:min-w-fit fixed z-5000 top-5 md:top-10 inset-x-0 mx-auto px-6 md:px-8 lg:px-10 py-3 md:py-3 rounded-lg border border-gray-200 dark:border-white/12.5 shadow-lg items-center justify-center gap-3 md:gap-4 backdrop-blur-md",
+          "bg-white/80 dark:bg-[#161a31]/80 flex max-w-fit md:min-w-[70vw] lg:min-w-fit fixed z-5000 top-5 md:top-10 inset-x-0 mx-auto px-6 md:px-8 lg:px-10 py-3 md:py-3 rounded-lg border border-gray-200 dark:border-white/12.5 shadow-lg items-center justify-center gap-3 md:gap-4 backdrop-blur-md",
           className
         )}
         style={{
