@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const AboutHero = () => {
   return (
-    <section className="py-12 sm:py-16 md:py-20 min-h-screen flex items-center justify-center">
+    <section className="pt-30 py-12 sm:py-16 sm:pt-33 md:py-20 md:pt-36 min-h-screen flex items-center justify-center">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
         {/* Image */}
         <div className="flex justify-center">
@@ -21,7 +21,8 @@ const AboutHero = () => {
         {/* Content */}
         <div className="space-y-4 sm:space-y-5 md:space-y-6">
           <h1 className="heading text-3xl sm:text-4xl md:text-5xl">
-            About <span className="text-purple-300">Me</span>
+            About{" "}
+            <span className="text-purple-500 dark:text-purple-300">Me</span>
           </h1>
           <p className="text-base sm:text-lg text-gray-700 dark:text-[#bec1dd] leading-relaxed">
             Hi! I&apos;m Karen, a passionate full-stack developer with a keen

@@ -70,7 +70,7 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
           duration: 0.2,
         }}
         className={cn(
-          "bg-white/80 dark:bg-[linear-gradient(90deg,rgba(22,26,49,1)_0%,rgba(6,9,31,1)_100%)] flex max-w-fit md:min-w-[70vw] lg:min-w-fit fixed z-5000 top-4 md:top-10 inset-x-0 mx-auto px-4 md:px-8 lg:px-10 py-2 md:py-3 rounded-lg border border-gray-200 dark:border-white/12.5 shadow-lg items-center justify-center gap-2 md:gap-4 backdrop-blur-md",
+          "bg-white/80 dark:bg-[linear-gradient(90deg,rgba(22,26,49,1)_0%,rgba(6,9,31,1)_100%)] flex max-w-fit md:min-w-[70vw] lg:min-w-fit fixed z-5000 top-5 md:top-10 inset-x-0 mx-auto px-6 md:px-8 lg:px-10 py-3 md:py-3 rounded-lg border border-gray-200 dark:border-white/12.5 shadow-lg items-center justify-center gap-3 md:gap-4 backdrop-blur-md",
           className
         )}
         style={{
@@ -91,8 +91,8 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
               className={cn(
                 `${
                   isActive
-                    ? "border text-xs sm:text-sm font-medium relative border-purple-400 dark:border-white/20 text-purple-700 dark:text-white bg-purple-50 dark:bg-transparent px-2 sm:px-3 md:px-4 py-1.5 md:py-2 rounded-full whitespace-nowrap"
-                    : "relative text-gray-700 dark:text-neutral-50 items-center flex gap-1 hover:text-purple-600 dark:hover:text-neutral-300 text-xs sm:text-sm"
+                    ? "border text-sm sm:text-sm md:text-sm font-medium relative border-purple-400 dark:border-white/20 text-purple-700 dark:text-white bg-purple-50 dark:bg-transparent px-3 sm:px-3 md:px-4 py-2 md:py-2 rounded-full whitespace-nowrap"
+                    : "relative text-gray-700 dark:text-neutral-50 items-center flex gap-1 hover:text-purple-600 dark:hover:text-neutral-300 text-sm sm:text-sm md:text-sm"
                 }`
               )}
             >

@@ -14,14 +14,15 @@ const AboutCTA = () => {
         </p>
         <div className="flex gap-3 md:gap-4 justify-center flex-wrap">
           <Link
-            href="mailto:2003.karen.shmavonyan@gmail.com"
-            className="px-6 sm:px-8 py-2 sm:py-3 bg-white text-purple-600 hover:bg-purple-50 rounded-lg font-semibold transition-colors text-sm sm:text-base"
+            href="/assets/resume/Karen_Shmavonyan_Resume.pdf"
+            download="Karen_Shmavonyan_Resume.pdf"
+            className="px-6 sm:px-8 py-2 sm:py-3 bg-white text-purple-600 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-xl hover:bg-gradient-to-r hover:from-white hover:to-purple-50 text-sm sm:text-base"
           >
-            Send Me an Email
+            Download Resume
           </Link>
           <Link
             href="/contact"
-            className="px-6 sm:px-8 py-2 sm:py-3 border-2 border-white text-white hover:bg-white hover:text-purple-600 rounded-lg font-semibold transition-colors text-sm sm:text-base"
+            className="px-6 sm:px-8 py-2 sm:py-3 border-2 border-white text-white rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-xltext-sm sm:text-base"
           >
             Contact Me
           </Link>
