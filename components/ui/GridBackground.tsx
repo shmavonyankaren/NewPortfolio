@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 export function GridBackground() {
   return (
     <div
-      className="absolute top-0 left-0 flex h-screen w-full items-center justify-center bg-white dark:bg-[#000319]"
+      className="absolute top-0 left-0 flex h-screen w-full items-center justify-center bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)] dark:bg-[#000319]"
       style={{ willChange: "auto", contain: "layout", pointerEvents: "none" }}
     >
       <div
@@ -16,15 +16,10 @@ export function GridBackground() {
         )}
         style={{ willChange: "auto", backfaceVisibility: "hidden" }}
       />
-      {/* Simplified gradient - removed expensive mask */}
+      {/* Subtle overlay: light mode fades to white; dark mode fades to #000319 */}
       <div
-        className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[#000319]"
-        style={{
-          backgroundColor: "#000319",
-          willChange: "auto",
-          backfaceVisibility: "hidden",
-          opacity: 0.4,
-        }}
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)]   dark:to-[#000319] opacity-20 dark:opacity-40"
+        style={{ willChange: "auto", backfaceVisibility: "hidden" }}
       />
     </div>
   );
