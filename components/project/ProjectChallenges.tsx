@@ -22,7 +22,7 @@ export function ProjectChallenges({ challenges }: ProjectChallengesProps) {
       <div className="space-y-6">
         {challenges.map((challenge, index) => (
           <div key={index} className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-300"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-300"></div>
             <div className="relative bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-2xl p-6 hover:shadow-xl transition-all duration-300">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
                 {challenge.title}
