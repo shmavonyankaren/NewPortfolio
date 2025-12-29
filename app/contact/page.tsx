@@ -9,13 +9,13 @@ const CV_LINK = "/assets/resume/Karen_Shmavonyan_Resume.pdf";
 
 function ContactPage() {
   return (
-    <main className="pt-8 min-h-screen bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)] dark:bg-[#000319] text-gray-900 dark:text-white flex justify-center items-center flex-col overflow-hidden mx-auto sm:px-10 lg:px-10 px-5">
+    <main className="pt-8 min-h-screen bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)] dark:bg-[#000319] text-gray-900 dark:text-white flex justify-center items-center flex-col overflow-hidden mx-auto sm:px-10 lg:px-10 px-5 scroll-smooth">
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-16 sm:py-20 md:py-24">
         <div className="flex flex-col gap-10 sm:gap-12">
           <ContactHeader />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <QuickActions email={EMAIL} phone={PHONE} cvLink={CV_LINK} />
-            <ContactForm email={EMAIL} />
+            <ContactForm />
           </div>
         </div>
       </section>
