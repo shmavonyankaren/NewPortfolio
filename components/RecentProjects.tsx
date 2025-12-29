@@ -89,7 +89,7 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
             {item.iconLists.map((icon, index) => (
               <div
                 key={index}
-                className="border border-white/20 bg-back/90 shadow-lg  bg-linear-to-r from-[#161a31] to-[#06091f] rounded-full  lg:w-10 lg:h-10 w-8 h-8 flex justify-center items-center"
+                className="border border-none dark:border-white/20 bg-back/90 shadow-lg bg  bg-linear-to-r from-purple-400 to-purple-700 dark:from-[#161a31] dark:to-[#06091f] rounded-full  lg:w-10 lg:h-10 w-8 h-8 flex justify-center items-center"
                 style={{
                   transform: `translateX(-${5 * index + 2}px)`,
                 }}
@@ -141,7 +141,7 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
 
 ProjectCard.displayName = "ProjectCard";
 
-const RecentProjectsContent = () => {
+const RecentProjectsContent: React.FC = () => {
   return (
     <div className="flex flex-1 w-full flex-wrap justify-center gap-12 mt-10">
       {projects.map((item) => (

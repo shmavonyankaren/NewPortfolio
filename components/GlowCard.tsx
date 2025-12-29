@@ -61,12 +61,12 @@ const GlowCard = ({ card, index, children }: GlowCardProps) => {
             key={i}
             src="/star.png"
             alt="star"
-            className="size-4 md:size-5"
+            className="size-4 md:size-5 brightness-110 invert sepia saturate-[3] hue-rotate-[260deg] dark:brightness-100 dark:invert-0 dark:sepia-0 dark:saturate-100 dark:hue-rotate-0"
           />
         ))}
       </div>
       <div className="mb-4 md:mb-5">
-        <p className="text-white-50 text-sm md:text-base lg:text-lg">
+        <p className="text-slate-700 dark:text-white text-sm md:text-base lg:text-lg">
           {card.review}
         </p>
       </div>

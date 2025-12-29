@@ -30,7 +30,8 @@ export const gridItems: GridItem[] = [
     id: 2,
     title: "I'm very flexible with time zone communications",
     description: "",
-    className: "text-center  lg:col-span-2 md:col-span-3 md:row-span-2",
+    className:
+      "bg-purple-300 text-center  lg:col-span-2 md:col-span-3 md:row-span-2",
     imgClassName: "",
     titleClassName: "justify-start",
     img: "",
@@ -161,6 +162,8 @@ export const testimonials: QuoteItem[] = [
 export const companies: CompanyItem[] = [
   {
     id: 1,
+    className:
+      "brightness-0  dark:invert dark:sepia dark:saturate-[3] dark:hue-rotate-240",
     name: "cloudinary",
     img: "/cloud.svg",
     nameImg: "/cloudName.svg",

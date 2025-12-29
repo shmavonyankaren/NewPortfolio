@@ -36,6 +36,7 @@ export type CompanyItem = {
   name: string;
   img: string;
   nameImg: string;
+  className?: string;
 };
 
 export type WorkExperienceAndEducation = {
