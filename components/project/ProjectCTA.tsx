@@ -8,8 +8,8 @@ type ProjectCTAProps = {
 export function ProjectCTA({ project }: ProjectCTAProps) {
   return (
     <div className="relative mt-20">
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-xl opacity-30"></div>
-      <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-700 dark:to-pink-700 rounded-2xl p-8 md:p-12 text-center text-white">
+      <div className="absolute inset-0 bg-linear-to-r from-purple-600 to-pink-600 rounded-2xl blur-xl opacity-30"></div>
+      <div className="relative bg-linear-to-r from-purple-600 to-pink-600 dark:from-purple-700 dark:to-pink-700 rounded-2xl p-8 md:p-12 text-center text-white">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Interested in This Project?
         </h2>

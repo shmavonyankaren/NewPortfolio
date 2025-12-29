@@ -21,7 +21,7 @@ export function ProjectFeatures({ features }: ProjectFeaturesProps) {
             key={index}
             className="flex items-start gap-3 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl p-5 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
           >
-            <FaCheckCircle className="text-purple-600 dark:text-purple-400 mt-1 flex-shrink-0" />
+            <FaCheckCircle className="text-purple-600 dark:text-purple-400 mt-1 shrink-0" />
             <p className="text-slate-700 dark:text-slate-300">{feature}</p>
           </div>
         ))}
