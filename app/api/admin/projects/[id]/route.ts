@@ -103,7 +103,7 @@ export async function PUT(
     }
 
     // Build the update object - only include fields that are provided
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (data.title !== undefined) updateData.title = data.title;
     if (data.description !== undefined)
       updateData.description = data.description;
@@ -155,7 +155,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -167,7 +167,11 @@ export async function DELETE(
     return NextResponse.json({ message: "Project deleted successfully" });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to delete project" },
+      {
+        error: `Failed to delete project: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      },
       { status: 500 }
     );
   }
