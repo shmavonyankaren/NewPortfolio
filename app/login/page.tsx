@@ -64,7 +64,7 @@ export default function Login() {
     );
   }
   return (
-    <div className="min-h-screen bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)]  dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)] flex items-center justify-center px-5 md:px-10 lg:px-20 py-10">
+    <div className="min-h-screen bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)]  dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)] flex items-center justify-center px-5 md:px-10 lg:px-20  pt-22">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-10">
@@ -89,7 +89,7 @@ export default function Login() {
           {/* Username Field */}
           <div className="mb-6">
             <label
-              className="text-white mb-2 font-semibold flex items-center gap-2"
+              className="text-black dark:text-white mb-2 font-semibold flex items-center gap-2"
               htmlFor="username"
             >
               <User size={18} className="text-purple-400" />
@@ -99,7 +99,7 @@ export default function Login() {
               type="text"
               id="username"
               name="username"
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 bg-white border border-purple-200/70 shadow-sm rounded-lg text-slate-900 placeholder-slate-500 dark:bg-white/10 dark:border-white/20 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-300/70 dark:focus:border-transparent transition-all"
               placeholder="Enter your username"
               required
             />
@@ -108,7 +108,7 @@ export default function Login() {
           {/* Password Field */}
           <div className="mb-8">
             <label
-              className="text-white mb-2 font-semibold flex items-center gap-2"
+              className="text-black dark:text-white mb-2 font-semibold flex items-center gap-2"
               htmlFor="password"
             >
               <Lock size={18} className="text-purple-400" />
@@ -118,7 +118,7 @@ export default function Login() {
               type="password"
               id="password"
               name="password"
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 bg-white border border-purple-200/70 shadow-sm rounded-lg text-slate-900 placeholder-slate-500 dark:bg-white/10 dark:border-white/20 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-300/70 dark:focus:border-transparent transition-all"
               placeholder="Enter your password"
               required
             />
