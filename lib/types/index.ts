@@ -1,5 +1,6 @@
 export type ProjectItem = {
-  id: number;
+  id?: number;
+  _id?: string;
   title: string;
   des: string;
   img: string;

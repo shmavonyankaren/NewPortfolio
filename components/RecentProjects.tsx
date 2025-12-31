@@ -11,21 +11,22 @@ import { memo } from "react";
 
 const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
   const router = useRouter();
+  const projectId = item._id || item.id;
 
   return (
     <CardContainer
-      key={item.id}
+      key={projectId}
       className="min-w-80 flex justify-center items-center md:flex-none md:w-160 max-w-154"
       containerClassName="pb-20"
     >
       <CardBody
         className="h-auto w-full flex flex-col p-6 rounded-2xl shadow-[0_8px_16px_rgb(0_0_0/0.4)] border border-white/10 group-hover/pin:border-white/20 transition duration-700 cursor-pointer group"
-        onClick={() => router.push(`/projects/${item.id}`)}
+        onClick={() => router.push(`/projects/${projectId}`)}
         role="button"
         tabIndex={0}
         onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
           if (e.key === "Enter" || e.key === " ") {
-            router.push(`/projects/${item.id}`);
+            router.push(`/projects/${projectId}`);
           }
         }}
       >
@@ -89,7 +90,7 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
             {item.iconLists.map((icon, index) => (
               <div
                 key={index}
-                className="border border-none dark:border-white/20 bg-back/90 shadow-lg bg  bg-linear-to-r from-purple-400 to-purple-700 dark:from-[#161a31] dark:to-[#06091f] rounded-full  lg:w-10 lg:h-10 w-8 h-8 flex justify-center items-center"
+                className="border border-none dark:border-white/20 bg-back/90 shadow-lg bg-linear-to-br from-white-400 to-purple-700 dark:from-[#161a31] dark:to-[#06091f] rounded-full  lg:w-10 lg:h-10 w-8 h-8 flex justify-center items-center"
                 style={{
                   transform: `translateX(-${5 * index + 2}px)`,
                 }}
@@ -145,7 +146,7 @@ const RecentProjectsContent: React.FC = () => {
   return (
     <div className="flex flex-1 w-full flex-wrap justify-center gap-12 mt-10">
       {projects.map((item) => (
-        <ProjectCard key={item.id} item={item} />
+        <ProjectCard key={item._id || item.id} item={item} />
       ))}
     </div>
   );

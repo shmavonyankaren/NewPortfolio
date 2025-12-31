@@ -66,7 +66,7 @@ export function QuickActions({ email, phone, cvLink }: QuickActionsProps) {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-purple-600 to-purple-700 text-white p-5 sm:p-6 shadow-md">
+      <div className="rounded-2xl border border-slate-200/70 bg-linear-to-br from-purple-600 to-purple-700 text-white p-5 sm:p-6 shadow-md">
         <h3 className="text-lg font-semibold mb-2">Prefer email?</h3>
         <p className="text-sm text-white/80">
           Drop me a line and I&apos;ll get back within one business day.

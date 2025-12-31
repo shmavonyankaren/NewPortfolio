@@ -21,8 +21,12 @@ const AboutHero = () => {
         {/* Content */}
         <div className="space-y-4 sm:space-y-5 md:space-y-6">
           <h1 className="heading text-3xl sm:text-4xl md:text-5xl">
-            About{" "}
-            <span className="text-purple-500 dark:text-purple-300">Me</span>
+            <div className="inline-block">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 bg-clip-text text-transparent">
+                About Me
+              </h1>
+              <div className="h-1 w-full bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 rounded-full"></div>
+            </div>
           </h1>
           <p className="text-base sm:text-lg text-gray-700 dark:text-[#bec1dd] leading-relaxed">
             Hi! I&apos;m Karen, a passionate full-stack developer with a keen

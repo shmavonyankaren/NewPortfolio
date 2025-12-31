@@ -6,6 +6,9 @@ import { FloatingNav } from "@/components/ui/FloatingNavbar";
 import { navItems } from "@/data";
 import SentryFeedbackWidget from "@/components/ReportBugButton";
 const inter = Inter({ subsets: ["latin"] });
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
 
 // const geistMono = Geist_Mono({
 //   variable: "--font-geist-mono",
@@ -42,6 +45,7 @@ export default function RootLayout({
           overscrollBehavior: "none",
         }}
       >
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

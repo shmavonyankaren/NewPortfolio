@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { projects } from "@/data";
 import { FaArrowLeft } from "react-icons/fa";
@@ -16,9 +15,11 @@ import {
 function ProjectPage() {
   const params = useParams();
   const router = useRouter();
-  const projectId = Number(params.projectId);
+  const projectId = params.projectId as string;
 
-  const project = projects.find((p) => p.id === projectId);
+  const project = projects.find(
+    (p) => p._id === projectId || p.id === Number(projectId)
+  );
 
   if (!project) {
     return (
@@ -28,7 +29,7 @@ function ProjectPage() {
         </h1>
         <button
           onClick={() => router.push("/projects")}
-          className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition"
+          className="cursor-pointer px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition"
         >
           Back to Projects
         </button>
@@ -73,12 +74,12 @@ function ProjectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)] text-slate-900 dark:text-white">
+    <div className="min-h-screen bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)] dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)] text-slate-900 dark:text-white">
       <div className="max-w-7xl mx-auto px-5 md:px-10 md:py-30 lg:px-20 py-20 pt-25">
         {/* Back Button */}
         <button
           onClick={() => router.push("/projects")}
-          className="flex items-center gap-2 mb-8 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition group"
+          className="cursor-pointer flex items-center gap-2 mb-8 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition group"
         >
           <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
           <span className="font-medium">Back to Projects</span>

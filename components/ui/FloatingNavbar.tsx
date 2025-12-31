@@ -29,13 +29,31 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
 
   // set true for the initial state so that nav bar is visible in the hero section
   const [visible, setVisible] = useState(true);
+  const [isScrollable, setIsScrollable] = useState(false);
 
-  // Reset navbar visibility on route change
+  // Reset navbar visibility on route change and check if page is scrollable
   useEffect(() => {
     queueMicrotask(() => setVisible(true));
+
+    // Check if page has scrollable content
+    const checkScrollable = () => {
+      const isScrollable =
+        document.documentElement.scrollHeight > window.innerHeight;
+      setIsScrollable(isScrollable);
+    };
+
+    checkScrollable();
+    window.addEventListener("resize", checkScrollable);
+    return () => window.removeEventListener("resize", checkScrollable);
   }, [pathName]);
 
   useMotionValueEvent(scrollYProgress, "change", (current) => {
+    // Only apply scroll-based hiding if page is actually scrollable
+    if (!isScrollable) {
+      setVisible(true);
+      return;
+    }
+
     // Check if current is not undefined and is a number
     if (typeof current === "number") {
       const prev = prevDirectionRef.current;
