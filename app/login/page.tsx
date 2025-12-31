@@ -25,7 +25,7 @@ export default function Login() {
           router.push("/admin-dashboard");
         }
       } catch (error) {
-        console.log("Auth check failed, allowing login");
+        handleError(error);
       } finally {
         setIsChecking(false);
       }
@@ -89,7 +89,7 @@ export default function Login() {
           {/* Username Field */}
           <div className="mb-6">
             <label
-              className="block text-white mb-2 font-semibold flex items-center gap-2"
+              className="text-white mb-2 font-semibold flex items-center gap-2"
               htmlFor="username"
             >
               <User size={18} className="text-purple-400" />
@@ -108,7 +108,7 @@ export default function Login() {
           {/* Password Field */}
           <div className="mb-8">
             <label
-              className="block text-white mb-2 font-semibold flex items-center gap-2"
+              className="text-white mb-2 font-semibold flex items-center gap-2"
               htmlFor="password"
             >
               <Lock size={18} className="text-purple-400" />
