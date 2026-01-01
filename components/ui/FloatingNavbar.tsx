@@ -26,10 +26,63 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
   const { scrollYProgress } = useScroll();
   const pathName = usePathname();
   const prevDirectionRef = useRef(0);
+  const navRefs = useRef<{ [key: string]: HTMLElement | null }>({});
 
   // set true for the initial state so that nav bar is visible in the hero section
   const [visible, setVisible] = useState(true);
   const [isScrollable, setIsScrollable] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  // Update active index when path changes
+  useEffect(() => {
+    function updateActiveIndex() {
+      const index = navItems.findIndex((item) =>
+        item.link === "/" ? pathName === "/" : pathName.startsWith(item.link)
+      );
+      setActiveIndex(index);
+    }
+    updateActiveIndex();
+  }, [pathName, navItems]);
+
+  // Update indicator position when active index changes
+  useEffect(() => {
+    if (activeIndex >= 0 && navRefs.current[activeIndex]) {
+      const element = navRefs.current[activeIndex];
+      if (element) {
+        const parentRect = element.parentElement?.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+        if (parentRect) {
+          setIndicatorStyle({
+            left: elementRect.left - parentRect.left,
+            width: elementRect.width,
+          });
+        }
+      }
+    }
+  }, [activeIndex]);
+
+  // Update indicator on resize/zoom
+  useEffect(() => {
+    const updateIndicator = () => {
+      if (activeIndex >= 0 && navRefs.current[activeIndex]) {
+        const element = navRefs.current[activeIndex];
+        if (element) {
+          const parentRect = element.parentElement?.getBoundingClientRect();
+          const elementRect = element.getBoundingClientRect();
+          if (parentRect) {
+            setIndicatorStyle({
+              left: elementRect.left - parentRect.left,
+              width: elementRect.width,
+            });
+          }
+        }
+      }
+    };
+
+    window.addEventListener("resize", updateIndicator);
+    return () => window.removeEventListener("resize", updateIndicator);
+  }, [activeIndex]);
 
   // Reset navbar visibility on route change and check if page is scrollable
   useEffect(() => {
@@ -96,29 +149,54 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
           backfaceVisibility: "hidden",
         }}
       >
-        {navItems.map((navItem: NavItem, idx: number) => {
-          const isActive =
-            navItem.link === "/"
-              ? pathName === "/"
-              : pathName.startsWith(navItem.link);
+        <div className="relative flex items-center gap-3 md:gap-4">
+          {/* Animated background indicator */}
+          {activeIndex >= 0 && (
+            <motion.div
+              className="absolute border border-purple-400 dark:border-white/20 bg-purple-50 dark:bg-purple-400/10 rounded-full top-0"
+              initial={false}
+              animate={{
+                left: indicatorStyle.left,
+                width: indicatorStyle.width,
+                height: "100%",
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+              }}
+              style={{
+                zIndex: 0,
+              }}
+            />
+          )}
 
-          return (
-            <Link
-              key={`link=${idx}`}
-              href={navItem.link}
-              className={cn(
-                `${
+          {navItems.map((navItem: NavItem, idx: number) => {
+            const isActive =
+              navItem.link === "/"
+                ? pathName === "/"
+                : pathName.startsWith(navItem.link);
+
+            return (
+              <Link
+                key={`link=${idx}`}
+                ref={(el) => {
+                  navRefs.current[idx] = el;
+                }}
+                href={navItem.link}
+                className={cn(
+                  "relative z-10 flex items-center gap-1 text-sm sm:text-sm md:text-sm transition-colors duration-200",
                   isActive
-                    ? "border text-sm sm:text-sm md:text-sm font-medium relative border-purple-400 dark:borderwhite/20 text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-400/10 px-3 sm:px-3 md:px-4 py-2 md:py-2 rounded-full whitespace-nowrap"
-                    : "relative text-gray-700 dark:text-neutral-50 items-center flex gap-1 hover:text-purple-600 dark:hover:text-neutral-300 text-sm sm:text-sm md:text-sm"
-                }`
-              )}
-            >
-              <span className="hidden sm:block">{navItem.icon}</span>
-              <span className="cursor-pointer">{navItem.name}</span>
-            </Link>
-          );
-        })}
+                    ? "font-medium text-purple-700 dark:text-purple-300 px-3 sm:px-3 md:px-4 py-2 md:py-2 whitespace-nowrap"
+                    : "text-gray-700 dark:text-neutral-50 hover:text-purple-600 dark:hover:text-neutral-300"
+                )}
+              >
+                <span className="hidden sm:block">{navItem.icon}</span>
+                <span className="cursor-pointer">{navItem.name}</span>
+              </Link>
+            );
+          })}
+        </div>
         <ModeToggle />
         {/* remove this login btn */}
         {/* <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
