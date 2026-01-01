@@ -75,7 +75,7 @@ export default function ContactCard({
                   href={contact.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm"
                 >
                   GitHub
                 </a>

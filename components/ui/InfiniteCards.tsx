@@ -25,6 +25,7 @@ export const InfiniteMovingCards = ({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollerRef = React.useRef<HTMLUListElement>(null);
   const [start, setStart] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
@@ -57,6 +58,15 @@ export const InfiniteMovingCards = ({
     container.style.setProperty("--animation-direction", animationDirection);
     container.style.setProperty("--animation-duration", animationDuration);
   }, [direction, speed]);
+
+  const handleTouchStart = () => {
+    setIsPaused(true);
+  };
+
+  const handleTouchEnd = () => {
+    setIsPaused(false);
+  };
+
   return (
     <div
       ref={containerRef}
@@ -72,9 +82,12 @@ export const InfiniteMovingCards = ({
           // change gap-16
           " flex min-w-full shrink-0 gap-16 py-4 w-max flex-nowrap",
           start && "animate-scroll ",
-          pauseOnHover && "hover:paused"
+          pauseOnHover && "hover:paused",
+          isPaused && "paused"
         )}
         style={{ willChange: "transform", backfaceVisibility: "hidden" }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {items.map((item, idx) => (
           <li

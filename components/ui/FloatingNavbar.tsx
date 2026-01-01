@@ -109,7 +109,7 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
               className={cn(
                 `${
                   isActive
-                    ? "border text-sm sm:text-sm md:text-sm font-medium relative border-purple-400 dark:border-white/20 text-purple-700 dark:text-white bg-purple-50 dark:bg-transparent px-3 sm:px-3 md:px-4 py-2 md:py-2 rounded-full whitespace-nowrap"
+                    ? "border text-sm sm:text-sm md:text-sm font-medium relative border-purple-400 dark:borderwhite/20 text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-400/10 px-3 sm:px-3 md:px-4 py-2 md:py-2 rounded-full whitespace-nowrap"
                     : "relative text-gray-700 dark:text-neutral-50 items-center flex gap-1 hover:text-purple-600 dark:hover:text-neutral-300 text-sm sm:text-sm md:text-sm"
                 }`
               )}

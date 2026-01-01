@@ -30,7 +30,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen px-5 md:px-10 lg:px-20 py-10 text-slate-900 dark:text-white bg-linear-to-r from-slate-50 to-slate-100 dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)]">
-      <div className="max-w-7xl mx-auto">
+      <div className="lg:mt-0 mt-17 max-w-7xl mx-auto">
         {/* Header with Logout Button */}
         <div className="flex items-center justify-between mb-12">
           <div>
