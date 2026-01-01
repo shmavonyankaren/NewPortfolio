@@ -8,11 +8,21 @@ import JobsManager from "@/components/admin/JobsManager";
 import EducationManager from "@/components/admin/EducationManager";
 import ContactManager from "@/components/admin/ContactManager";
 import InsightsManager from "@/components/admin/InsightsManager";
+import SkillsAndExpertiseManager from "@/components/admin/SkillsAndExpertiseManager";
+import CertificateSectionManager from "@/components/admin/CertificateSectionManager";
+import GeneralInformationManager from "@/components/admin/GeneralInformationManager";
 
 export default function AdminDashboard() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [activeTab, setActiveTab] = useState<
-    "projects" | "jobs" | "education" | "contact" | "insights"
+    | "projects"
+    | "jobs"
+    | "education"
+    | "contact"
+    | "insights"
+    | "skills"
+    | "certificates"
+    | "general-information"
   >("projects");
 
   const handleLogout = async () => {
@@ -26,6 +36,9 @@ export default function AdminDashboard() {
     { id: "education", label: "Education" },
     { id: "contact", label: "Contact Info" },
     { id: "insights", label: "Insights" },
+    { id: "skills", label: "Skills & Expertise" },
+    { id: "certificates", label: "Certificates" },
+    { id: "general-information", label: "General Information" },
   ] as const;
 
   return (
@@ -75,6 +88,9 @@ export default function AdminDashboard() {
           {activeTab === "education" && <EducationManager />}
           {activeTab === "contact" && <ContactManager />}
           {activeTab === "insights" && <InsightsManager />}
+          {activeTab === "skills" && <SkillsAndExpertiseManager />}
+          {activeTab === "certificates" && <CertificateSectionManager />}
+          {activeTab === "general-information" && <GeneralInformationManager />}
         </div>
       </div>
     </div>

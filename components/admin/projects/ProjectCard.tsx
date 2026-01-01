@@ -8,7 +8,7 @@ interface Project {
   title: string;
   shortDescription: string;
   description?: string;
-  image: string;
+  image?: string;
   features?: Array<{ title: string; description: string }>;
   challenges?: Array<{ challenge: string; solution: string }>;
   technologies?: Array<{ name: string }>;
@@ -38,14 +38,18 @@ export default function ProjectCard({
   return (
     <div className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg overflow-hidden">
       <div className="flex items-start gap-3 p-3 sm:p-4 border-b border-slate-200 dark:border-white/10">
-        {project.image && (
+        {project.image ? (
           <Image
             width={64}
             height={64}
             src={project.image}
             alt={project.title}
-            className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded border border-slate-200 dark:border-white/10 shrink-0 hidden xs:block"
+            className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded border border-slate-200 dark:border-white/10 shrink-0"
           />
+        ) : (
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white text-xl sm:text-2xl border border-slate-200 dark:border-white/10 shrink-0">
+            🖼️
+          </div>
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
