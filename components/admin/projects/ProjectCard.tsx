@@ -47,7 +47,7 @@ export default function ProjectCard({
             className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded border border-slate-200 dark:border-white/10 shrink-0"
           />
         ) : (
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white text-xl sm:text-2xl border border-slate-200 dark:border-white/10 shrink-0">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-linear-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white text-xl sm:text-2xl border border-slate-200 dark:border-white/10 shrink-0">
             🖼️
           </div>
         )}
