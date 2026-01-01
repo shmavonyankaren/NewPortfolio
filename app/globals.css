@@ -132,6 +132,8 @@ html {
   .animate-fourth { animation: moveHorizontal 40s ease infinite; }
   .animate-fifth { animation: moveInCircle 20s ease infinite; }
   .animate-scroll { animation: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite; }
+  .animate-scroll.paused,
+  .animate-scroll:hover.hover\:paused { animation-play-state: paused; }
 }
 
 @layer base {

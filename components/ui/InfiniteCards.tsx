@@ -88,6 +88,7 @@ export const InfiniteMovingCards = ({
         style={{ willChange: "transform", backfaceVisibility: "hidden" }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       >
         {items.map((item, idx) => (
           <li
