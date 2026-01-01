@@ -7,7 +7,13 @@ export interface IJob extends Document {
   startDate: Date;
   endDate?: Date;
   isCurrentlyWorking: boolean;
-  skills: string[];
+  skills: Array<{
+    name: string;
+    image?: string;
+  }>;
+  responsibilities: Array<{
+    name: string;
+  }>;
   logo?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -21,7 +27,17 @@ const JobSchema = new Schema<IJob>(
     startDate: { type: Date, required: true },
     endDate: Date,
     isCurrentlyWorking: { type: Boolean, default: false },
-    skills: [String],
+    skills: [
+      {
+        name: { type: String, required: true },
+        image: String,
+      },
+    ],
+    responsibilities: [
+      {
+        name: { type: String, required: true },
+      },
+    ],
     logo: String,
   },
   { timestamps: true }

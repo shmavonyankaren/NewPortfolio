@@ -52,3 +52,21 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE() {
+  try {
+    await connectDB();
+    const result = await Contact.deleteMany({});
+    console.log("Contacts deleted:", result.deletedCount);
+    return NextResponse.json({
+      message: "All contacts deleted",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Failed to delete contacts:", error);
+    return NextResponse.json(
+      { error: "Failed to delete contacts" },
+      { status: 500 }
+    );
+  }
+}

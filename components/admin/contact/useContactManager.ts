@@ -160,20 +160,15 @@ export function useContactManager() {
       message: `Are you sure you want to delete all ${contacts.length} contacts? This action cannot be undone.`,
       onConfirm: async () => {
         try {
-          await Promise.all(
-            contacts.map((contact) =>
-              fetch(`/api/admin/contacts/${contact._id}`, {
-                method: "DELETE",
-              }).then((res) => {
-                if (!res.ok)
-                  throw new Error(`Failed to delete contact ${contact._id}`);
-                return res;
-              })
-            )
-          );
+          const res = await fetch("/api/admin/contacts", { method: "DELETE" });
+          if (!res.ok) {
+            throw new Error("Failed to delete all contacts");
+          }
           setContacts([]);
+          console.log("All contacts deleted successfully");
         } catch (error) {
           console.error("Failed to delete all contacts:", error);
+          alert("Error deleting all contacts");
         }
       },
     });

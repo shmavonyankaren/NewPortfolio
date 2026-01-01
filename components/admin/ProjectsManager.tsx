@@ -17,6 +17,7 @@ export default function ProjectsManager() {
     submittingId,
     deletingId,
     formData,
+    errorMessage,
     confirmDialog,
     showTechInput,
     tempTech,
@@ -71,6 +72,7 @@ export default function ProjectsManager() {
         <ProjectForm
           formData={formData}
           editingId={editingId}
+          errorMessage={errorMessage}
           showTechInput={showTechInput}
           tempTech={tempTech}
           showFeatureInput={showFeatureInput}

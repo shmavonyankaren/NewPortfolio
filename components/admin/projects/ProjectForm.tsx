@@ -39,6 +39,7 @@ interface Project {
 interface ProjectFormProps {
   formData: Project;
   editingId: string | null;
+  errorMessage?: string;
   showTechInput: boolean;
   tempTech: { name: string; icon: string };
   showFeatureInput: boolean;
@@ -68,6 +69,7 @@ interface ProjectFormProps {
 export default function ProjectForm({
   formData,
   editingId,
+  errorMessage,
   showTechInput,
   tempTech,
   showFeatureInput,
@@ -289,6 +291,12 @@ export default function ProjectForm({
           onFormDataChange({ ...formData, challenges: newChallenges });
         }}
       />
+
+      {errorMessage && (
+        <div className="bg-red-500/10 border border-red-500 text-red-600 dark:text-red-400 px-4 py-3 rounded">
+          {errorMessage}
+        </div>
+      )}
 
       <div className="flex gap-2 border-t border-slate-300 dark:border-white/10 pt-4">
         <button

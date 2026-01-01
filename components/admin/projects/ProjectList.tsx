@@ -16,6 +16,7 @@ interface ProjectListProps {
 export default function ProjectList({
   projects,
   editingId,
+  disabled,
   submittingId,
   deletingId,
   onEdit,
@@ -43,6 +44,7 @@ export default function ProjectList({
             onDelete={() => onDelete(project._id!)}
             isSubmitting={submittingId === project._id}
             isDeleting={deletingId === project._id}
+            disabled={disabled}
           />
         ))}
     </div>

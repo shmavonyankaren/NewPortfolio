@@ -1,30 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Trash2, Edit2, Plus, Star, Trash } from "lucide-react";
+import { Trash2, Edit2, Plus, Trash, User } from "lucide-react";
 import Image from "next/image";
 import FileUploader from "./FileUploader";
 import ConfirmDialog from "./ConfirmDialog";
 
-interface ClientComment {
+interface Insight {
   _id?: string;
-  clientName: string;
-  company: string;
-  comment: string;
-  rating: number;
+  name: string;
+  position: string;
+  insight: string;
   image?: string;
 }
 
-export default function CommentsManager() {
-  const [comments, setComments] = useState<ClientComment[]>([]);
+export default function InsightsManager() {
+  const [comments, setComments] = useState<Insight[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<ClientComment>({
-    clientName: "",
-    company: "",
-    comment: "",
-    rating: 5,
+  const [formData, setFormData] = useState<Insight>({
+    name: "",
+    position: "",
+    insight: "",
     image: "",
   });
   const [confirmDialog, setConfirmDialog] = useState({
@@ -79,9 +77,9 @@ export default function CommentsManager() {
   const handleDelete = async (id: string) => {
     setConfirmDialog({
       isOpen: true,
-      title: "Delete Comment",
+      title: "Delete Insight",
       message:
-        "Are you sure you want to delete this comment? This action cannot be undone.",
+        "Are you sure you want to delete this insight? This action cannot be undone.",
       onConfirm: async () => {
         try {
           await fetch(`/api/admin/comments/${id}`, { method: "DELETE" });
@@ -96,15 +94,11 @@ export default function CommentsManager() {
   const handleDeleteAll = async () => {
     setConfirmDialog({
       isOpen: true,
-      title: "Delete All Comments",
-      message: `Are you sure you want to delete all ${comments.length} comments? This action cannot be undone and will permanently remove all client testimonials.`,
+      title: "Delete All Insights",
+      message: `Are you sure you want to delete all ${comments.length} insights? This action cannot be undone and will permanently remove all insights.`,
       onConfirm: async () => {
         try {
-          await Promise.all(
-            comments.map((comment) =>
-              fetch(`/api/admin/comments/${comment._id}`, { method: "DELETE" })
-            )
-          );
+          await fetch("/api/admin/comments", { method: "DELETE" });
           setComments([]);
         } catch (error) {
           console.error("Failed to delete all comments:", error);
@@ -113,7 +107,7 @@ export default function CommentsManager() {
     });
   };
 
-  const handleEdit = (comment: ClientComment) => {
+  const handleEdit = (comment: Insight) => {
     setFormData(comment);
     setEditingId(comment._id || null);
     setShowForm(true);
@@ -121,10 +115,9 @@ export default function CommentsManager() {
 
   const resetForm = () => {
     setFormData({
-      clientName: "",
-      company: "",
-      comment: "",
-      rating: 5,
+      name: "",
+      position: "",
+      insight: "",
       image: "",
     });
     setEditingId(null);
@@ -140,7 +133,7 @@ export default function CommentsManager() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Client Comments
+          Insights
         </h3>
         <div className="flex gap-2">
           {comments.length > 0 && (
@@ -153,11 +146,26 @@ export default function CommentsManager() {
             </button>
           )}
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => {
+              if (showForm && !editingId) {
+                resetForm();
+              } else {
+                setShowForm(true);
+              }
+            }}
             className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
           >
-            <Plus size={20} />
-            Add Comment
+            {showForm && !editingId ? (
+              <>
+                <Plus size={20} className="rotate-45" />
+                Close
+              </>
+            ) : (
+              <>
+                <Plus size={20} />
+                Add Insight
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -179,14 +187,14 @@ export default function CommentsManager() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="block text-sm font-medium text-slate-900 dark:text-white">
-                Client Name *
+                Name *
               </label>
               <input
                 type="text"
                 placeholder="John Doe"
-                value={formData.clientName}
+                value={formData.name}
                 onChange={(e) =>
-                  setFormData({ ...formData, clientName: e.target.value })
+                  setFormData({ ...formData, name: e.target.value })
                 }
                 className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
                 required
@@ -194,14 +202,14 @@ export default function CommentsManager() {
             </div>
             <div className="space-y-1">
               <label className="block text-sm font-medium text-slate-900 dark:text-white">
-                Company *
+                Position *
               </label>
               <input
                 type="text"
-                placeholder="Company name"
-                value={formData.company}
+                placeholder="CEO at Company"
+                value={formData.position}
                 onChange={(e) =>
-                  setFormData({ ...formData, company: e.target.value })
+                  setFormData({ ...formData, position: e.target.value })
                 }
                 className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
                 required
@@ -209,7 +217,7 @@ export default function CommentsManager() {
             </div>
             <div className="space-y-1">
               <label className="block text-sm font-medium text-slate-900 dark:text-white">
-                Client Image
+                Image
               </label>
               <FileUploader
                 imageUrl={formData.image || ""}
@@ -222,35 +230,13 @@ export default function CommentsManager() {
 
           <div className="space-y-1">
             <label className="block text-sm font-medium text-slate-900 dark:text-white">
-              Rating *
-            </label>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, rating: star })}
-                  className={`${
-                    star <= formData.rating
-                      ? "text-yellow-400"
-                      : "text-gray-600"
-                  }`}
-                >
-                  <Star size={24} fill="currentColor" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-slate-900 dark:text-white">
-              Comment *
+              Insight *
             </label>
             <textarea
-              placeholder="Share your experience..."
-              value={formData.comment}
+              placeholder="Share an insight or testimonial..."
+              value={formData.insight}
               onChange={(e) =>
-                setFormData({ ...formData, comment: e.target.value })
+                setFormData({ ...formData, insight: e.target.value })
               }
               className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
               rows={4}
@@ -262,7 +248,7 @@ export default function CommentsManager() {
               type="submit"
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
             >
-              {editingId ? "Update" : "Create"} Comment
+              {editingId ? "Update" : "Create"} Insight
             </button>
             <button
               type="button"
@@ -279,71 +265,65 @@ export default function CommentsManager() {
         {comments.length === 0 ? (
           <div className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-8 text-center">
             <p className="text-slate-600 dark:text-gray-400 text-lg">
-              No client comments yet. Click &quot;Add Comment&quot; to create
-              one.
+              No insights yet. Click &quot;Add Insight&quot; to create one.
             </p>
           </div>
         ) : (
-          comments.map((comment) => (
-            <div
-              key={comment._id}
-              className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-4"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    {comment.image && (
-                      <Image
-                        width={40}
-                        height={40}
-                        src={comment.image}
-                        alt={comment.clientName}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                    )}
-                    <div>
-                      <h4 className="text-slate-900 dark:text-white font-semibold">
-                        {comment.clientName}
-                      </h4>
-                      <p className="text-slate-600 dark:text-gray-400 text-sm">
-                        {comment.company}
-                      </p>
+          comments
+            .filter((c) => c._id !== editingId)
+            .map((comment) => (
+              <div
+                key={comment._id}
+                className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-4"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      {comment.image ? (
+                        <Image
+                          width={40}
+                          height={40}
+                          src={comment.image}
+                          alt={comment.name}
+                          className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+                          <User size={20} className="text-white" />
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="text-slate-900 dark:text-white font-semibold">
+                          {comment.name}
+                        </h4>
+                        <p className="text-slate-600 dark:text-gray-400 text-sm">
+                          {comment.position}
+                        </p>
+                      </div>
                     </div>
+                    <p className="text-slate-700 dark:text-gray-300 text-sm italic mt-2">
+                      &quot;{comment.insight}&quot;
+                    </p>
                   </div>
-                  <div className="flex gap-1 my-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={16}
-                        className={
-                          star <= comment.rating
-                            ? "text-yellow-400 fill-yellow-400"
-                            : "text-gray-600"
-                        }
-                      />
-                    ))}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(comment)}
+                      disabled={showForm && !editingId}
+                      className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
+                    >
+                      <Edit2 size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(comment._id!)}
+                      disabled={showForm && !editingId}
+                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-600"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </div>
-                  <p className="text-slate-700 dark:text-gray-300 text-sm italic">
-                    &quot;{comment.comment}&quot;
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEdit(comment)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(comment._id!)}
-                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
-                  >
-                    <Trash2 size={18} />
-                  </button>
                 </div>
               </div>
-            </div>
-          ))
+            ))
         )}
       </div>
     </div>

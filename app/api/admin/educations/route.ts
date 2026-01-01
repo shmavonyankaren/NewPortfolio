@@ -28,3 +28,21 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE() {
+  try {
+    await connectDB();
+    const result = await Education.deleteMany({});
+    console.log("Educations deleted:", result.deletedCount);
+    return NextResponse.json({
+      message: "All educations deleted",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Failed to delete educations:", error);
+    return NextResponse.json(
+      { error: "Failed to delete educations" },
+      { status: 500 }
+    );
+  }
+}

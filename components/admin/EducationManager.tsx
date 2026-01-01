@@ -107,16 +107,17 @@ export default function EducationManager() {
       message: `Are you sure you want to delete all ${educations.length} educations? This action cannot be undone.`,
       onConfirm: async () => {
         try {
-          await Promise.all(
-            educations.map((education) =>
-              fetch(`/api/admin/educations/${education._id}`, {
-                method: "DELETE",
-              })
-            )
-          );
+          const res = await fetch("/api/admin/educations", {
+            method: "DELETE",
+          });
+          if (!res.ok) {
+            throw new Error("Failed to delete all educations");
+          }
           setEducations([]);
+          console.log("All educations deleted successfully");
         } catch (error) {
           console.error("Failed to delete all educations:", error);
+          alert("Error deleting all educations");
         }
       },
     });
@@ -167,11 +168,26 @@ export default function EducationManager() {
             </button>
           )}
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => {
+              if (showForm && !editingId) {
+                resetForm();
+              } else {
+                setShowForm(true);
+              }
+            }}
             className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
           >
-            <Plus size={20} />
-            Add Education
+            {showForm && !editingId ? (
+              <>
+                <Plus size={20} className="rotate-45" />
+                Close
+              </>
+            ) : (
+              <>
+                <Plus size={20} />
+                Add Education
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -339,43 +355,47 @@ export default function EducationManager() {
             </p>
           </div>
         ) : (
-          educations.map((education) => (
-            <div
-              key={education._id}
-              className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-4 flex items-center justify-between"
-            >
-              <div className="flex-1">
-                <h4 className="text-slate-900 dark:text-white font-semibold">
-                  {education.degree} in {education.field}
-                </h4>
-                <p className="text-slate-600 dark:text-gray-400 text-sm">
-                  {education.institution}
-                </p>
-                <p className="text-slate-500 dark:text-gray-500 text-xs mt-1">
-                  {education.description}
-                </p>
-                {education.gpa && (
-                  <p className="text-slate-600 dark:text-gray-400 text-sm mt-1">
-                    GPA: {education.gpa}
+          educations
+            .filter((e) => e._id !== editingId)
+            .map((education) => (
+              <div
+                key={education._id}
+                className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-4 flex items-center justify-between"
+              >
+                <div className="flex-1">
+                  <h4 className="text-slate-900 dark:text-white font-semibold">
+                    {education.degree} in {education.field}
+                  </h4>
+                  <p className="text-slate-600 dark:text-gray-400 text-sm">
+                    {education.institution}
                   </p>
-                )}
+                  <p className="text-slate-500 dark:text-gray-500 text-xs mt-1">
+                    {education.description}
+                  </p>
+                  {education.gpa && (
+                    <p className="text-slate-600 dark:text-gray-400 text-sm mt-1">
+                      GPA: {education.gpa}
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(education)}
+                    disabled={showForm && !editingId}
+                    className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(education._id!)}
+                    disabled={showForm && !editingId}
+                    className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-600"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(education)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
-                >
-                  <Edit2 size={18} />
-                </button>
-                <button
-                  onClick={() => handleDelete(education._id!)}
-                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
-          ))
+            ))
         )}
       </div>
     </div>

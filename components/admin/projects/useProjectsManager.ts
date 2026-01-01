@@ -45,6 +45,7 @@ export function useProjectsManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [formData, setFormData] = useState<Project>({
     title: "",
     description: "",
@@ -101,6 +102,27 @@ export function useProjectsManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Clear previous error
+    setErrorMessage("");
+
+    // Validate required fields before submitting
+    const missingFields = [];
+    if (!formData.title?.trim()) missingFields.push("Title");
+    if (!formData.description?.trim()) missingFields.push("Description");
+    if (!formData.shortDescription?.trim())
+      missingFields.push("Short Description");
+    if (!formData.image?.trim()) missingFields.push("Image");
+
+    if (missingFields.length > 0) {
+      setErrorMessage(
+        `Please fill in the following required fields: ${missingFields.join(
+          ", "
+        )}`
+      );
+      return;
+    }
+
     try {
       const id = editingId || "new";
       setSubmittingId(id);
@@ -147,6 +169,9 @@ export function useProjectsManager() {
       resetForm();
     } catch (error) {
       console.error("Failed to save project:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to save project";
+      alert(errorMessage);
     } finally {
       setSubmittingId(null);
     }
@@ -186,18 +211,12 @@ export function useProjectsManager() {
       onConfirm: async () => {
         try {
           setDeletingId("all");
-          const results = await Promise.all(
-            projects.map((project) =>
-              fetch(`/api/admin/projects/${project._id}`, {
-                method: "DELETE",
-              }).then((res) => {
-                if (!res.ok)
-                  throw new Error(`Failed to delete project ${project._id}`);
-                return res;
-              })
-            )
-          );
+          const res = await fetch("/api/admin/projects", { method: "DELETE" });
+          if (!res.ok) {
+            throw new Error("Failed to delete all projects");
+          }
           setProjects([]);
+          console.log("All projects deleted successfully");
         } catch (error) {
           console.error("Failed to delete all projects:", error);
         } finally {
@@ -230,6 +249,7 @@ export function useProjectsManager() {
     });
     setEditingId(null);
     setShowForm(false);
+    setErrorMessage("");
     setShowTechInput(false);
     setTempTech({ name: "", icon: "" });
     setShowFeatureInput(false);
@@ -303,6 +323,7 @@ export function useProjectsManager() {
     submittingId,
     deletingId,
     formData,
+    errorMessage,
     confirmDialog,
     showTechInput,
     tempTech,

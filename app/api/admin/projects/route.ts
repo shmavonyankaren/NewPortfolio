@@ -21,14 +21,15 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
 
     // Validate required fields
-    if (
-      !data.title ||
-      !data.description ||
-      !data.shortDescription ||
-      !data.image
-    ) {
+    const missingFields = [];
+    if (!data.title) missingFields.push("title");
+    if (!data.description) missingFields.push("description");
+    if (!data.shortDescription) missingFields.push("shortDescription");
+    if (!data.image) missingFields.push("image");
+
+    if (missingFields.length > 0) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: `Missing required fields: ${missingFields.join(", ")}` },
         { status: 400 }
       );
     }
@@ -99,6 +100,24 @@ export async function POST(request: NextRequest) {
     console.error("Project creation error:", error);
     return NextResponse.json(
       { error: "Failed to create project" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE() {
+  try {
+    await connectDB();
+    const result = await Project.deleteMany({});
+    console.log("Projects deleted:", result.deletedCount);
+    return NextResponse.json({
+      message: "All projects deleted",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Failed to delete projects:", error);
+    return NextResponse.json(
+      { error: "Failed to delete projects" },
       { status: 500 }
     );
   }

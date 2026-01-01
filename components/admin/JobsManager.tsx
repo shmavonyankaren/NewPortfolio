@@ -1,21 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Trash2, Edit2, Plus, Trash } from "lucide-react";
-import FileUploader from "./FileUploader";
 import ConfirmDialog from "./ConfirmDialog";
-
-interface Job {
-  _id?: string;
-  company: string;
-  position: string;
-  description: string;
-  startDate: string;
-  endDate?: string;
-  isCurrentlyWorking: boolean;
-  skills: string[];
-  logo?: string;
-}
+import JobHeader from "./jobs/JobHeader";
+import JobForm from "./jobs/JobForm";
+import JobList from "./jobs/JobList";
+import { Job } from "./types/job";
 
 export default function JobsManager() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -30,6 +20,7 @@ export default function JobsManager() {
     endDate: "",
     isCurrentlyWorking: false,
     skills: [],
+    responsibilities: [],
     logo: "",
   });
   const [confirmDialog, setConfirmDialog] = useState({
@@ -38,6 +29,11 @@ export default function JobsManager() {
     message: "",
     onConfirm: () => {},
   });
+  const [showSkillInput, setShowSkillInput] = useState(false);
+  const [tempSkill, setTempSkill] = useState("");
+  const [tempSkillImage, setTempSkillImage] = useState("");
+  const [showResponsibilityInput, setShowResponsibilityInput] = useState(false);
+  const [tempResponsibility, setTempResponsibility] = useState("");
 
   useEffect(() => {
     fetchJobs();
@@ -58,26 +54,72 @@ export default function JobsManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Prepare data with proper date formatting
+      const dataToSubmit = {
+        ...formData,
+        startDate: formData.startDate
+          ? new Date(formData.startDate).toISOString()
+          : new Date().toISOString(),
+        endDate: formData.endDate
+          ? new Date(formData.endDate).toISOString()
+          : undefined,
+      };
+
+      console.log("Submitting job data:", dataToSubmit);
+
       if (editingId) {
         const res = await fetch(`/api/admin/jobs/${editingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(dataToSubmit),
         });
-        const updated = await res.json();
-        setJobs(jobs.map((j) => (j._id === editingId ? updated : j)));
+
+        const responseData = await res.json();
+
+        if (!res.ok) {
+          console.error(
+            "Failed to update job. Status:",
+            res.status,
+            "Response:",
+            responseData
+          );
+          alert(`Error updating job: ${responseData.error || "Unknown error"}`);
+          return;
+        }
+
+        console.log("Job updated successfully:", responseData);
+        setJobs(jobs.map((j) => (j._id === editingId ? responseData : j)));
       } else {
         const res = await fetch("/api/admin/jobs", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(dataToSubmit),
         });
-        const newJob = await res.json();
-        setJobs([...jobs, newJob]);
+
+        const responseData = await res.json();
+
+        if (!res.ok) {
+          console.error(
+            "Failed to create job. Status:",
+            res.status,
+            "Response:",
+            responseData
+          );
+          alert(`Error creating job: ${responseData.error || "Unknown error"}`);
+          return;
+        }
+
+        console.log("Job created successfully:", responseData);
+        setJobs([...jobs, responseData]);
       }
       resetForm();
     } catch (error) {
-      console.error("Failed to save job:", error);
+      console.error("Error during job submission:", error);
+      alert(
+        `Error: ${
+          error instanceof Error ? error.message : "Unknown error occurred"
+        }`
+      );
     }
   };
 
@@ -105,21 +147,39 @@ export default function JobsManager() {
       message: `Are you sure you want to delete all ${jobs.length} jobs? This action cannot be undone.`,
       onConfirm: async () => {
         try {
-          await Promise.all(
-            jobs.map((job) =>
-              fetch(`/api/admin/jobs/${job._id}`, { method: "DELETE" })
-            )
-          );
+          const res = await fetch("/api/admin/jobs", { method: "DELETE" });
+          if (!res.ok) {
+            throw new Error("Failed to delete all jobs");
+          }
           setJobs([]);
+          console.log("All jobs deleted successfully");
         } catch (error) {
           console.error("Failed to delete all jobs:", error);
+          alert("Error deleting all jobs");
         }
       },
     });
   };
 
   const handleEdit = (job: Job) => {
-    setFormData(job);
+    // Format dates for date input fields (YYYY-MM-DD)
+    const formatDate = (date: string | Date | undefined): string => {
+      if (!date) return "";
+      const d = new Date(date);
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${d.getFullYear()}-${month}-${day}`;
+    };
+
+    setFormData({
+      ...job,
+      startDate: formatDate(job.startDate),
+      endDate: formatDate(job.endDate),
+      skills: (job.skills || []).map((s) =>
+        typeof s === "string" ? { name: s } : s
+      ),
+      responsibilities: job.responsibilities || [],
+    });
     setEditingId(job._id || null);
     setShowForm(true);
   };
@@ -133,10 +193,59 @@ export default function JobsManager() {
       endDate: "",
       isCurrentlyWorking: false,
       skills: [],
+      responsibilities: [],
       logo: "",
     });
     setEditingId(null);
     setShowForm(false);
+    setShowSkillInput(false);
+    setTempSkill("");
+    setTempSkillImage("");
+    setShowResponsibilityInput(false);
+    setTempResponsibility("");
+  };
+
+  const handleAddSkill = () => {
+    if (tempSkill.trim()) {
+      setFormData({
+        ...formData,
+        skills: [
+          ...formData.skills,
+          { name: tempSkill.trim(), image: tempSkillImage },
+        ],
+      });
+      setTempSkill("");
+      setTempSkillImage("");
+      setShowSkillInput(false);
+    }
+  };
+
+  const handleRemoveSkill = (index: number) => {
+    setFormData({
+      ...formData,
+      skills: formData.skills.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleAddResponsibility = () => {
+    if (tempResponsibility.trim()) {
+      setFormData({
+        ...formData,
+        responsibilities: [
+          ...formData.responsibilities,
+          { name: tempResponsibility.trim() },
+        ],
+      });
+      setTempResponsibility("");
+      setShowResponsibilityInput(false);
+    }
+  };
+
+  const handleRemoveResponsibility = (index: number) => {
+    setFormData({
+      ...formData,
+      responsibilities: formData.responsibilities.filter((_, i) => i !== index),
+    });
   };
 
   if (loading)
@@ -146,29 +255,19 @@ export default function JobsManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Jobs Management
-        </h3>
-        <div className="flex gap-2">
-          {jobs.length > 0 && (
-            <button
-              onClick={handleDeleteAll}
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
-            >
-              <Trash size={20} />
-              Delete All
-            </button>
-          )}
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
-          >
-            <Plus size={20} />
-            Add Job
-          </button>
-        </div>
-      </div>
+      <JobHeader
+        jobCount={jobs.length}
+        showForm={showForm}
+        editingId={editingId}
+        onAddClick={() => {
+          if (showForm && !editingId) {
+            resetForm();
+          } else {
+            setShowForm(true);
+          }
+        }}
+        onDeleteAll={handleDeleteAll}
+      />
 
       <ConfirmDialog
         isOpen={confirmDialog.isOpen}
@@ -180,199 +279,36 @@ export default function JobsManager() {
       />
 
       {showForm && (
-        <form
+        <JobForm
+          formData={formData}
+          editingId={editingId}
+          showSkillInput={showSkillInput}
+          showResponsibilityInput={showResponsibilityInput}
+          tempSkill={tempSkill}
+          tempSkillImage={tempSkillImage}
+          tempResponsibility={tempResponsibility}
+          onFormChange={(data) => setFormData({ ...formData, ...data })}
+          onSkillChange={setTempSkill}
+          onSkillImageChange={setTempSkillImage}
+          onAddSkill={handleAddSkill}
+          onRemoveSkill={handleRemoveSkill}
+          onShowSkillInput={setShowSkillInput}
+          onResponsibilityChange={setTempResponsibility}
+          onAddResponsibility={handleAddResponsibility}
+          onRemoveResponsibility={handleRemoveResponsibility}
+          onShowResponsibilityInput={setShowResponsibilityInput}
           onSubmit={handleSubmit}
-          className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-slate-900 dark:text-white">
-                Company *
-              </label>
-              <input
-                type="text"
-                placeholder="Company name"
-                value={formData.company}
-                onChange={(e) =>
-                  setFormData({ ...formData, company: e.target.value })
-                }
-                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
-                required
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-slate-900 dark:text-white">
-                Position *
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., Senior Developer"
-                value={formData.position}
-                onChange={(e) =>
-                  setFormData({ ...formData, position: e.target.value })
-                }
-                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
-                required
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-slate-900 dark:text-white">
-                Start Date *
-              </label>
-              <input
-                type="date"
-                value={formData.startDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, startDate: e.target.value })
-                }
-                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:focus:ring-purple-500"
-                required
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-slate-900 dark:text-white">
-                End Date
-              </label>
-              <input
-                type="date"
-                value={formData.endDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, endDate: e.target.value })
-                }
-                disabled={formData.isCurrentlyWorking}
-                className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:focus:ring-purple-500"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-slate-900 dark:text-white">
-                Company Logo
-              </label>
-              <FileUploader
-                imageUrl={formData.logo || ""}
-                onFieldChange={(url) => setFormData({ ...formData, logo: url })}
-              />
-            </div>
-            <div className="flex items-end">
-              <label className="flex items-center gap-2 text-slate-900 dark:text-white pb-2">
-                <input
-                  type="checkbox"
-                  checked={formData.isCurrentlyWorking}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      isCurrentlyWorking: e.target.checked,
-                    })
-                  }
-                  className="w-4 h-4"
-                />
-                Currently Working
-              </label>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-slate-900 dark:text-white">
-              Description *
-            </label>
-            <textarea
-              placeholder="Detailed job description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
-              rows={4}
-              required
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-slate-900 dark:text-white">
-              Skills
-            </label>
-            <input
-              type="text"
-              placeholder="React, TypeScript, Node.js (comma-separated)"
-              value={formData.skills.join(", ")}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  skills: e.target.value.split(",").map((s) => s.trim()),
-                })
-              }
-              className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
-            >
-              {editingId ? "Update" : "Create"} Job
-            </button>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+          onCancel={resetForm}
+        />
       )}
 
-      <div className="grid grid-cols-1 gap-4">
-        {jobs.length === 0 ? (
-          <div className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-8 text-center">
-            <p className="text-slate-600 dark:text-gray-400 text-lg">
-              No jobs yet. Click &quot;Add Job&quot; to create one.
-            </p>
-          </div>
-        ) : (
-          jobs.map((job) => (
-            <div
-              key={job._id}
-              className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-4 flex items-center justify-between"
-            >
-              <div className="flex-1">
-                <h4 className="text-slate-900 dark:text-white font-semibold">
-                  {job.position} at {job.company}
-                </h4>
-                <p className="text-slate-600 dark:text-gray-400 text-sm">
-                  {job.description}
-                </p>
-                {job.skills.length > 0 && (
-                  <div className="flex gap-2 mt-2 flex-wrap">
-                    {job.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="bg-purple-600/20 text-purple-700 dark:text-purple-300 text-xs px-2 py-1 rounded"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleEdit(job)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
-                >
-                  <Edit2 size={18} />
-                </button>
-                <button
-                  onClick={() => handleDelete(job._id!)}
-                  className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+      <JobList
+        jobs={jobs}
+        editingId={editingId}
+        showForm={showForm}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }
