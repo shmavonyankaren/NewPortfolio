@@ -18,7 +18,7 @@ type Education = {
   }>;
 };
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await connectDB();
     const educations = await EducationModel.find().sort({ startDate: -1 });

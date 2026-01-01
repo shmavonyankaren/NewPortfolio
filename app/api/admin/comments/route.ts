@@ -2,7 +2,7 @@ import { connectDB } from "@/lib/db/connection";
 import { Insight } from "@/lib/models/Insight";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await connectDB();
     const comments = await Insight.find().sort({ createdAt: -1 });

@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/db/connection";
-import { Project, IProject } from "@/lib/models/Project";
+import { Project } from "@/lib/models/Project";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(projects);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch projects" },
+      { error: `Failed to fetch projects: ${error}` },
       { status: 500 }
     );
   }

@@ -20,7 +20,7 @@ type Job = {
   logo?: string;
 };
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await connectDB();
     const jobs = await JobModel.find().sort({ startDate: -1 });
