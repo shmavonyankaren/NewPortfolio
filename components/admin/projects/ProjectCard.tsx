@@ -1,6 +1,7 @@
 "use client";
 
 import { Edit2, Trash2, Loader } from "lucide-react";
+import Image from "next/image";
 
 interface Project {
   _id?: string;
@@ -38,7 +39,9 @@ export default function ProjectCard({
     <div className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg overflow-hidden">
       <div className="flex items-start gap-3 p-4 border-b border-slate-200 dark:border-white/10">
         {project.image && (
-          <img
+          <Image
+            width={64}
+            height={64}
             src={project.image}
             alt={project.title}
             className="w-16 h-16 object-cover rounded border border-slate-200 dark:border-white/10 shrink-0"
