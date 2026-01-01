@@ -1,53 +1,40 @@
 "use client";
 
-import { Job } from "../types/job";
+import { Education } from "../types/education";
 import FileUploader from "../FileUploader";
 import SkillInput from "./SkillInput";
-import ResponsibilityInput from "./ResponsibilityInput";
 
-interface JobFormProps {
-  formData: Job;
+interface EducationFormProps {
+  formData: Education;
   editingId: string | null;
   showSkillInput: boolean;
-  showResponsibilityInput: boolean;
   tempSkill: string;
   tempSkillImage: string;
-  tempResponsibility: string;
-  onFormChange: (data: Partial<Job>) => void;
+  onFormChange: (data: Partial<Education>) => void;
   onSkillChange: (skill: string) => void;
   onSkillImageChange: (image: string) => void;
   onAddSkill: () => void;
   onRemoveSkill: (index: number) => void;
   onShowSkillInput: (show: boolean) => void;
-  onResponsibilityChange: (responsibility: string) => void;
-  onAddResponsibility: () => void;
-  onRemoveResponsibility: (index: number) => void;
-  onShowResponsibilityInput: (show: boolean) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
 }
 
-export default function JobForm({
+export default function EducationForm({
   formData,
   editingId,
   showSkillInput,
-  showResponsibilityInput,
   tempSkill,
   tempSkillImage,
-  tempResponsibility,
   onFormChange,
   onSkillChange,
   onSkillImageChange,
   onAddSkill,
   onRemoveSkill,
   onShowSkillInput,
-  onResponsibilityChange,
-  onAddResponsibility,
-  onRemoveResponsibility,
-  onShowResponsibilityInput,
   onSubmit,
   onCancel,
-}: JobFormProps) {
+}: EducationFormProps) {
   const toDisplayDate = (value: string) => {
     if (!value) return "";
     const [year, month, day] = value.split("-");
@@ -69,26 +56,38 @@ export default function JobForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
           <label className="block text-sm font-medium text-slate-900 dark:text-white">
-            Company *
+            Institution *
           </label>
           <input
             type="text"
-            placeholder="Company name"
-            value={formData.company}
-            onChange={(e) => onFormChange({ company: e.target.value })}
+            placeholder="University or School name"
+            value={formData.institution}
+            onChange={(e) => onFormChange({ institution: e.target.value })}
             className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
             required
           />
         </div>
         <div className="space-y-1">
           <label className="block text-sm font-medium text-slate-900 dark:text-white">
-            Position *
+            Degree
           </label>
           <input
             type="text"
-            placeholder="e.g., Senior Developer"
-            value={formData.position}
-            onChange={(e) => onFormChange({ position: e.target.value })}
+            placeholder="e.g., Bachelor of Science"
+            value={formData.degree}
+            onChange={(e) => onFormChange({ degree: e.target.value })}
+            className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-slate-900 dark:text-white">
+            Field of Study *
+          </label>
+          <input
+            type="text"
+            placeholder="e.g., Computer Science"
+            value={formData.field}
+            onChange={(e) => onFormChange({ field: e.target.value })}
             className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
             required
           />
@@ -123,32 +122,37 @@ export default function JobForm({
             onChange={(e) =>
               onFormChange({ endDate: fromDisplayDate(e.target.value) })
             }
-            disabled={formData.isCurrentlyWorking}
+            disabled={formData.isCurrentlyStudying}
             className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:focus:ring-purple-500"
           />
         </div>
         <div className="space-y-1">
           <label className="block text-sm font-medium text-slate-900 dark:text-white">
-            Company Logo
+            Institution Logo
           </label>
           <FileUploader
             imageUrl={formData.logo || ""}
             onFieldChange={(url) => onFormChange({ logo: url })}
           />
         </div>
-        <div className="flex items-end">
-          <label className="flex items-center gap-2 text-slate-900 dark:text-white pb-2">
-            <input
-              type="checkbox"
-              checked={formData.isCurrentlyWorking}
-              onChange={(e) =>
-                onFormChange({ isCurrentlyWorking: e.target.checked })
-              }
-              className="w-4 h-4"
-            />
-            Currently Working
-          </label>
-        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="isCurrentlyStudying"
+          checked={formData.isCurrentlyStudying}
+          onChange={(e) =>
+            onFormChange({ isCurrentlyStudying: e.target.checked })
+          }
+          className="w-4 h-4"
+        />
+        <label
+          htmlFor="isCurrentlyStudying"
+          className="text-sm font-medium text-slate-900 dark:text-white"
+        >
+          Currently Studying
+        </label>
       </div>
 
       <div className="space-y-1">
@@ -156,7 +160,7 @@ export default function JobForm({
           Description *
         </label>
         <textarea
-          placeholder="Detailed job description"
+          placeholder="Detailed education description"
           value={formData.description}
           onChange={(e) => onFormChange({ description: e.target.value })}
           className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
@@ -177,22 +181,12 @@ export default function JobForm({
         onShowSkillInput={onShowSkillInput}
       />
 
-      <ResponsibilityInput
-        responsibilities={formData.responsibilities}
-        tempResponsibility={tempResponsibility}
-        showResponsibilityInput={showResponsibilityInput}
-        onResponsibilityChange={onResponsibilityChange}
-        onAddResponsibility={onAddResponsibility}
-        onRemoveResponsibility={onRemoveResponsibility}
-        onShowResponsibilityInput={onShowResponsibilityInput}
-      />
-
       <div className="flex gap-2">
         <button
           type="submit"
           className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
-          {editingId ? "Update" : "Create"} Job
+          {editingId ? "Update" : "Create"} Education
         </button>
         <button
           type="button"

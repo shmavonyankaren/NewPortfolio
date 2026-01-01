@@ -18,33 +18,35 @@ export default function JobHeader({
   onDeleteAll,
 }: JobHeaderProps) {
   return (
-    <div className="flex items-center justify-between">
-      <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-        Jobs Management
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+        Jobs
       </h3>
-      <div className="flex gap-2">
+      <div className="flex gap-2 w-full sm:w-auto">
         {jobCount > 0 && (
           <button
             onClick={onDeleteAll}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+            className="flex items-center justify-center gap-1 sm:gap-2 bg-red-600 hover:bg-red-700 text-white px-3 sm:px-4 py-2 rounded-lg font-semibold transition-colors flex-1 sm:flex-initial"
+            title="Delete All"
           >
-            <Trash size={20} />
-            Delete All
+            <Trash size={18} className="sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">Delete All</span>
           </button>
         )}
         <button
           onClick={onAddClick}
-          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+          className="flex items-center justify-center gap-1 sm:gap-2 bg-purple-600 hover:bg-purple-700 text-white px-3 sm:px-4 py-2 rounded-lg font-semibold transition-colors flex-1 sm:flex-initial"
+          title={showForm && !editingId ? "Close" : "Add Job"}
         >
           {showForm && !editingId ? (
             <>
-              <Plus size={20} className="rotate-45" />
-              Close
+              <Plus size={18} className="rotate-45 sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">Close</span>
             </>
           ) : (
             <>
-              <Plus size={20} />
-              Add Job
+              <Plus size={18} className="sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">Add</span>
             </>
           )}
         </button>

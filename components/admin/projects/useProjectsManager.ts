@@ -270,13 +270,6 @@ export function useProjectsManager() {
     }
   };
 
-  const handleRemoveTechnology = (index: number) => {
-    setFormData({
-      ...formData,
-      technologies: formData.technologies.filter((_, i) => i !== index),
-    });
-  };
-
   // Feature handlers
   const handleAddFeature = () => {
     if (tempFeature.title.trim() && tempFeature.description.trim()) {
@@ -289,13 +282,6 @@ export function useProjectsManager() {
     }
   };
 
-  const handleRemoveFeature = (index: number) => {
-    setFormData({
-      ...formData,
-      features: formData.features.filter((_, i) => i !== index),
-    });
-  };
-
   // Challenge handlers
   const handleAddChallenge = () => {
     if (tempChallenge.challenge.trim() && tempChallenge.solution.trim()) {
@@ -306,13 +292,6 @@ export function useProjectsManager() {
       setTempChallenge({ challenge: "", solution: "" });
       setShowChallengeInput(false);
     }
-  };
-
-  const handleRemoveChallenge = (index: number) => {
-    setFormData({
-      ...formData,
-      challenges: formData.challenges.filter((_, i) => i !== index),
-    });
   };
 
   return {

@@ -37,23 +37,23 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   return (
     <div className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg overflow-hidden">
-      <div className="flex items-start gap-3 p-4 border-b border-slate-200 dark:border-white/10">
+      <div className="flex items-start gap-3 p-3 sm:p-4 border-b border-slate-200 dark:border-white/10">
         {project.image && (
           <Image
             width={64}
             height={64}
             src={project.image}
             alt={project.title}
-            className="w-16 h-16 object-cover rounded border border-slate-200 dark:border-white/10 shrink-0"
+            className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded border border-slate-200 dark:border-white/10 shrink-0 hidden xs:block"
           />
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <div className="flex-1">
-              <h4 className="text-slate-900 dark:text-white font-semibold truncate">
+            <div className="flex-1 min-w-0">
+              <h4 className="text-slate-900 dark:text-white font-semibold text-sm sm:text-base wrap-break-words">
                 {project.title}
               </h4>
-              <p className="text-slate-600 dark:text-gray-400 text-sm line-clamp-2">
+              <p className="text-slate-600 dark:text-gray-400 text-xs sm:text-sm line-clamp-2">
                 {project.shortDescription}
               </p>
             </div>
@@ -75,7 +75,7 @@ export default function ProjectCard({
         </div>
       </div>
 
-      <div className="px-4 py-3 space-y-3 text-sm">
+      <div className="px-3 sm:px-4 py-3 space-y-3 text-sm">
         {project.description && (
           <div>
             <p className="text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
@@ -157,29 +157,31 @@ export default function ProjectCard({
         )}
       </div>
 
-      <div className="flex gap-2 p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
+      <div className="flex gap-2 p-3 sm:p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
         <button
           onClick={onEdit}
           disabled={
             isEditing || isSubmitting || isDeleting || (disabled && !isEditing)
           }
           className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 flex items-center justify-center"
+          title="Edit"
         >
           {isSubmitting ? (
-            <Loader size={18} className="animate-spin" />
+            <Loader size={16} className="animate-spin sm:w-4.5 sm:h-4.5" />
           ) : (
-            <Edit2 size={18} />
+            <Edit2 size={16} className="sm:w-4.5 sm:h-4.5" />
           )}
         </button>
         <button
           onClick={onDelete}
           disabled={isEditing || isDeleting || (disabled && !isEditing)}
           className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-600 flex items-center justify-center"
+          title="Delete"
         >
           {isDeleting ? (
-            <Loader size={18} className="animate-spin" />
+            <Loader size={16} className="animate-spin sm:w-4.5 sm:h-4.5" />
           ) : (
-            <Trash2 size={18} />
+            <Trash2 size={16} className="sm:w-4.5 sm:h-4.5" />
           )}
         </button>
       </div>

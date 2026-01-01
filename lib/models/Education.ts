@@ -2,13 +2,17 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IEducation extends Document {
   institution: string;
-  degree: string;
+  degree?: string;
   field: string;
   startDate: Date;
   endDate?: Date;
   description: string;
-  gpa?: number;
   logo?: string;
+  isCurrentlyStudying: boolean;
+  skills: Array<{
+    name: string;
+    image?: string;
+  }>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,13 +20,22 @@ export interface IEducation extends Document {
 const EducationSchema = new Schema<IEducation>(
   {
     institution: { type: String, required: true },
-    degree: { type: String, required: true },
+    degree: String,
     field: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: Date,
     description: { type: String, required: true },
-    gpa: Number,
     logo: String,
+    isCurrentlyStudying: { type: Boolean, default: false },
+    skills: {
+      type: [
+        {
+          name: { type: String, required: true },
+          image: String,
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );
