@@ -11,6 +11,7 @@ import InsightsManager from "@/components/admin/InsightsManager";
 import SkillsAndExpertiseManager from "@/components/admin/SkillsAndExpertiseManager";
 import CertificateSectionManager from "@/components/admin/CertificateSectionManager";
 import GeneralInformationManager from "@/components/admin/GeneralInformationManager";
+import CommentsSectionManager from "@/components/admin/CommentsSectionManager";
 
 export default function AdminDashboard() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -23,6 +24,7 @@ export default function AdminDashboard() {
     | "skills"
     | "certificates"
     | "general-information"
+    | "comments"
   >("projects");
 
   const handleLogout = async () => {
@@ -39,6 +41,7 @@ export default function AdminDashboard() {
     { id: "skills", label: "Skills & Expertise" },
     { id: "certificates", label: "Certificates" },
     { id: "general-information", label: "General Information" },
+    { id: "comments", label: "Comments Section" },
   ] as const;
 
   return (
@@ -73,7 +76,7 @@ export default function AdminDashboard() {
               className={`cursor-pointer px-4 py-2 rounded-lg font-semibold transition-all ${
                 activeTab === tab.id
                   ? "bg-purple-600 text-white"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/5 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10"
+                  : "bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-white/5 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10"
               }`}
             >
               {tab.label}
@@ -91,6 +94,7 @@ export default function AdminDashboard() {
           {activeTab === "skills" && <SkillsAndExpertiseManager />}
           {activeTab === "certificates" && <CertificateSectionManager />}
           {activeTab === "general-information" && <GeneralInformationManager />}
+          {activeTab === "comments" && <CommentsSectionManager />}
         </div>
       </div>
     </div>
