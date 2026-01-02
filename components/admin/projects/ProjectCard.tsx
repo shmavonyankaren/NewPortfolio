@@ -1,7 +1,7 @@
 "use client";
 
-import { Edit2, Trash2, Loader } from "lucide-react";
 import Image from "next/image";
+import { ItemActionButtons } from "../common";
 
 interface Project {
   _id?: string;
@@ -161,34 +161,16 @@ export default function ProjectCard({
         )}
       </div>
 
-      <div className="flex gap-2 p-3 sm:p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
-        <button
-          onClick={onEdit}
-          disabled={
-            isEditing || isSubmitting || isDeleting || (disabled && !isEditing)
-          }
-          className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 flex items-center justify-center"
-          title="Edit"
-        >
-          {isSubmitting ? (
-            <Loader size={16} className="animate-spin sm:w-4.5 sm:h-4.5" />
-          ) : (
-            <Edit2 size={16} className="sm:w-4.5 sm:h-4.5" />
-          )}
-        </button>
-        <button
-          onClick={onDelete}
-          disabled={isEditing || isDeleting || (disabled && !isEditing)}
-          className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-600 flex items-center justify-center"
-          title="Delete"
-        >
-          {isDeleting ? (
-            <Loader size={16} className="animate-spin sm:w-4.5 sm:h-4.5" />
-          ) : (
-            <Trash2 size={16} className="sm:w-4.5 sm:h-4.5" />
-          )}
-        </button>
-      </div>
+      <ItemActionButtons
+        onEdit={onEdit}
+        onDelete={onDelete}
+        disabled={disabled && !isEditing}
+        editDisabled={isEditing || isSubmitting || isDeleting}
+        deleteDisabled={isEditing || isDeleting}
+        editLoading={isSubmitting}
+        deleteLoading={isDeleting}
+        containerClassName="p-3 sm:p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5"
+      />
     </div>
   );
 }

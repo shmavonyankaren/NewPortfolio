@@ -1,32 +1,27 @@
 "use client";
 
-import { Skill } from "../types/education";
-import FileUploader from "../FileUploader";
+import { Skill } from "../types/skillset";
 import { Trash2 } from "lucide-react";
 
-interface SkillInputProps {
+interface SkillItemInputProps {
   skills: Skill[];
-  tempSkill: string;
-  tempSkillImage: string;
+  tempSkillName: string;
   showSkillInput: boolean;
-  onSkillChange: (skill: string) => void;
-  onSkillImageChange: (image: string) => void;
+  onSkillNameChange: (name: string) => void;
   onAddSkill: () => void;
   onRemoveSkill: (index: number) => void;
   onShowSkillInput: (show: boolean) => void;
 }
 
-export default function SkillInput({
+export default function SkillItemInput({
   skills,
-  tempSkill,
-  tempSkillImage,
+  tempSkillName,
   showSkillInput,
-  onSkillChange,
-  onSkillImageChange,
+  onSkillNameChange,
   onAddSkill,
   onRemoveSkill,
   onShowSkillInput,
-}: SkillInputProps) {
+}: SkillItemInputProps) {
   return (
     <div className="space-y-4 border-t border-slate-300 dark:border-white/10 pt-4">
       <div className="flex items-center justify-between">
@@ -52,11 +47,12 @@ export default function SkillInput({
               </label>
               <input
                 type="text"
-                placeholder="e.g., React, TypeScript"
-                value={tempSkill}
-                onChange={(e) => onSkillChange(e.target.value)}
+                placeholder="e.g., React, TypeScript, Problem Solving"
+                value={tempSkillName}
+                onChange={(e) => onSkillNameChange(e.target.value)}
                 onKeyPress={(e) => {
-                  if (e.key === "Enter" && tempSkill.trim()) {
+                  if (e.key === "Enter" && tempSkillName.trim()) {
+                    e.preventDefault();
                     onAddSkill();
                   }
                 }}
@@ -64,20 +60,11 @@ export default function SkillInput({
                 autoFocus
               />
             </div>
-            <div className="flex-1 w-full space-y-1">
-              <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
-                Icon/Logo (Optional)
-              </label>
-              <FileUploader
-                imageUrl={tempSkillImage || ""}
-                onFieldChange={onSkillImageChange}
-              />
-            </div>
             <div className="flex w-full gap-2">
               <button
                 type="button"
                 onClick={onAddSkill}
-                className=" cursor-pointer flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
+                className="cursor-pointer flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
               >
                 Save
               </button>
@@ -85,8 +72,7 @@ export default function SkillInput({
                 type="button"
                 onClick={() => {
                   onShowSkillInput(false);
-                  onSkillChange("");
-                  onSkillImageChange("");
+                  onSkillNameChange("");
                 }}
                 className="cursor-pointer flex-1 bg-gray-600 hover:bg-gray-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
               >
@@ -107,16 +93,11 @@ export default function SkillInput({
               <p className="text-sm font-medium text-slate-900 dark:text-white">
                 {skill.name}
               </p>
-              {skill.image && (
-                <p className="text-xs text-slate-600 dark:text-gray-400">
-                  Icon uploaded
-                </p>
-              )}
             </div>
             <button
               type="button"
               onClick={() => onRemoveSkill(index)}
-              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors shrink-0"
+              className="cursor-pointer bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors shrink-0"
             >
               <Trash2 size={16} />
             </button>

@@ -13,7 +13,7 @@ export const ourFileRouter = {
       maxFileSize: "4MB",
       maxFileCount: 1,
     },
-  }).onUploadComplete(async ({ metadata, file }) => {
+  }).onUploadComplete(async ({ file }) => {
     // This code RUNS ON YOUR SERVER after upload
 
     console.log("file url", file.url);
@@ -27,6 +27,19 @@ export const ourFileRouter = {
       maxFileCount: 1,
     },
   }).onUploadComplete(async ({ file }) => {
+    return { url: file.url };
+  }),
+  certificateUploader: f({
+    pdf: {
+      maxFileSize: "8MB",
+      maxFileCount: 1,
+    },
+    image: {
+      maxFileSize: "8MB",
+      maxFileCount: 1,
+    },
+  }).onUploadComplete(async ({ file }) => {
+    console.log("Certificate uploaded:", file.url);
     return { url: file.url };
   }),
 } satisfies FileRouter;

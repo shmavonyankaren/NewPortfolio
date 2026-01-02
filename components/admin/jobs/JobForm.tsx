@@ -190,14 +190,14 @@ export default function JobForm({
       <div className="flex gap-2">
         <button
           type="submit"
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+          className="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
           {editingId ? "Update" : "Create"} Job
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+          className="cursor-pointer bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
           Cancel
         </button>

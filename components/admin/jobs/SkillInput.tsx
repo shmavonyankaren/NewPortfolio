@@ -37,7 +37,7 @@ export default function SkillInput({
           type="button"
           onClick={() => onShowSkillInput(true)}
           disabled={showSkillInput}
-          className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded text-sm font-semibold transition-colors"
+          className="cursor-pointer bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded text-sm font-semibold transition-colors"
         >
           + Add Skill
         </button>
@@ -77,7 +77,7 @@ export default function SkillInput({
               <button
                 type="button"
                 onClick={onAddSkill}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
+                className="cursor-pointer flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
               >
                 Save
               </button>
@@ -88,7 +88,7 @@ export default function SkillInput({
                   onSkillChange("");
                   onSkillImageChange("");
                 }}
-                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
+                className="cursor-pointer flex-1 bg-gray-600 hover:bg-gray-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
               >
                 Cancel
               </button>
@@ -116,7 +116,7 @@ export default function SkillInput({
             <button
               type="button"
               onClick={() => onRemoveSkill(index)}
-              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors shrink-0"
+              className="cursor-pointer bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors shrink-0"
             >
               <Trash2 size={16} />
             </button>

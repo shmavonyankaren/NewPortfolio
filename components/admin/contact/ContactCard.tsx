@@ -1,6 +1,6 @@
 "use client";
 
-import { Edit2, Trash2 } from "lucide-react";
+import { ItemActionButtons } from "../common";
 
 interface Contact {
   _id?: string;
@@ -27,6 +27,27 @@ export default function ContactCard({
   onDelete,
   disabled = false,
 }: ContactCardProps) {
+  const handleDownloadCV = async () => {
+    if (!contact.cvUrl) return;
+
+    try {
+      const response = await fetch(contact.cvUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "CV.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
+      // Fallback to opening in new tab
+      window.open(contact.cvUrl, "_blank");
+    }
+  };
+
   return (
     <div className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-3 sm:p-4">
       <div className="flex flex-col sm:flex-row items-start gap-3">
@@ -35,7 +56,7 @@ export default function ContactCard({
             {contact.location}
           </h4>
           <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
-            <p className="text-slate-600 dark:text-gray-400 break-words">
+            <p className="text-slate-600 dark:text-gray-400 wrap-break-word">
               <span className="text-slate-900 dark:text-white font-semibold">
                 Email:{" "}
               </span>
@@ -57,14 +78,12 @@ export default function ContactCard({
             )}
             {contact.cvUrl && (
               <p className="text-slate-600 dark:text-gray-400 mt-2 sm:mt-3">
-                <a
-                  href={contact.cvUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold"
+                <button
+                  onClick={handleDownloadCV}
+                  className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold underline cursor-pointer"
                 >
                   Download CV (PDF)
-                </a>
+                </button>
               </p>
             )}
           </div>
@@ -103,24 +122,11 @@ export default function ContactCard({
             </div>
           )}
         </div>
-        <div className="flex gap-2 shrink-0">
-          <button
-            onClick={onEdit}
-            disabled={disabled}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
-            title="Edit"
-          >
-            <Edit2 size={16} className="sm:w-[18px] sm:h-[18px]" />
-          </button>
-          <button
-            onClick={onDelete}
-            disabled={disabled}
-            className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-600"
-            title="Delete"
-          >
-            <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
-          </button>
-        </div>
+        <ItemActionButtons
+          onEdit={onEdit}
+          onDelete={onDelete}
+          disabled={disabled}
+        />
       </div>
     </div>
   );

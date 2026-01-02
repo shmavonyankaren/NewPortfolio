@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Trash } from "lucide-react";
+import { AddButton, DeleteAllButton } from "../common";
 
 interface ProjectHeaderProps {
   projectCount: number;
@@ -19,34 +19,17 @@ export default function ProjectHeader({
 }: ProjectHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+      <h3 className=" text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
         Projects
       </h3>
       <div className="flex gap-2 w-full sm:w-auto">
-        {projectCount > 0 && (
-          <button
-            onClick={onDeleteAll}
-            className="flex items-center justify-center gap-1 sm:gap-2 bg-red-600 hover:bg-red-700 text-white px-3 sm:px-4 py-2 rounded-lg font-semibold transition-colors flex-1 sm:flex-initial"
-            title="Delete All"
-          >
-            <Trash size={18} className="sm:w-5 sm:h-5" />
-            <span className="text-sm sm:text-base">Delete All</span>
-          </button>
-        )}
-        <button
+        <DeleteAllButton count={projectCount} onClick={onDeleteAll} />
+        <AddButton
+          isOpen={showForm && !editingId}
           onClick={onToggleForm}
-          className="flex items-center justify-center gap-1 sm:gap-2 bg-purple-600 hover:bg-purple-700 text-white px-3 sm:px-4 py-2 rounded-lg font-semibold transition-colors flex-1 sm:flex-initial"
-          title={showForm && !editingId ? "Close" : "Add Project"}
-        >
-          <Plus size={18} className="sm:w-5 sm:h-5" />
-          <span className="text-sm sm:text-base">
-            {projectCount === 0
-              ? "Add Project"
-              : showForm && !editingId
-              ? "Close"
-              : "Add"}
-          </span>
-        </button>
+          addLabel={projectCount === 0 ? "Add Project" : "Add"}
+          closeLabel="Close"
+        />
       </div>
     </div>
   );

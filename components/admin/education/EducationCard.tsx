@@ -1,8 +1,8 @@
 "use client";
 
-import { Edit2, Trash2 } from "lucide-react";
 import { Education } from "../types/education";
 import Image from "next/image";
+import { ItemActionButtons } from "../common";
 
 interface EducationCardProps {
   education: Education;
@@ -77,24 +77,11 @@ export default function EducationCard({
             </div>
           )}
         </div>
-        <div className="flex gap-2 shrink-0">
-          <button
-            onClick={onEdit}
-            disabled={showForm && !editingId}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
-            title="Edit"
-          >
-            <Edit2 size={16} className="sm:w-4.5 sm:h-4.5" />
-          </button>
-          <button
-            onClick={onDelete}
-            disabled={showForm && !editingId}
-            className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-600"
-            title="Delete"
-          >
-            <Trash2 size={16} className="sm:w-4.5 sm:h-4.5" />
-          </button>
-        </div>
+        <ItemActionButtons
+          onEdit={onEdit}
+          onDelete={onDelete}
+          disabled={showForm && !editingId}
+        />
       </div>
     </div>
   );
