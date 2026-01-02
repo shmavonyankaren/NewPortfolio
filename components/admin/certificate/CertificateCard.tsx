@@ -19,6 +19,17 @@ export default function CertificateCard({
   onEdit,
   onDelete,
 }: CertificateCardProps) {
+  const formatDate = (value?: string) => {
+    if (!value) return "";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   const handleView = () => {
     window.open(certificate.fileUrl, "_blank");
   };
@@ -53,6 +64,9 @@ export default function CertificateCard({
           </div>
           <p className="text-xs sm:text-sm text-purple-600 dark:text-purple-400 font-medium mb-2">
             Issued by: {certificate.issuer}
+          </p>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-300 mb-2">
+            Issued on: {formatDate(certificate.dateIssued)}
           </p>
           <p className="text-slate-600 dark:text-gray-400 text-xs sm:text-sm line-clamp-2">
             {certificate.description}

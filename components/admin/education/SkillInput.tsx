@@ -116,7 +116,7 @@ export default function SkillInput({
             <button
               type="button"
               onClick={() => onRemoveSkill(index)}
-              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors shrink-0"
+              className="cursor-pointer bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors shrink-0"
             >
               <Trash2 size={16} />
             </button>

@@ -3,6 +3,7 @@
 import { Education } from "../types/education";
 import FileUploader from "../FileUploader";
 import SkillInput from "./SkillInput";
+import DatePicker from "../ui/DatePicker";
 
 interface EducationFormProps {
   formData: Education;
@@ -35,19 +36,6 @@ export default function EducationForm({
   onSubmit,
   onCancel,
 }: EducationFormProps) {
-  const toDisplayDate = (value: string) => {
-    if (!value) return "";
-    const [year, month, day] = value.split("-");
-    if (!year || !month || !day) return value;
-    return `${day}/${month}/${year}`;
-  };
-
-  const fromDisplayDate = (value: string) => {
-    const [day, month, year] = value.split("/");
-    if (!day || !month || !year) return value;
-    return `${year}-${month}-${day}`;
-  };
-
   return (
     <form
       onSubmit={onSubmit}
@@ -92,40 +80,18 @@ export default function EducationForm({
             required
           />
         </div>
-        <div className="space-y-1">
-          <label className="block text-sm font-medium text-slate-900 dark:text-white">
-            Start Date *
-          </label>
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="\\d{2}/\\d{2}/\\d{4}"
-            placeholder="DD/MM/YYYY"
-            value={toDisplayDate(formData.startDate)}
-            onChange={(e) =>
-              onFormChange({ startDate: fromDisplayDate(e.target.value) })
-            }
-            className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:focus:ring-purple-500"
-            required
-          />
-        </div>
-        <div className="space-y-1">
-          <label className="block text-sm font-medium text-slate-900 dark:text-white">
-            End Date
-          </label>
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="\\d{2}/\\d{2}/\\d{4}"
-            placeholder="DD/MM/YYYY"
-            value={toDisplayDate(formData.endDate || "")}
-            onChange={(e) =>
-              onFormChange({ endDate: fromDisplayDate(e.target.value) })
-            }
-            disabled={formData.isCurrentlyStudying}
-            className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:focus:ring-purple-500"
-          />
-        </div>
+        <DatePicker
+          label="Start Date *"
+          value={formData.startDate}
+          onChange={(date) => onFormChange({ startDate: date })}
+          required
+        />
+        <DatePicker
+          label="End Date"
+          value={formData.endDate || ""}
+          onChange={(date) => onFormChange({ endDate: date })}
+          disabled={formData.isCurrentlyStudying}
+        />
         <div className="space-y-1">
           <label className="block text-sm font-medium text-slate-900 dark:text-white">
             Institution Logo

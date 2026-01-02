@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface ICertificate extends Document {
   title: string;
   issuer: string;
+  dateIssued: Date;
   description: string;
   fileUrl: string;
   fileName?: string;
@@ -15,6 +16,7 @@ const CertificateSchema = new Schema<ICertificate>(
   {
     title: { type: String, required: true },
     issuer: { type: String, required: true },
+    dateIssued: { type: Date, required: true },
     description: { type: String, required: true },
     fileUrl: { type: String, required: true },
     fileName: String,

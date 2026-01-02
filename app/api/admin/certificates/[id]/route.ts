@@ -6,10 +6,21 @@ type Certificate = {
   _id?: string;
   title: string;
   issuer: string;
+  dateIssued: string;
   description: string;
   fileUrl: string;
   fileName?: string;
   fileType?: string;
+};
+
+const normalize = (doc: any) => {
+  if (!doc) return doc;
+  const obj = doc.toObject ? doc.toObject() : { ...doc };
+  if (obj.dateIssued) {
+    const d = new Date(obj.dateIssued);
+    if (!Number.isNaN(d.getTime())) obj.dateIssued = d.toISOString();
+  }
+  return obj;
 };
 
 export async function GET(
@@ -19,14 +30,14 @@ export async function GET(
   try {
     await connectDB();
     const { id } = await params;
-    const certificate: Certificate | null = await CertificateModel.findById(id);
+    const certificate = await CertificateModel.findById(id);
     if (!certificate) {
       return NextResponse.json(
         { error: "Certificate not found" },
         { status: 404 }
       );
     }
-    return NextResponse.json(certificate);
+    return NextResponse.json(normalize(certificate));
   } catch (error) {
     return NextResponse.json(
       {
@@ -55,11 +66,18 @@ export async function PUT(
       JSON.stringify(data, null, 2)
     );
 
+    if (!data.dateIssued || Number.isNaN(new Date(data.dateIssued).getTime())) {
+      return NextResponse.json(
+        { error: "Invalid or missing dateIssued" },
+        { status: 400 }
+      );
+    }
     const updatedCertificate = await CertificateModel.findByIdAndUpdate(
       id,
       {
         title: data.title,
         issuer: data.issuer,
+        dateIssued: new Date(data.dateIssued),
         description: data.description,
         fileUrl: data.fileUrl,
         fileName: data.fileName,
@@ -76,7 +94,7 @@ export async function PUT(
     }
 
     console.log("Certificate updated successfully:", updatedCertificate._id);
-    return NextResponse.json(updatedCertificate);
+    return NextResponse.json(normalize(updatedCertificate));
   } catch (error) {
     console.error("Failed to update certificate:", error);
     return NextResponse.json(

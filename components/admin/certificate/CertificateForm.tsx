@@ -2,6 +2,7 @@
 
 import { Certificate } from "../types/certificate";
 import CertificateUploader from "./CertificateUploader";
+import DatePicker from "../ui/DatePicker";
 
 interface CertificateFormProps {
   formData: Certificate;
@@ -18,6 +19,8 @@ export default function CertificateForm({
   onSubmit,
   onCancel,
 }: CertificateFormProps) {
+  const normalizeDate = (value: string) => value || "";
+
   return (
     <form
       onSubmit={onSubmit}
@@ -51,6 +54,13 @@ export default function CertificateForm({
           />
         </div>
       </div>
+
+      <DatePicker
+        label="Date Issued *"
+        value={normalizeDate(formData.dateIssued)}
+        onChange={(date) => onFormChange({ dateIssued: date })}
+        required
+      />
 
       <div className="space-y-1">
         <label className="block text-sm font-medium text-slate-900 dark:text-white">

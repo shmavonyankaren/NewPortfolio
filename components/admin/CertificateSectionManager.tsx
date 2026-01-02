@@ -9,6 +9,24 @@ import {
   CertificateList,
 } from "./certificate";
 
+// Helpers mirror job handling: store form date as YYYY-MM-DD, submit as ISO string
+const formatForInput = (value: string | Date | null | undefined) => {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${month}-${day}`;
+};
+
+const toISOStringOrNow = (value: string | Date | null | undefined) => {
+  if (value) {
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime())) return d.toISOString();
+  }
+  return new Date().toISOString();
+};
+
 export default function CertificateSectionManager() {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,6 +35,7 @@ export default function CertificateSectionManager() {
   const [formData, setFormData] = useState<Certificate>({
     title: "",
     issuer: "",
+    dateIssued: "",
     description: "",
     fileUrl: "",
     fileName: "",
@@ -37,7 +56,15 @@ export default function CertificateSectionManager() {
     try {
       const res = await fetch("/api/admin/certificates");
       const data = await res.json();
-      setCertificates(data);
+      setCertificates(
+        (data || []).map((item: Certificate) => ({
+          ...item,
+          // store ISO for render/edit convenience
+          dateIssued: item.dateIssued
+            ? new Date(item.dateIssued).toISOString()
+            : "",
+        }))
+      );
     } catch (error) {
       console.error("Failed to fetch certificates:", error);
     } finally {
@@ -51,10 +78,15 @@ export default function CertificateSectionManager() {
       console.log("Submitting certificate data:", formData);
 
       if (editingId) {
+        const payload = {
+          ...formData,
+          dateIssued: toISOStringOrNow(formData.dateIssued),
+        };
+
         const res = await fetch(`/api/admin/certificates/${editingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
 
         const responseData = await res.json();
@@ -76,13 +108,29 @@ export default function CertificateSectionManager() {
 
         console.log("Certificate updated successfully:", responseData);
         setCertificates(
-          certificates.map((c) => (c._id === editingId ? responseData : c))
+          certificates.map((c) =>
+            c._id === editingId
+              ? {
+                  ...c,
+                  ...responseData,
+                  dateIssued:
+                    responseData.dateIssued
+                      ? new Date(responseData.dateIssued).toISOString()
+                      : payload.dateIssued,
+                }
+              : c
+          )
         );
       } else {
+        const payload = {
+          ...formData,
+          dateIssued: toISOStringOrNow(formData.dateIssued),
+        };
+
         const res = await fetch("/api/admin/certificates", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
 
         const responseData = await res.json();
@@ -103,7 +151,16 @@ export default function CertificateSectionManager() {
         }
 
         console.log("Certificate created successfully:", responseData);
-        setCertificates([...certificates, responseData]);
+        setCertificates([
+          ...certificates,
+          {
+            ...responseData,
+            dateIssued:
+              responseData.dateIssued
+                ? new Date(responseData.dateIssued).toISOString()
+                : payload.dateIssued,
+          },
+        ]);
       }
       resetForm();
     } catch (error) {
@@ -159,6 +216,7 @@ export default function CertificateSectionManager() {
   const handleEdit = (certificate: Certificate) => {
     setFormData({
       ...certificate,
+      dateIssued: formatForInput(certificate.dateIssued),
     });
     setEditingId(certificate._id || null);
     setShowForm(true);
@@ -168,6 +226,7 @@ export default function CertificateSectionManager() {
     setFormData({
       title: "",
       issuer: "",
+      dateIssued: "",
       description: "",
       fileUrl: "",
       fileName: "",

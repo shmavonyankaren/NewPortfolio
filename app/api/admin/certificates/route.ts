@@ -6,17 +6,28 @@ type Certificate = {
   _id?: string;
   title: string;
   issuer: string;
+  dateIssued: string;
   description: string;
   fileUrl: string;
   fileName?: string;
   fileType?: string;
 };
 
+const normalize = (doc: any) => {
+  if (!doc) return doc;
+  const obj = doc.toObject ? doc.toObject() : { ...doc };
+  if (obj.dateIssued) {
+    const d = new Date(obj.dateIssued);
+    if (!Number.isNaN(d.getTime())) obj.dateIssued = d.toISOString();
+  }
+  return obj;
+};
+
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
     const certificates = await CertificateModel.find().sort({ createdAt: -1 });
-    return NextResponse.json(certificates);
+    return NextResponse.json(certificates.map(normalize));
   } catch (error) {
     console.error("Failed to fetch certificates:", error);
     return NextResponse.json(
@@ -44,9 +55,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!data.dateIssued || Number.isNaN(new Date(data.dateIssued).getTime())) {
+      return NextResponse.json(
+        { error: "Invalid or missing dateIssued" },
+        { status: 400 }
+      );
+    }
+
     const newCertificate = new CertificateModel({
       title: data.title,
       issuer: data.issuer,
+      dateIssued: new Date(data.dateIssued),
       description: data.description,
       fileUrl: data.fileUrl,
       fileName: data.fileName,
@@ -56,7 +75,7 @@ export async function POST(request: NextRequest) {
     await newCertificate.save();
     console.log("Certificate created successfully:", newCertificate._id);
 
-    return NextResponse.json(newCertificate, { status: 201 });
+    return NextResponse.json(normalize(newCertificate), { status: 201 });
   } catch (error) {
     console.error("Failed to create certificate:", error);
     if (error instanceof Error) {
