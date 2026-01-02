@@ -49,7 +49,7 @@ export default function ConfirmDialog({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+            className="cursor-pointer text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
           >
             <X size={24} />
           </button>
@@ -66,7 +66,7 @@ export default function ConfirmDialog({
         <div className="flex gap-3 p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+            className=" cursor-pointer flex-1 px-4 py-2.5 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
           >
             {cancelText}
           </button>
@@ -75,7 +75,7 @@ export default function ConfirmDialog({
               onConfirm();
               onClose();
             }}
-            className={`flex-1 px-4 py-2.5 rounded-lg font-semibold transition-colors ${
+            className={` cursor-pointer flex-1 px-4 py-2.5 rounded-lg font-semibold transition-colors ${
               isDangerous
                 ? "bg-red-600 hover:bg-red-700 text-white"
                 : "bg-purple-600 hover:bg-purple-700 text-white"

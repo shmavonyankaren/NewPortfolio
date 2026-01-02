@@ -13,16 +13,6 @@ type Certificate = {
   fileType?: string;
 };
 
-const normalize = (doc: any) => {
-  if (!doc) return doc;
-  const obj = doc.toObject ? doc.toObject() : { ...doc };
-  if (obj.dateIssued) {
-    const d = new Date(obj.dateIssued);
-    if (!Number.isNaN(d.getTime())) obj.dateIssued = d.toISOString();
-  }
-  return obj;
-};
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -30,14 +20,14 @@ export async function GET(
   try {
     await connectDB();
     const { id } = await params;
-    const certificate = await CertificateModel.findById(id);
+    const certificate: Certificate | null = await CertificateModel.findById(id);
     if (!certificate) {
       return NextResponse.json(
         { error: "Certificate not found" },
         { status: 404 }
       );
     }
-    return NextResponse.json(normalize(certificate));
+    return NextResponse.json(certificate);
   } catch (error) {
     return NextResponse.json(
       {
@@ -84,7 +74,7 @@ export async function PUT(
         fileType: data.fileType,
       },
       { new: true, runValidators: true }
-    );
+    ).lean();
 
     if (!updatedCertificate) {
       return NextResponse.json(
@@ -94,7 +84,7 @@ export async function PUT(
     }
 
     console.log("Certificate updated successfully:", updatedCertificate._id);
-    return NextResponse.json(normalize(updatedCertificate));
+    return NextResponse.json(updatedCertificate);
   } catch (error) {
     console.error("Failed to update certificate:", error);
     return NextResponse.json(

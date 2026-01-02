@@ -113,10 +113,9 @@ export default function CertificateSectionManager() {
               ? {
                   ...c,
                   ...responseData,
-                  dateIssued:
-                    responseData.dateIssued
-                      ? new Date(responseData.dateIssued).toISOString()
-                      : payload.dateIssued,
+                  dateIssued: responseData.dateIssued
+                    ? new Date(responseData.dateIssued).toISOString()
+                    : payload.dateIssued,
                 }
               : c
           )
@@ -155,10 +154,9 @@ export default function CertificateSectionManager() {
           ...certificates,
           {
             ...responseData,
-            dateIssued:
-              responseData.dateIssued
-                ? new Date(responseData.dateIssued).toISOString()
-                : payload.dateIssued,
+            dateIssued: responseData.dateIssued
+              ? new Date(responseData.dateIssued).toISOString()
+              : payload.dateIssued,
           },
         ]);
       }
