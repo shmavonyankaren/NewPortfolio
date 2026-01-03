@@ -38,7 +38,7 @@ const AboutTestimonials = ({ comments }: AboutTestimonialsProps) => {
             >
               <div className="flex items-start gap-3 md:gap-4 mb-4">
                 {testimonial.image && testimonial.image.trim() !== "" ? (
-                  <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
                     <Image
                       src={testimonial.image}
                       alt={testimonial.name}
@@ -47,15 +47,15 @@ const AboutTestimonials = ({ comments }: AboutTestimonialsProps) => {
                     />
                   </div>
                 ) : (
-                  <div className="text-3xl md:text-4xl flex-shrink-0">
+                  <div className="text-3xl md:text-4xl shrink-0">
                     {testimonial.avatar}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base break-words">
+                  <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base wrap-break-words">
                     {testimonial.name}
                   </h3>
-                  <p className="text-gray-600 dark:text-purple-400 text-xs sm:text-sm break-words">
+                  <p className="text-gray-600 dark:text-purple-400 text-xs sm:text-sm wrap-break-words">
                     {testimonial.role}
                   </p>
                 </div>
