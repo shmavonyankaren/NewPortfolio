@@ -30,7 +30,10 @@ export default function EducationManager() {
   const [showSkillInput, setShowSkillInput] = useState(false);
   const [tempSkill, setTempSkill] = useState("");
   const [tempSkillImage, setTempSkillImage] = useState("");
-
+  const [tempSkillDescription, setTempSkillDescription] = useState("");
+  const [editingSkillIndex, setEditingSkillIndex] = useState<number | null>(
+    null
+  );
   useEffect(() => {
     fetchEducations();
   }, []);
@@ -202,23 +205,65 @@ export default function EducationManager() {
     setShowSkillInput(false);
     setTempSkill("");
     setTempSkillImage("");
+    setTempSkillDescription("");
+    setEditingSkillIndex(null);
   };
 
   const handleFormChange = (data: Partial<Education>) => {
     setFormData({ ...formData, ...data });
   };
 
+  const handleEditSkill = (index: number) => {
+    const skill = formData.skills?.[index];
+    if (skill) {
+      setTempSkill(skill.name);
+      setTempSkillImage(skill.image || "");
+      setTempSkillDescription(skill.description || "");
+      setEditingSkillIndex(index);
+    }
+  };
+
+  const handleUpdateSkill = () => {
+    if (tempSkill.trim() && editingSkillIndex !== null) {
+      const updatedSkills = [...(formData.skills || [])];
+      updatedSkills[editingSkillIndex] = {
+        name: tempSkill,
+        image: tempSkillImage || undefined,
+        description: tempSkillDescription || undefined,
+      };
+      setFormData({
+        ...formData,
+        skills: updatedSkills,
+      });
+      setTempSkill("");
+      setTempSkillImage("");
+      setTempSkillDescription("");
+      setEditingSkillIndex(null);
+    }
+  };
+
+  const handleCancelEditSkill = () => {
+    setTempSkill("");
+    setTempSkillImage("");
+    setTempSkillDescription("");
+    setEditingSkillIndex(null);
+  };
   const handleAddSkill = () => {
     if (tempSkill.trim()) {
       setFormData({
         ...formData,
         skills: [
           ...formData.skills,
-          { name: tempSkill.trim(), image: tempSkillImage },
+          {
+            name: tempSkill.trim(),
+            image: tempSkillImage,
+            description: tempSkillDescription,
+          },
         ],
       });
       setTempSkill("");
       setTempSkillImage("");
+      setTempSkillDescription("");
       setShowSkillInput(false);
     }
   };
@@ -270,9 +315,15 @@ export default function EducationManager() {
           editingId={editingId}
           showSkillInput={showSkillInput}
           tempSkill={tempSkill}
+          tempSkillDescription={tempSkillDescription}
           tempSkillImage={tempSkillImage}
+          editingSkillIndex={editingSkillIndex}
+          onUpdateSkill={handleUpdateSkill}
+          onCancelEditSkill={handleCancelEditSkill}
+          onEditSkill={handleEditSkill}
           onFormChange={handleFormChange}
           onSkillChange={setTempSkill}
+          onSkillDescriptionChange={setTempSkillDescription}
           onSkillImageChange={setTempSkillImage}
           onAddSkill={handleAddSkill}
           onRemoveSkill={handleRemoveSkill}

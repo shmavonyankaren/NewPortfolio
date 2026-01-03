@@ -1,7 +1,11 @@
 import React from "react";
 
-const AboutExperience = () => {
-  const experienceData = [
+interface AboutExperienceProps {
+  jobs?: any[];
+}
+
+const AboutExperience = ({ jobs }: AboutExperienceProps) => {
+  const fallbackExperience = [
     {
       title: "Senior Frontend Developer",
       company: "Tech Innovations Inc.",
@@ -33,6 +37,27 @@ const AboutExperience = () => {
       skills: ["HTML/CSS", "JavaScript", "Vue.js", "Responsive Design"],
     },
   ];
+
+  const experienceData =
+    jobs && jobs.length > 0
+      ? jobs.map((job) => ({
+          title: job.position,
+          company: job.company,
+          duration: `${new Date(job.startDate).toLocaleDateString("en-US", {
+            month: "short",
+            year: "numeric",
+          })} - ${
+            job.isCurrentlyWorking
+              ? "Present"
+              : new Date(job.endDate).toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                })
+          }`,
+          description: job.description,
+          skills: job.skills?.map((s: any) => s.name) || [],
+        }))
+      : fallbackExperience;
 
   return (
     <section className="py-12 sm:py-16 md:py-20">

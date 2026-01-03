@@ -2,7 +2,38 @@ import RecentProjects from "@/components/RecentProjects";
 import React from "react";
 import { FaCode, FaRocket, FaLayerGroup } from "react-icons/fa";
 
-function MyProjects() {
+async function fetchProjects() {
+  try {
+    const res = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+      }/api/admin/projects`,
+      {
+        cache: "no-store",
+      }
+    );
+    if (!res.ok) return [];
+    return res.json();
+  } catch (error) {
+    console.error("Failed to fetch projects:", error);
+    return [];
+  }
+}
+
+async function MyProjects() {
+  const projects = await fetchProjects();
+  const projectCount = projects.length > 0 ? `${projects.length}+` : "5+";
+
+  // Calculate unique technologies
+  const uniqueTechs =
+    projects.length > 0
+      ? new Set(
+          projects.flatMap(
+            (p: any) => p.technologies?.map((t: any) => t.name) || []
+          )
+        ).size
+      : 20;
+
   return (
     <div className="min-h-screen flex flex-col items-center pt-20 pb-10 bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)]  dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)] text-gray-900 dark:text-white">
       <div className="w-full max-w-7xl mx-auto md:px-20 px-5">
@@ -31,7 +62,7 @@ function MyProjects() {
                 </div>
                 <div>
                   <h3 className="text-3xl font-bold text-slate-900 dark:text-white">
-                    5+
+                    {projectCount}
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
                     Projects Completed
@@ -50,7 +81,7 @@ function MyProjects() {
                 </div>
                 <div>
                   <h3 className="text-3xl font-bold text-slate-900 dark:text-white">
-                    20+
+                    {uniqueTechs}+
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
                     Technologies Used
@@ -81,7 +112,7 @@ function MyProjects() {
         </div>
 
         {/* Projects Grid */}
-        <RecentProjects />
+        <RecentProjects projects={projects} />
       </div>
     </div>
   );

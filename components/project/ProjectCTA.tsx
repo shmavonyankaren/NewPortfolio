@@ -18,22 +18,26 @@ export function ProjectCTA({ project }: ProjectCTAProps) {
           I&apos;m always open to feedback and collaboration!
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          <a
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-8 py-4 bg-white text-purple-600 hover:bg-slate-100 rounded-xl font-semibold transition-all duration-300 hover:-translate-y-0.5 shadow-lg"
-          >
-            View Live Demo
-          </a>
-          <a
-            href={project.gitHubLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white/10 rounded-xl font-semibold transition-all duration-300 hover:-translate-y-0.5"
-          >
-            Explore Code
-          </a>
+          {project.demoUrl && project.demoUrl.trim() !== "" && (
+            <a
+              href={project.demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-white text-purple-600 hover:bg-slate-100 rounded-xl font-semibold transition-all duration-300 hover:-translate-y-0.5 shadow-lg"
+            >
+              View Live Demo
+            </a>
+          )}
+          {project.githubUrl && project.githubUrl.trim() !== "" && (
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white/10 rounded-xl font-semibold transition-all duration-300 hover:-translate-y-0.5"
+            >
+              Explore Code
+            </a>
+          )}
         </div>
       </div>
     </div>

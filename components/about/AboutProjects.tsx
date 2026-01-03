@@ -1,27 +1,29 @@
 import Link from "next/link";
 import React from "react";
 
-const AboutProjects = () => {
-  const projectsData = [
-    {
-      title: "E-Commerce Platform",
-      description:
-        "A full-featured e-commerce platform with payment integration, inventory management, and real-time notifications.",
-      tags: ["Next.js", "Stripe", "MongoDB", "Tailwind CSS"],
-    },
-    {
-      title: "Project Management Tool",
-      description:
-        "Collaborative project management application with real-time updates, team collaboration, and advanced analytics.",
-      tags: ["React", "Node.js", "WebSocket", "PostgreSQL"],
-    },
-    {
-      title: "AI Content Generator",
-      description:
-        "An intelligent content generation tool using OpenAI API with advanced customization and formatting options.",
-      tags: ["React", "Python", "OpenAI API", "FastAPI"],
-    },
-  ];
+interface AboutProjectsProps {
+  projects?: {
+    _id?: string;
+    title: string;
+    description: string;
+    shortDescription?: string;
+    technologies?: { name: string }[];
+  }[];
+}
+
+const AboutProjects = ({ projects }: AboutProjectsProps) => {
+  const projectsData =
+    projects && projects.length > 0
+      ? projects.slice(0, 3).map((project) => ({
+          _id: project._id,
+          title: project.title,
+          description: project.shortDescription || project.description,
+          tags:
+            project.technologies
+              ?.slice(0, 4)
+              .map((t: { name: string }) => t.name) || [],
+        }))
+      : [];
 
   return (
     <section className="py-12 sm:py-16 md:py-20">
@@ -45,7 +47,7 @@ const AboutProjects = () => {
                 {project.description}
               </p>
               <div className="flex flex-wrap gap-2 mb-4 md:mb-6">
-                {project.tags.map((tag, tagIdx) => (
+                {project.tags.map((tag: string, tagIdx: number) => (
                   <span
                     key={tagIdx}
                     className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm font-semibold"
@@ -55,7 +57,7 @@ const AboutProjects = () => {
                 ))}
               </div>
               <button className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold transition-colors text-sm sm:text-base">
-                View Project →
+                <Link href={`/projects/${project._id}`}>View Project →</Link>
               </button>
             </div>
           ))}

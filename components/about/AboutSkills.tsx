@@ -1,7 +1,11 @@
 import React from "react";
 
-const AboutSkills = () => {
-  const skillsData = [
+interface AboutSkillsProps {
+  skillsets?: any[];
+}
+
+const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
+  const fallbackSkills = [
     {
       title: "Frontend Development",
       emoji: "🎨",
@@ -75,6 +79,15 @@ const AboutSkills = () => {
       ],
     },
   ];
+
+  const skillsData =
+    skillsets && skillsets.length > 0
+      ? skillsets.map((skillset) => ({
+          title: skillset.title,
+          emoji: "🎯",
+          skills: skillset.skills?.map((s: any) => s.name) || [],
+        }))
+      : fallbackSkills;
 
   return (
     <section className="py-12 sm:py-16 md:py-20">

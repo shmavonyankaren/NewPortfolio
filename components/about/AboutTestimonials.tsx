@@ -1,33 +1,25 @@
 import React from "react";
+import Image from "next/image";
+import { Comment } from "../admin/types/comment";
 
-const AboutTestimonials = () => {
-  const testimonialData = [
-    {
-      name: "John Smith",
-      role: "CTO at Tech Innovations",
-      text: "Karen's expertise in frontend development and her ability to lead teams made her invaluable to our projects. Highly recommended!",
-      avatar: "👨‍💼",
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Product Manager at StartUp Ventures",
-      text: "Working with Karen was a game-changer. She delivered high-quality code on time and was a pleasure to collaborate with.",
-      avatar: "👩‍💼",
-    },
-    {
-      name: "Mike Wilson",
-      role: "Founder at Digital Solutions",
-      text: "Karen's problem-solving skills and attention to detail are exceptional. She transformed our entire frontend architecture.",
-      avatar: "👨‍💻",
-    },
-    {
-      name: "Emily Chen",
-      role: "Senior Developer at Tech Innovations",
-      text: "Karen mentored me throughout my learning journey. Her guidance was instrumental in my growth as a developer.",
-      avatar: "👩‍💻",
-    },
-  ];
+interface AboutTestimonialsProps {
+  comments?: Comment[];
+}
 
+const AboutTestimonials = ({ comments }: AboutTestimonialsProps) => {
+  const testimonialData =
+    comments &&
+    comments.map((comment) => ({
+      name: comment.name,
+      role: comment.position,
+      text: comment.comment,
+      avatar: "👤",
+      image: comment.image || "",
+    }));
+
+  if (!testimonialData || testimonialData.length === 0) {
+    return null;
+  }
   return (
     <section className="py-12 sm:py-16 md:py-20">
       <div className="space-y-8 md:space-y-12">
@@ -45,9 +37,20 @@ const AboutTestimonials = () => {
               className="bg-white dark:bg-[#1a1f3a] p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-purple-500/20"
             >
               <div className="flex items-start gap-3 md:gap-4 mb-4">
-                <div className="text-3xl md:text-4xl flex-shrink-0">
-                  {testimonial.avatar}
-                </div>
+                {testimonial.image && testimonial.image.trim() !== "" ? (
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+                    <Image
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="text-3xl md:text-4xl flex-shrink-0">
+                    {testimonial.avatar}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base break-words">
                     {testimonial.name}

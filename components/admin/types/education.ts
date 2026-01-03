@@ -1,6 +1,7 @@
 export interface Skill {
   name: string;
   image?: string;
+  description?: string;
 }
 
 export interface Education {

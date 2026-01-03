@@ -8,7 +8,15 @@ import { FaLocationArrow } from "react-icons/fa";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
-function Hero() {
+interface HeroProps {
+  generalInfo?: {
+    fullName?: string;
+    shortAbout?: string;
+    fullDescription?: string;
+  } | null;
+}
+
+function Hero({ generalInfo }: HeroProps) {
   const [animateSpotlights, setAnimateSpotlights] = useState(false);
 
   useEffect(() => {
@@ -28,6 +36,11 @@ function Hero() {
       }
     };
   }, []);
+
+  const fullName = generalInfo?.fullName || "Karen";
+  const shortAbout =
+    generalInfo?.shortAbout ||
+    "Software Developer specializing in crafting stunning and efficient web applications using JavaScript";
 
   return (
     <div className="pb-20 pt-36">
@@ -57,9 +70,7 @@ function Hero() {
           </h2>
           <TextGenerateEffect />
           <p className="text-center md:tracking-wider mb-4 text-sm md:text-lg lg:text-2xl">
-            Hi, I &apos;m Karen, Software Developer specializing in crafting
-            stunning and efficient web applications using JavaScript. Let&apos;s
-            build something amazing together!
+            {shortAbout}
           </p>
           <a href="#">
             <MagicButton

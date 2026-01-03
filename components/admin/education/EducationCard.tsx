@@ -60,18 +60,37 @@ export default function EducationCard({
             {education.description}
           </p>
           {education.skills && education.skills.length > 0 && (
-            <div className="mt-2">
-              <p className="text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1">
+            <div className="mt-3">
+              <p className="text-xs font-semibold text-slate-700 dark:text-gray-300 mb-2">
                 Skills:
               </p>
-              <div className="flex gap-2 flex-wrap">
+              <div className="space-y-2 flex flex-col gap-3">
                 {education.skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-purple-600/20 text-purple-700 dark:text-purple-300 text-xs px-2 py-1 rounded flex items-center gap-1"
-                  >
-                    {typeof skill === "string" ? skill : skill.name}
-                  </span>
+                  <div key={index} className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 w-fit">
+                      {typeof skill !== "string" && skill.image ? (
+                        <Image
+                          width={24}
+                          height={24}
+                          src={skill.image}
+                          alt={skill.name}
+                          className="w-6 h-6 rounded object-cover"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 rounded bg-purple-200 dark:bg-purple-700 flex items-center justify-center text-xs">
+                          ⚙️
+                        </div>
+                      )}
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 whitespace-nowrap">
+                        {typeof skill === "string" ? skill : skill.name}
+                      </span>
+                    </div>
+                    {typeof skill !== "string" && skill.description && (
+                      <p className="text-xs text-slate-600 dark:text-gray-400 mt-1 ml-8">
+                        {skill.description}
+                      </p>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>

@@ -1,15 +1,20 @@
 "use client";
 
 import { GoArrowUpRight } from "react-icons/go";
-import { projects } from "@/data";
+import { projects as fallbackProjects } from "@/data";
 import { FaGithub } from "react-icons/fa";
 
 import { CardContainer, CardBody, CardItem } from "./ui/3d-card";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
+import { ProjectItem } from "@/lib/types";
 
-const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
+interface RecentProjectsProps {
+  projects?: ProjectItem[];
+}
+
+const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
   const router = useRouter();
   const projectId = item._id || item.id;
 
@@ -49,15 +54,17 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
               priority={false}
               loading="lazy"
             />
-            <Image
-              width={500}
-              height={300}
-              src={item.img}
-              alt={item.title}
-              className="z-10 absolute bottom-0 w-auto"
-              sizes="(min-width: 1024px) 40vw, 80vw"
-              loading="lazy"
-            />
+            {item.image && (
+              <Image
+                width={500}
+                height={300}
+                src={item.image}
+                alt={item.title}
+                className="z-10 absolute bottom-0 w-auto"
+                sizes="(min-width: 1024px) 40vw, 80vw"
+                loading="lazy"
+              />
+            )}
           </div>
         </CardItem>
 
@@ -70,14 +77,8 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
 
         {/* Description */}
         <CardItem translateZ="20" className="w-full">
-          <p
-            className="lg:text-xl dark:text-[#BEC1DD] text-slate-700 lg:font-normal font-light text-sm line-clamp-2 mt-2"
-            // style={{
-            //   color: "#BEC1DD",
-            //   margin: "1vh 0",
-            // }}
-          >
-            {item.des}
+          <p className="lg:text-xl dark:text-[#BEC1DD] text-slate-700 lg:font-normal font-light text-sm line-clamp-2 mt-2">
+            {item.shortDescription}
           </p>
         </CardItem>
 
@@ -87,52 +88,82 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-5 w-full"
         >
           <div className="flex items-center">
-            {item.iconLists.map((icon, index) => (
-              <div
-                key={index}
-                className="border border-none dark:border-white/20 bg-back/90 shadow-lg bg-linear-to-br from-white-400 to-purple-700 dark:from-[#161a31] dark:to-[#06091f] rounded-full  lg:w-10 lg:h-10 w-8 h-8 flex justify-center items-center"
-                style={{
-                  transform: `translateX(-${5 * index + 2}px)`,
-                }}
-              >
-                <Image
-                  width={40}
-                  height={40}
-                  src={icon}
-                  alt={`tech-${index}`}
-                  className="p-2"
-                  sizes="32px"
-                  loading="lazy"
-                />
-              </div>
-            ))}
+            {(
+              item.technologies?.slice(0, 5) ||
+              (item as { iconLists?: string[] }).iconLists
+                ?.slice(0, 5)
+                .map((icon: string) => ({ icon })) ||
+              []
+            ).map(
+              (
+                tech: { icon?: string; name?: string } | string,
+                index: number
+              ) => {
+                const icon = typeof tech === "string" ? tech : tech.icon;
+                const name = typeof tech === "string" ? "" : tech.name;
+                const hasValidIcon =
+                  icon &&
+                  icon.trim() !== "" &&
+                  (icon.startsWith("/") || icon.startsWith("http"));
+
+                return (
+                  <div
+                    key={index}
+                    className="border border-none dark:border-white/20 bg-back/90 shadow-lg bg-linear-to-br from-white-400 to-purple-700 dark:from-[#161a31] dark:to-[#06091f] rounded-full  lg:w-10 lg:h-10 w-8 h-8 flex justify-center items-center"
+                    style={{
+                      transform: `translateX(-${5 * index + 2}px)`,
+                    }}
+                  >
+                    {hasValidIcon ? (
+                      <Image
+                        width={40}
+                        height={40}
+                        src={icon}
+                        alt={name || `tech-${index}`}
+                        className="p-2"
+                        sizes="32px"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-white dark:text-white text-xs font-bold">
+                        {(name || `T${index}`).charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                );
+              }
+            )}
           </div>
 
           {/* Actions: keep inside card on iPhone widths */}
           <div className="w-full max-w-full flex  sm:flex-row sm:flex-wrap  justify-center items-stretch gap-3">
-            <a
-              href={item.gitHubLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center text-gray-600 dark:text-gray-300 dark:hover:text-gray-400 hover:text-gray-800 px-4 py-2 sm:px-4 sm:py-2 rounded-xl"
-            >
-              <FaGithub className="mr-2" size={20} />
-              <span className="text-xs sm:text-sm">Check Code</span>
-            </a>
-            <a
-              href={item.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center
+            {item.githubUrl && item.githubUrl.trim() !== "" && (
+              <a
+                href={item.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center text-gray-600 dark:text-gray-300 dark:hover:text-gray-400 hover:text-gray-800 px-4 py-2 sm:px-4 sm:py-2 rounded-xl"
+              >
+                <FaGithub className="mr-2" size={20} />
+                <span className="text-xs sm:text-sm">Check Code</span>
+              </a>
+            )}
+            {item.demoUrl && item.demoUrl.trim() !== "" && (
+              <a
+                href={item.demoUrl as string}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center
               text-purple-600 dark:text-purple-300
                dark:hover:text-purple-400
                hover:text-purple-800 py-2 sm:px-4 sm:py-2 rounded-xl"
-            >
-              <GoArrowUpRight className="mr-2" size={20} />
-              <span className="text-xs sm:text-sm">Check Live Site</span>
-            </a>
+              >
+                <GoArrowUpRight className="mr-2" size={20} />
+                <span className="text-xs sm:text-sm">Check Live Site</span>
+              </a>
+            )}
           </div>
         </CardItem>
       </CardBody>
@@ -142,17 +173,22 @@ const ProjectCard = memo(({ item }: { item: (typeof projects)[0] }) => {
 
 ProjectCard.displayName = "ProjectCard";
 
-const RecentProjectsContent: React.FC = () => {
+const RecentProjectsContent: React.FC<{ projectsData: ProjectItem[] }> = ({
+  projectsData,
+}) => {
   return (
     <div className="flex flex-1 w-full flex-wrap justify-center gap-12 mt-10">
-      {projects.map((item) => (
+      {projectsData.map((item) => (
         <ProjectCard key={item._id || item.id} item={item} />
       ))}
     </div>
   );
 };
 
-const RecentProjects = () => {
+const RecentProjects = ({ projects }: RecentProjectsProps) => {
+  const projectsData =
+    projects && projects.length > 0 ? projects : fallbackProjects;
+
   return (
     <div className="py-20">
       <h1 className="heading">
@@ -161,7 +197,7 @@ const RecentProjects = () => {
           recent projects
         </span>
       </h1>
-      <RecentProjectsContent />
+      <RecentProjectsContent projectsData={projectsData} />
     </div>
   );
 };

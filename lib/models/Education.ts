@@ -12,6 +12,7 @@ export interface IEducation extends Document {
   skills: Array<{
     name: string;
     image?: string;
+    description?: string;
   }>;
   createdAt: Date;
   updatedAt: Date;
@@ -32,6 +33,7 @@ const EducationSchema = new Schema<IEducation>(
         {
           name: { type: String, required: true },
           image: String,
+          description: String,
         },
       ],
       default: [],

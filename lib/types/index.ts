@@ -2,11 +2,23 @@ export type ProjectItem = {
   id?: number;
   _id?: string;
   title: string;
-  des: string;
-  img: string;
-  iconLists: string[];
-  link: string;
-  gitHubLink: string;
+  shortDescription: string;
+  description: string;
+  technologies?: { name: string; icon?: string }[];
+  image: string;
+  features: {
+    title: string;
+    description: string;
+  }[];
+  challenges: {
+    challenge: string;
+    solution: string;
+  }[];
+  demoUrl?: string;
+  githubUrl?: string;
+  teamType: "solo" | "team";
+  status: "Live & Maintained" | "Completed" | "In Progress";
+  duration: string;
 };
 
 export type GridItem = {

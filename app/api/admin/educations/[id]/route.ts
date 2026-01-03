@@ -15,6 +15,7 @@ type Education = {
   skills: Array<{
     name: string;
     image?: string;
+    description?: string;
   }>;
 };
 
@@ -77,23 +78,34 @@ export async function PUT(
       data.skills = [];
     }
     data.skills = data.skills
-      .map((skill: string | { name?: string; image?: string }) => {
-        if (!skill) return null;
-        if (typeof skill === "string") {
-          return { name: skill };
+      .map(
+        (
+          skill:
+            | string
+            | { name?: string; image?: string; description?: string }
+        ) => {
+          if (!skill) return null;
+          if (typeof skill === "string") {
+            return { name: skill };
+          }
+          if (skill.name) {
+            return {
+              name: String(skill.name).trim(),
+              ...(skill.image && skill.image.trim()
+                ? { image: skill.image.trim() }
+                : {}),
+              ...(skill.description && skill.description.trim()
+                ? { description: skill.description.trim() }
+                : {}),
+            };
+          }
+          return null;
         }
-        if (skill.name) {
-          return {
-            name: String(skill.name).trim(),
-            ...(skill.image && skill.image.trim()
-              ? { image: skill.image.trim() }
-              : {}),
-          };
-        }
-        return null;
-      })
+      )
       .filter(
-        (skill): skill is { name: string; image?: string } =>
+        (
+          skill
+        ): skill is { name: string; image?: string; description?: string } =>
           skill !== null && skill.name.length > 0
       );
 

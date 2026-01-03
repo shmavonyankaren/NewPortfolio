@@ -5,13 +5,122 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { expCards } from "../data";
-// import TitleHeader from "../components/TitleHeader";
 import GlowCard from "./GlowCard";
 import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Experience = () => {
+interface Skill {
+  name: string;
+  icon?: string;
+  image?: string;
+  description?: string;
+}
+
+interface Job {
+  company: string;
+  position: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  isCurrentlyWorking: boolean;
+  skills?: Skill[];
+  responsibilities?: Array<{ name: string }>;
+  logo?: string;
+}
+
+interface Education {
+  institution: string;
+  degree?: string;
+  field: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  isCurrentlyStudying: boolean;
+  skills?: Skill[];
+  logo?: string;
+}
+
+interface ExperienceCard {
+  review: string;
+  imgPath: string;
+  logoPath: string;
+  title: string;
+  date: string;
+  responsibilities?: string[];
+  skills?: Skill[];
+  type: "job" | "education";
+}
+
+interface ExperienceSectionProps {
+  jobs: Job[];
+  education?: Education[];
+}
+
+const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
+  // Transform jobs to ExperienceCard format
+  const jobCards: ExperienceCard[] =
+    jobs && jobs.length > 0
+      ? jobs.map((job) => ({
+          review: job.description || "",
+          imgPath: "/exp1.svg",
+          logoPath: job.logo || "/app.svg",
+          title: job.position,
+          date: `${new Date(job.startDate).toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric",
+          })} - ${
+            job.isCurrentlyWorking
+              ? "Present"
+              : new Date(job.endDate).toLocaleDateString("en-US", {
+                  month: "long",
+                  year: "numeric",
+                })
+          }`,
+          skills: job.skills || [],
+          responsibilities: job.responsibilities?.map((r) => r.name) || [],
+          type: "job",
+        }))
+      : [];
+
+  // Transform education to ExperienceCard format
+  const educationCards: ExperienceCard[] =
+    education && education.length > 0
+      ? education.map((edu) => ({
+          review: edu.description || "",
+          imgPath: "/exp1.svg",
+          logoPath: edu.logo || "/app.svg",
+          title: edu.field,
+          date: `${new Date(edu.startDate).toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric",
+          })} - ${
+            edu.isCurrentlyStudying
+              ? "Present"
+              : new Date(edu.endDate).toLocaleDateString("en-US", {
+                  month: "long",
+                  year: "numeric",
+                })
+          }`,
+          skills: edu.skills || [],
+          type: "education",
+        }))
+      : [];
+
+  // Combine all cards and sort by start date (old to new)
+  const allCards = [...jobCards, ...educationCards].sort((a, b) => {
+    // Extract the start date from the date string (before the dash)
+    const aStartDate = new Date(a.date.split(" - ")[0]);
+    const bStartDate = new Date(b.date.split(" - ")[0]);
+    return aStartDate.getTime() - bStartDate.getTime();
+  });
+
+  // Use combined cards if available, otherwise use fallback
+  const experienceCards: ExperienceCard[] =
+    allCards.length > 0
+      ? allCards
+      : expCards.map((card) => ({ ...card, type: "job" as const }));
+
   useGSAP(() => {
     // Optimize ScrollTrigger settings
     ScrollTrigger.config({ ignoreMobileResize: true });
@@ -139,17 +248,29 @@ const Experience = () => {
           </div>
 
           <div className="relative z-50 space-y-8 sm:space-y-10 md:space-y-16 xl:space-y-32">
-            {expCards.map((card, index) => (
-              <div key={card.title} className="exp-card-wrapper">
+            {experienceCards.map((card, index) => (
+              <div key={`${card.type}-${index}`} className="exp-card-wrapper">
                 <div className="w-full sm:w-full md:w-full xl:w-2/6 mb-6 md:mb-0">
-                  <GlowCard card={card} index={index}>
-                    <div>
-                      <Image
+                  <GlowCard
+                    card={{ ...card, skills: card.skills?.map((s) => s.name) }}
+                    index={index}
+                  >
+                    <div className="flex  gap-3">
+                      {/* <Image
                         width={40}
                         height={40}
                         src={card.imgPath ? card.imgPath : "/app.svg"}
                         alt="exp-img"
-                      />
+                      /> */}
+                      {/* {card.type === "job" ? (
+                        <p className="text-sm md:text-base lg:text-lg text-white-50">
+                          💼 Work Experience
+                        </p>
+                      ) : (
+                        <p className="text-sm md:text-base lg:text-lg text-white-50">
+                          🎓 Education
+                        </p>
+                      )} */}
                     </div>
                   </GlowCard>
                 </div>
@@ -166,28 +287,96 @@ const Experience = () => {
                         />
                       </div>
 
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1  min-w-0">
                         <h1 className="font-semibold text-xl sm:text-2xl md:text-3xl">
-                          {card.title}
+                          {card.type === "job" ? card.title : card.title}
                         </h1>
                         <p className="my-3 sm:my-4 md:my-5 text-white-50 text-sm sm:text-base">
                           🗓️&nbsp;{card.date}
                         </p>
                         <p className="text-[#839CB5] italic text-sm md:text-base">
-                          Responsibilities
+                          {card.type === "job" ? "Skills" : "Skills Learned"}
                         </p>
-                        <ul className="list-disc ms-5 mt-3 sm:mt-4 md:mt-5 flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5 text-white-50">
-                          {card.responsibilities.map(
-                            (responsibility, index) => (
-                              <li
+                        {card.type === "job" ? (
+                          <div className="mt-3 sm:mt-4 md:mt-5 flex flex-col gap-3 sm:gap-4 md:gap-5">
+                            {card.skills?.map((skill: Skill, index: number) => (
+                              <div
                                 key={index}
-                                className="text-sm sm:text-base md:text-lg"
+                                className="flex items-center gap-3"
                               >
-                                {responsibility}
-                              </li>
-                            )
+                                <div className="p-3 w-6 h-6 rounded bg-purple-200 dark:bg-purple-700 flex items-center justify-center text-xs">
+                                  ⚙️
+                                </div>
+                                <p>{skill.name}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="mt-3 sm:mt-4 md:mt-5 flex flex-col gap-3 sm:gap-4 md:gap-5">
+                            {card.skills?.map((skill: Skill, index: number) => (
+                              <div key={index} className="flex flex-col gap-2">
+                                <div className="flex items-center gap-3">
+                                  {skill.icon || skill.image ? (
+                                    <Image
+                                      width={24}
+                                      height={24}
+                                      src={
+                                        skill.icon || skill.image || "/app.svg"
+                                      }
+                                      alt={skill.name}
+                                      className="w-6 h-6 rounded object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-6 h-6 rounded bg-purple-200 dark:bg-purple-700 flex items-center justify-center text-xs">
+                                      ⚙️
+                                    </div>
+                                  )}
+                                  <span className="text-sm sm:text-base md:text-lg text-black dark:text-white  font-medium">
+                                    {skill.name}
+                                  </span>
+                                </div>
+                                {skill.description && (
+                                  <p className="text-xs sm:text-sm text-white-50 ml-9">
+                                    {skill.description}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {/* Responsibilities Section */}
+                        {card.type === "job" &&
+                          card.responsibilities &&
+                          card.responsibilities.length > 0 && (
+                            <>
+                              <p className="mt-5 text-[#839CB5] italic text-sm md:text-base">
+                                {" "}
+                                Responsibilities
+                              </p>
+                              <ul className="list-disc ms-5 mt-3 sm:mt-4 md:mt-5 flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5 text-white-50">
+                                {card.responsibilities.map(
+                                  (responsibility: string, index: number) => (
+                                    <li
+                                      key={index}
+                                      className="text-sm sm:text-base md:text-lg"
+                                    >
+                                      {responsibility}
+                                    </li>
+                                  )
+                                )}
+                              </ul>
+                            </>
                           )}
-                        </ul>
+                        {/* {card.type === "education" && (
+                          <p className="text-[#839CB5] italic text-sm md:text-base mt-4">
+                            📚 Education
+                          </p>
+                        )}
+                        {card.type === "job" && (
+                          <p className="text-[#839CB5] italic text-sm md:text-base mt-4">
+                            💼 Work Experience
+                          </p>
+                        )} */}
                       </div>
                     </div>
                   </div>

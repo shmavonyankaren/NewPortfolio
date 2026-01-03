@@ -6,7 +6,16 @@ import Image from "next/image";
 import { useRef, useCallback } from "react";
 
 type GlowCardProps = {
-  card: (typeof expCards)[0];
+  card: {
+    review: string;
+    imgPath: string;
+    logoPath: string;
+    title: string;
+    date: string;
+    responsibilities?: string[];
+    skills?: string[];
+    type: "job" | "education";
+  };
   index: number;
   children: React.ReactNode;
 };
@@ -53,7 +62,7 @@ const GlowCard = ({ card, index, children }: GlowCardProps) => {
       className="card card-border timeline-card rounded-xl p-5 md:p-8 lg:p-10 mb-4 md:mb-5 break-inside-avoid-column"
     >
       <div className="glow"></div>
-      <div className="flex items-center gap-1 mb-4 md:mb-5">
+      {/* <div className="flex items-center gap-1 mb-4 md:mb-5">
         {Array.from({ length: 5 }, (_, i) => (
           <Image
             width={20}
@@ -64,7 +73,7 @@ const GlowCard = ({ card, index, children }: GlowCardProps) => {
             className="size-4 md:size-5 brightness-110 invert sepia saturate-[3] hue-rotate-260 dark:brightness-100 dark:invert-0 dark:sepia-0 dark:saturate-100 dark:hue-rotate-0"
           />
         ))}
-      </div>
+      </div> */}
       <div className="mb-4 md:mb-5">
         <p className="text-slate-700 dark:text-white text-sm md:text-base lg:text-lg">
           {card.review}

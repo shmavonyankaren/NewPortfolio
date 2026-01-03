@@ -2,7 +2,25 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const AboutHero = () => {
+interface AboutHeroProps {
+  generalInfo?: {
+    fullName?: string;
+    shortAbout?: string;
+    fullDescription?: string;
+    userPhoto?: string;
+  } | null;
+}
+
+const AboutHero = ({ generalInfo }: AboutHeroProps) => {
+  const fullName = generalInfo?.fullName || "Karen";
+  const description =
+    generalInfo?.fullDescription ||
+    "Hi! I'm Karen, a passionate full-stack developer with a keen interest in creating beautiful and functional web applications. With over 5 years of experience in web development, I've worked with startups and established companies to bring their visions to life.";
+  const userPhoto =
+    generalInfo?.userPhoto && generalInfo.userPhoto.trim() !== ""
+      ? generalInfo.userPhoto
+      : "/assets/images/image6.png";
+
   return (
     <section className="pt-30 py-12 sm:py-16 sm:pt-33 md:py-20 md:pt-36 min-h-screen flex items-center justify-center">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -10,7 +28,7 @@ const AboutHero = () => {
         <div className="flex justify-center">
           <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-3xl overflow-hidden shadow-2xl border-2 border-purple-500/30">
             <Image
-              src="/assets/images/image6.png"
+              src={userPhoto}
               alt="Profile"
               fill
               className="object-cover"
@@ -28,17 +46,8 @@ const AboutHero = () => {
               <div className="h-1 w-full bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 rounded-full"></div>
             </div>
           </h1>
-          <p className="text-base sm:text-lg text-gray-700 dark:text-[#bec1dd] leading-relaxed">
-            Hi! I&apos;m Karen, a passionate full-stack developer with a keen
-            interest in creating beautiful and functional web applications. With
-            over 5 years of experience in web development, I&apos;ve worked with
-            startups and established companies to bring their visions to life.
-          </p>
-          <p className="text-base sm:text-lg text-gray-700 dark:text-[#bec1dd] leading-relaxed">
-            I believe in writing clean, maintainable code and creating user
-            experiences that delight. When I&apos;m not coding, you can find me
-            exploring new technologies, contributing to open-source projects, or
-            sharing my knowledge with the developer community.
+          <p className="text-base sm:text-lg text-gray-700 dark:text-[#bec1dd] leading-relaxed whitespace-pre-line">
+            {description}
           </p>
           <div className="pt-4 md:pt-6 flex gap-3 md:gap-4 flex-wrap">
             <Link

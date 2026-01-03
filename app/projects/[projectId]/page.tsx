@@ -10,16 +10,65 @@ import {
   ProjectFeatures,
   ProjectChallenges,
   ProjectCTA,
+  ProjectFullDescription,
 } from "@/components/project";
+import { useEffect, useState } from "react";
+import { ProjectItem } from "@/lib/types";
 
 function ProjectPage() {
   const params = useParams();
   const router = useRouter();
   const projectId = params.projectId as string;
+  const [project, setProject] = useState<ProjectItem | null | undefined>(null);
+  const [loading, setLoading] = useState(true);
 
-  const project = projects.find(
-    (p) => p._id === projectId || p.id === Number(projectId)
-  );
+  useEffect(() => {
+    async function fetchProject() {
+      try {
+        const res = await fetch(`/api/admin/projects`);
+        if (res.ok) {
+          const apiProjects = await res.json();
+          const foundProject = apiProjects.find(
+            (p: ProjectItem) => p._id === projectId
+          );
+          if (foundProject) {
+            setProject(foundProject);
+          } else {
+            // Fallback to static projects
+            const staticProject = projects.find(
+              (p) => p._id === projectId || p.id === Number(projectId)
+            );
+            setProject(staticProject);
+          }
+        } else {
+          // Fallback to static projects
+          const staticProject = projects.find(
+            (p) => p._id === projectId || p.id === Number(projectId)
+          );
+          setProject(staticProject);
+        }
+      } catch (error) {
+        console.error("Failed to fetch project:", error);
+        // Fallback to static projects
+        const staticProject = projects.find(
+          (p) => p._id === projectId || p.id === Number(projectId)
+        );
+        setProject(staticProject);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProject();
+  }, [projectId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)]">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   if (!project) {
     return (
@@ -37,39 +86,27 @@ function ProjectPage() {
     );
   }
 
-  // Mock detailed data - in real app, this would come from API/database
+  // Prepare project details - use API data if available, otherwise fallback
   const projectDetails = {
-    overview: project.des,
-    features: [
-      "User authentication and authorization",
-      "Real-time data updates and synchronization",
-      "Responsive design for all devices",
-      "Advanced search and filtering",
-      "Interactive UI with smooth animations",
-      "Optimized performance and SEO",
-    ],
-    challenges: [
-      {
-        title: "Performance Optimization",
-        description:
-          "Implemented lazy loading and code splitting to reduce initial bundle size by 40%",
-      },
-      {
-        title: "State Management",
-        description:
-          "Designed a scalable state management solution handling complex data flows",
-      },
-      {
-        title: "Cross-browser Compatibility",
-        description:
-          "Ensured consistent experience across all modern browsers and devices",
-      },
-    ],
-    technologies: project.iconLists,
+    overview: project.shortDescription,
+    features:
+      project.features?.map((f: ProjectItem["features"][0]) => ({
+        title: f.title,
+        description: f.description,
+      })) || [],
+    challenges:
+      project.challenges?.map((c: ProjectItem["challenges"][0]) => ({
+        title: c.challenge,
+        description: c.solution,
+      })) || [],
+    technologies:
+      project.technologies?.filter(
+        (t) => t && t.name && typeof t.name === "string" && t.name.trim() !== ""
+      ) || [],
     stats: {
-      duration: "3 months",
-      team: "Solo Project",
-      status: "Live & Maintained",
+      duration: project.duration || "N/A",
+      team: project.teamType === "solo" ? "Solo Project" : "Team Project",
+      status: project.status || "N/A",
     },
   };
 
@@ -88,6 +125,7 @@ function ProjectPage() {
         <ProjectHero project={project} overview={projectDetails.overview} />
         <ProjectStats stats={projectDetails.stats} />
         <ProjectTechnologies technologies={projectDetails.technologies} />
+        <ProjectFullDescription description={project.description} />
         <ProjectFeatures features={projectDetails.features} />
         <ProjectChallenges challenges={projectDetails.challenges} />
         <ProjectCTA project={project} />

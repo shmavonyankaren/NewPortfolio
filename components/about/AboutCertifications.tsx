@@ -1,7 +1,11 @@
 import React from "react";
 
-const AboutCertifications = () => {
-  const certificationsData = [
+interface AboutCertificationsProps {
+  certificates?: any[];
+}
+
+const AboutCertifications = ({ certificates }: AboutCertificationsProps) => {
+  const fallbackCertifications = [
     {
       title: "AWS Certified Cloud Practitioner",
       issuer: "Amazon Web Services",
@@ -27,6 +31,16 @@ const AboutCertifications = () => {
       file: "/assets/certificates/react-developer.pdf",
     },
   ];
+
+  const certificationsData =
+    certificates && certificates.length > 0
+      ? certificates.map((cert) => ({
+          title: cert.title,
+          issuer: cert.issuer,
+          date: new Date(cert.dateIssued).getFullYear().toString(),
+          file: cert.fileUrl,
+        }))
+      : fallbackCertifications;
 
   return (
     <section className="py-12 sm:py-16 md:py-20">

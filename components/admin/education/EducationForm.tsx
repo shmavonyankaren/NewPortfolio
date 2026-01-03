@@ -11,9 +11,15 @@ interface EducationFormProps {
   showSkillInput: boolean;
   tempSkill: string;
   tempSkillImage: string;
+  tempSkillDescription: string;
+  editingSkillIndex: number | null;
+  onUpdateSkill: () => void;
+  onCancelEditSkill: () => void;
+  onEditSkill: (index: number) => void;
   onFormChange: (data: Partial<Education>) => void;
   onSkillChange: (skill: string) => void;
   onSkillImageChange: (image: string) => void;
+  onSkillDescriptionChange: (description: string) => void;
   onAddSkill: () => void;
   onRemoveSkill: (index: number) => void;
   onShowSkillInput: (show: boolean) => void;
@@ -27,9 +33,15 @@ export default function EducationForm({
   showSkillInput,
   tempSkill,
   tempSkillImage,
+  tempSkillDescription,
+  editingSkillIndex,
+  onUpdateSkill,
+  onCancelEditSkill,
+  onEditSkill,
   onFormChange,
   onSkillChange,
   onSkillImageChange,
+  onSkillDescriptionChange,
   onAddSkill,
   onRemoveSkill,
   onShowSkillInput,
@@ -62,7 +74,7 @@ export default function EducationForm({
           <input
             type="text"
             placeholder="e.g., Bachelor of Science"
-            value={formData.degree}
+            value={formData.degree || ""}
             onChange={(e) => onFormChange({ degree: e.target.value })}
             className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500 dark:focus:ring-purple-500"
           />
@@ -138,10 +150,16 @@ export default function EducationForm({
       <SkillInput
         skills={formData.skills}
         tempSkill={tempSkill}
+        editingSkillIndex={editingSkillIndex}
         tempSkillImage={tempSkillImage}
+        tempSkillDescription={tempSkillDescription}
         showSkillInput={showSkillInput}
+        onUpdateSkill={onUpdateSkill}
+        onCancelEditSkill={onCancelEditSkill}
+        onEditSkill={onEditSkill}
         onSkillChange={onSkillChange}
         onSkillImageChange={onSkillImageChange}
+        onSkillDescriptionChange={onSkillDescriptionChange}
         onAddSkill={onAddSkill}
         onRemoveSkill={onRemoveSkill}
         onShowSkillInput={onShowSkillInput}

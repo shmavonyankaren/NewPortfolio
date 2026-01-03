@@ -61,7 +61,9 @@ const Footer = () => {
               key={info.id}
               className="w-10 h-10 cursor-pointer flex justify-center items-center backdrop-filter backdrop-blur-lg saturate-180 bg-gradient-to-r from-[#161a31] to-[#06091f] rounded-lg border border-black/[0.1] hover:border-white/[0.2] transition-all"
             >
-              <Image width={20} height={20} src={info.img} alt="icons" />
+              {info.img && info.img.trim() !== "" && (
+                <Image width={20} height={20} src={info.img} alt="icons" />
+              )}
             </a>
           ))}
         </div>

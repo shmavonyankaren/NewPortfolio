@@ -4,3 +4,4 @@ export { ProjectTechnologies } from "./ProjectTechnologies";
 export { ProjectFeatures } from "./ProjectFeatures";
 export { ProjectChallenges } from "./ProjectChallenges";
 export { ProjectCTA } from "./ProjectCTA";
+export { ProjectFullDescription } from "./ProjectFullDescription";

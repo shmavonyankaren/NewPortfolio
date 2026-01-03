@@ -1,7 +1,11 @@
 import React from "react";
 
-const AboutEducation = () => {
-  const educationData = [
+interface AboutEducationProps {
+  educations?: any[];
+}
+
+const AboutEducation = ({ educations }: AboutEducationProps) => {
+  const fallbackEducation = [
     {
       degree: "Bachelor of Science",
       field: "Computer Science",
@@ -19,6 +23,21 @@ const AboutEducation = () => {
         "Specialized in full-stack development, cloud technologies, and modern web frameworks.",
     },
   ];
+
+  const educationData =
+    educations && educations.length > 0
+      ? educations.map((edu) => ({
+          degree: edu.degree || "",
+          field: edu.field,
+          institution: edu.institution,
+          duration: `${new Date(edu.startDate).getFullYear()} - ${
+            edu.isCurrentlyStudying
+              ? "Present"
+              : new Date(edu.endDate).getFullYear()
+          }`,
+          description: edu.description,
+        }))
+      : fallbackEducation;
 
   return (
     <section className="py-12 sm:py-16 md:py-20">
