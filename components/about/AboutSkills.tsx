@@ -1,7 +1,10 @@
 import React from "react";
 
 interface AboutSkillsProps {
-  skillsets?: any[];
+  skillsets?: {
+    title: string;
+    skills?: { name: string }[];
+  }[];
 }
 
 const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
@@ -85,7 +88,7 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
       ? skillsets.map((skillset) => ({
           title: skillset.title,
           emoji: "🎯",
-          skills: skillset.skills?.map((s: any) => s.name) || [],
+          skills: skillset.skills?.map((s: { name: string }) => s.name) || [],
         }))
       : fallbackSkills;
 

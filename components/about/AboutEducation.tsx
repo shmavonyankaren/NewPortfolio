@@ -1,7 +1,15 @@
 import React from "react";
 
 interface AboutEducationProps {
-  educations?: any[];
+  educations?: {
+    degree: string;
+    field: string;
+    institution: string;
+    startDate: string;
+    endDate: string;
+    isCurrentlyStudying: boolean;
+    description: string;
+  }[];
 }
 
 const AboutEducation = ({ educations }: AboutEducationProps) => {

@@ -12,7 +12,6 @@ interface AboutHeroProps {
 }
 
 const AboutHero = ({ generalInfo }: AboutHeroProps) => {
-  const fullName = generalInfo?.fullName || "Karen";
   const description =
     generalInfo?.fullDescription ||
     "Hi! I'm Karen, a passionate full-stack developer with a keen interest in creating beautiful and functional web applications. With over 5 years of experience in web development, I've worked with startups and established companies to bring their visions to life.";

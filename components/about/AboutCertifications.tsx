@@ -1,7 +1,12 @@
 import React from "react";
 
 interface AboutCertificationsProps {
-  certificates?: any[];
+  certificates?: {
+    title: string;
+    issuer: string;
+    dateIssued: string;
+    fileUrl: string;
+  }[];
 }
 
 const AboutCertifications = ({ certificates }: AboutCertificationsProps) => {
