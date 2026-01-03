@@ -91,7 +91,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
                 {exp.description}
               </p>
               <div className="flex flex-wrap gap-2">
-                {exp.skills.map((skill, skillIdx) => (
+                {exp.skills.map((skill: string, skillIdx: number) => (
                   <span
                     key={skillIdx}
                     className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm"
