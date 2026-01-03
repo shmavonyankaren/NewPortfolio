@@ -1,7 +1,15 @@
 import React from "react";
 
 interface AboutExperienceProps {
-  jobs?: any[];
+  jobs?: {
+    position: string;
+    company: string;
+    startDate: string;
+    endDate: string;
+    isCurrentlyWorking: boolean;
+    description: string;
+    skills?: { name: string }[];
+  }[];
 }
 
 const AboutExperience = ({ jobs }: AboutExperienceProps) => {
@@ -55,7 +63,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
                 })
           }`,
           description: job.description,
-          skills: job.skills?.map((s: any) => s.name) || [],
+          skills: job.skills?.map((s: { name: string }) => s.name) || [],
         }))
       : fallbackExperience;
 
