@@ -59,7 +59,7 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
                 height={300}
                 src={item.image}
                 alt={item.title}
-                className="z-10 absolute bottom-0 w-auto"
+                className="z-10 absolute bottom-0 w-auto rotate-5"
                 sizes="(min-width: 1024px) 40vw, 80vw"
                 loading="lazy"
               />
@@ -102,8 +102,21 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
                 const name = typeof tech === "string" ? "" : tech.name;
                 const hasValidIcon =
                   icon &&
+                  typeof icon === "string" &&
                   icon.trim() !== "" &&
                   (icon.startsWith("/") || icon.startsWith("http"));
+
+                // Debug logging
+                console.log(
+                  "Tech item:",
+                  tech,
+                  "Icon:",
+                  icon,
+                  "Name:",
+                  name,
+                  "HasValidIcon:",
+                  hasValidIcon
+                );
 
                 return (
                   <div
@@ -117,7 +130,7 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
                       <Image
                         width={40}
                         height={40}
-                        src={icon}
+                        src={icon as string}
                         alt={name || `tech-${index}`}
                         className="p-2"
                         sizes="32px"
