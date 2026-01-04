@@ -1,19 +1,19 @@
 "use client";
 
-import React from "react";
+// import React from "react";
 
-function getFilenameFromUrl(url: string, fallback: string) {
-  try {
-    const pathname = new URL(
-      url,
-      typeof window !== "undefined" ? window.location.href : "http://localhost"
-    ).pathname;
-    const last = pathname.split("/").filter(Boolean).pop();
-    return last || fallback;
-  } catch {
-    return fallback;
-  }
-}
+// function getFilenameFromUrl(url: string, fallback: string) {
+//   try {
+//     const pathname = new URL(
+//       url,
+//       typeof window !== "undefined" ? window.location.href : "http://localhost"
+//     ).pathname;
+//     const last = pathname.split("/").filter(Boolean).pop();
+//     return last || fallback;
+//   } catch {
+//     return fallback;
+//   }
+// }
 
 interface AboutCertificationsProps {
   certificates?: {
