@@ -1,7 +1,6 @@
 "use client";
 
 import { GoArrowUpRight } from "react-icons/go";
-import { projects as fallbackProjects } from "@/data";
 import { FaGithub } from "react-icons/fa";
 
 import { CardContainer, CardBody, CardItem } from "./ui/3d-card";
@@ -186,8 +185,7 @@ const RecentProjectsContent: React.FC<{ projectsData: ProjectItem[] }> = ({
 };
 
 const RecentProjects = ({ projects }: RecentProjectsProps) => {
-  const projectsData =
-    projects && projects.length > 0 ? projects : fallbackProjects;
+  const projectsData = projects && projects.length > 0 ? projects : [];
 
   return (
     <div className="py-20">

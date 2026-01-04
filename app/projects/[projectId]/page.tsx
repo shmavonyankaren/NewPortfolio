@@ -1,7 +1,6 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { projects } from "@/data";
 import { FaArrowLeft } from "react-icons/fa";
 import {
   ProjectHero,
@@ -31,29 +30,13 @@ function ProjectPage() {
           const foundProject = apiProjects.find(
             (p: ProjectItem) => p._id === projectId
           );
-          if (foundProject) {
-            setProject(foundProject);
-          } else {
-            // Fallback to static projects
-            const staticProject = projects.find(
-              (p) => p._id === projectId || p.id === Number(projectId)
-            );
-            setProject(staticProject);
-          }
+          setProject(foundProject);
         } else {
-          // Fallback to static projects
-          const staticProject = projects.find(
-            (p) => p._id === projectId || p.id === Number(projectId)
-          );
-          setProject(staticProject);
+          setProject(null);
         }
       } catch (error) {
         console.error("Failed to fetch project:", error);
-        // Fallback to static projects
-        const staticProject = projects.find(
-          (p) => p._id === projectId || p.id === Number(projectId)
-        );
-        setProject(staticProject);
+        setProject(null);
       } finally {
         setLoading(false);
       }
