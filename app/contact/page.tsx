@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import { ContactHeader } from "@/components/contact/ContactHeader";
 import { QuickActions } from "@/components/contact/QuickActions";
