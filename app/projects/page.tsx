@@ -11,7 +11,7 @@ async function fetchProjects() {
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
       }/api/admin/projects`,
       {
-        cache: "no-store",
+        next: { revalidate: 60 },
       }
     );
     if (!res.ok) return [];

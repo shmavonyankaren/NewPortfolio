@@ -16,7 +16,7 @@ async function fetchGeneralInfo() {
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
       }/api/admin/general-info`,
       {
-        cache: "no-store",
+        next: { revalidate: 60 },
       }
     );
     if (!res.ok) return null;
@@ -34,7 +34,7 @@ async function fetchEducations() {
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
       }/api/admin/educations`,
       {
-        cache: "no-store",
+        next: { revalidate: 60 },
       }
     );
     if (!res.ok) return [];
@@ -52,7 +52,7 @@ async function fetchJobs() {
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
       }/api/admin/jobs`,
       {
-        cache: "no-store",
+        next: { revalidate: 60 },
       }
     );
     if (!res.ok) return [];
@@ -70,7 +70,7 @@ async function fetchSkillsets() {
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
       }/api/admin/skillsets`,
       {
-        cache: "no-store",
+        next: { revalidate: 60 },
       }
     );
     if (!res.ok) return [];
@@ -88,7 +88,7 @@ async function fetchCertificates() {
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
       }/api/admin/certificates`,
       {
-        cache: "no-store",
+        next: { revalidate: 60 },
       }
     );
     if (!res.ok) return [];
