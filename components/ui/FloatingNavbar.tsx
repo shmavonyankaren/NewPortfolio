@@ -1,5 +1,5 @@
 "use client";
-import { JSX, useState, useEffect, useRef } from "react";
+import { JSX, useState, useEffect, useRef, useCallback } from "react";
 import {
   motion,
   AnimatePresence,
@@ -28,22 +28,22 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
   const prevDirectionRef = useRef(0);
   const navRefs = useRef<{ [key: string]: HTMLElement | null }>({});
 
+  const computeActiveIndex = useCallback(() => {
+    return navItems.findIndex((item) =>
+      item.link === "/" ? pathName === "/" : pathName.startsWith(item.link)
+    );
+  }, [navItems, pathName]);
+
   // set true for the initial state so that nav bar is visible in the hero section
   const [visible, setVisible] = useState(true);
   const [isScrollable, setIsScrollable] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [activeIndex, setActiveIndex] = useState<number>(() => computeActiveIndex());
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
   // Update active index when path changes
   useEffect(() => {
-    function updateActiveIndex() {
-      const index = navItems.findIndex((item) =>
-        item.link === "/" ? pathName === "/" : pathName.startsWith(item.link)
-      );
-      setActiveIndex(index);
-    }
-    updateActiveIndex();
-  }, [pathName, navItems]);
+    setActiveIndex(computeActiveIndex());
+  }, [computeActiveIndex]);
 
   // Update indicator position when active index changes
   useEffect(() => {
