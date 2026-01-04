@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 import RecentProjects from "@/components/RecentProjects";
 import React from "react";
