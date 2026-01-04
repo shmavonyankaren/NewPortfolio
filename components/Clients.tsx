@@ -7,7 +7,13 @@ import { InfiniteMovingCards } from "./ui/InfiniteCards";
 import Image from "next/image";
 
 interface ClientsProps {
-  insights?: any[];
+  insights?: {
+    comment?: string;
+    insight?: string;
+    name: string;
+    position: string;
+    image?: string;
+  }[];
 }
 
 const Clients = ({ insights }: ClientsProps) => {
@@ -15,7 +21,7 @@ const Clients = ({ insights }: ClientsProps) => {
   const insightsData =
     insights && insights.length > 0
       ? insights.map((insight) => ({
-          quote: insight.comment || insight.insight,
+          quote: insight.comment?.trim() || insight.insight?.trim() || "",
           name: insight.name,
           title: insight.position,
           img: insight.image || "",
@@ -25,10 +31,10 @@ const Clients = ({ insights }: ClientsProps) => {
   return (
     <section id="testimonials" className="py-20">
       <h1 className="heading">
-        Insights from
+        🌟 Insights from
         <span className="text-purple-500 dark:text-purple-300">
           {" "}
-          famous people
+          Famous People
         </span>
       </h1>
 

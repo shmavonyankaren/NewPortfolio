@@ -62,18 +62,18 @@ const AboutCertifications = ({ certificates }: AboutCertificationsProps) => {
         }))
       : fallbackCertifications;
 
-  const handleDownload = async (fileUrl: string, filename: string) => {
-    const safeName = filename
-      ? `${filename.replace(/\s+/g, "_")}.pdf`
-      : "certificate.pdf";
+  const handleDownload = async (fileUrl: string, certTitle: string) => {
     try {
+      const safeTitle = certTitle.replace(/[^\w.-]+/g, "_") || "certificate";
+      const desiredFilename = `${safeTitle}.pdf`;
       const res = await fetch(fileUrl);
       if (!res.ok) throw new Error("Failed to fetch certificate");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = getFilenameFromUrl(fileUrl, safeName);
+      // Always prefer the title-based filename to avoid random storage keys
+      link.download = desiredFilename;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -116,7 +116,7 @@ const AboutCertifications = ({ certificates }: AboutCertificationsProps) => {
                 <button
                   type="button"
                   onClick={() => handleDownload(cert.file, cert.title)}
-                  className="px-3 md:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 transition-colors"
+                  className="cursor-pointer px-3 md:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 transition-colors"
                 >
                   Download certificate
                 </button>

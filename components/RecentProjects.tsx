@@ -190,9 +190,9 @@ const RecentProjects = ({ projects }: RecentProjectsProps) => {
   return (
     <div className="py-20">
       <h1 className="heading">
-        A small selection of{" "}
+        🚀 Small Selection of{" "}
         <span className="text-purple-500 dark:text-purple-300">
-          recent projects
+          Recent Projects
         </span>
       </h1>
       <RecentProjectsContent projectsData={projectsData} />

@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { expCards } from "../data";
 import GlowCard from "./GlowCard";
 import Image from "next/image";
+import { FaRegBuilding, FaUniversity } from "react-icons/fa";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -64,7 +65,7 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
       ? jobs.map((job) => ({
           review: job.description || "",
           imgPath: "/exp1.svg",
-          logoPath: job.logo || "/app.svg",
+          logoPath: job.logo || "",
           title: job.position,
           date: `${new Date(job.startDate).toLocaleDateString("en-US", {
             month: "long",
@@ -89,7 +90,7 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
       ? education.map((edu) => ({
           review: edu.description || "",
           imgPath: "/exp1.svg",
-          logoPath: edu.logo || "/app.svg",
+          logoPath: edu.logo || "",
           title: edu.field,
           date: `${new Date(edu.startDate).toLocaleDateString("en-US", {
             month: "long",
@@ -278,13 +279,23 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
                   <div className="flex items-start">
                     <div className="expText flex flex-row sm:flex-row gap-4 sm:gap-6 md:gap-10 lg:gap-12 xl:gap-20 ml-2 sm:ml-4 md:ml-8 lg:ml-12 xl:ml-16">
                       <div className="timeline-logo shrink-0">
-                        <Image
-                          id="logo-element"
-                          width={50}
-                          height={50}
-                          src={card.logoPath ? card.logoPath : "/app.svg"}
-                          alt="logo"
-                        />
+                        {card.logoPath && card.logoPath.trim() !== "" ? (
+                          <Image
+                            id="logo-element"
+                            width={50}
+                            height={50}
+                            src={card.logoPath}
+                            alt="logo"
+                          />
+                        ) : card.type === "job" ? (
+                          <div className="flex items-center justify-center">
+                            <FaRegBuilding className="w-6 h-6 text-purple-200" />
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center">
+                            <FaUniversity className="w-6 h-6  text-purple-200" />
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex-1  min-w-0">

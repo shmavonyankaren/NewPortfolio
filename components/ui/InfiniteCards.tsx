@@ -80,7 +80,7 @@ export const InfiniteMovingCards = ({
         ref={scrollerRef}
         className={cn(
           // change gap-16
-          " flex min-w-full shrink-0 gap-16 py-4 w-max flex-nowrap",
+          " flex min-w-full shrink-0 gap-8 py-4 w-max flex-nowrap",
           start && "animate-scroll ",
           pauseOnHover && "hover:paused",
           isPaused && "paused"
@@ -92,14 +92,13 @@ export const InfiniteMovingCards = ({
       >
         {items.map((item, idx) => (
           <li
-            //   change md:w-[450px] to md:w-[60vw] , px-8 py-6 to p-16, border-slate-700 to border-slate-800
-            className="w-[90vw] max-w-full relative rounded-2xl border border-b-0
-             shrink-0 border-slate-300 dark:border-slate-800 p-5 md:p-16 md:w-[60vw] bg-[linear-gradient(135deg,rgba(88,28,135,1)_0%,rgba(109,40,217,1)_50%,rgba(126,34,206,1)_100%)] dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)]"
+            className="w-[90vw] max-w-full relative rounded-2xl border
+             shrink-0 border-slate-200 dark:border-slate-700 p-4 sm:p-6 md:p-8 md:w-[60vw] shadow-lg hover:shadow-xl transition-shadow duration-300
+             bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800"
             style={{
               willChange: "auto",
               backfaceVisibility: "hidden",
             }}
-            // change to idx cuz we have the same name
             key={idx}
           >
             <blockquote>
@@ -107,13 +106,12 @@ export const InfiniteMovingCards = ({
                 aria-hidden="true"
                 className="user-select-none -z-1 pointer-events-none absolute -left-0.5 -top-0.5 h-[calc(100%+4px)] w-[calc(100%+4px)]"
               ></div>
-              {/* change text color, text-lg */}
-              <span className=" relative z-20 text-sm md:text-lg leading-[1.6] text-white dark:text-white font-normal">
-                {item.quote}
+              <span className="relative z-20 text-sm sm:text-base md:text-lg leading-[1.6] text-slate-700 dark:text-slate-100 font-normal italic">
+                &quot;{item.quote}&quot;
               </span>
-              <div className="relative z-20 mt-6 flex flex-row items-center">
-                {/* add this div for the profile img */}
-                <div className="me-3">
+              <div className="relative z-20 mt-10 flex flex-row items-center gap-3">
+                {/* Profile image with better styling */}
+                <div className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-linear-to-br from-purple-200 to-blue-200 dark:from-purple-900 dark:to-blue-900">
                   <Image
                     src={
                       item.img && item.img.trim() !== ""
@@ -121,17 +119,18 @@ export const InfiniteMovingCards = ({
                         : "/profile.svg"
                     }
                     alt={item.name}
-                    width={32}
-                    height={32}
+                    width={56}
+                    height={56}
+                    className="w-full h-full object-cover"
                   />
                 </div>
-                <span className="flex flex-col gap-1">
-                  {/* change text color, font-normal to font-bold, text-xl */}
-                  <span className="text-xl font-bold leading-[1.6] text-white dark:text-white">
+                <span className="flex flex-col gap-0.5">
+                  {/* Name styling */}
+                  <span className="text-base sm:text-lg font-bold leading-[1.4] text-slate-900 dark:text-white">
                     {item.name}
                   </span>
-                  {/* change text color */}
-                  <span className=" text-sm leading-[1.6] text-white/80 dark:text-white-200 font-normal">
+                  {/* Title styling */}
+                  <span className="text-xs sm:text-sm leading-[1.4] text-slate-600 dark:text-slate-300 font-medium">
                     {item.title}
                   </span>
                 </span>
