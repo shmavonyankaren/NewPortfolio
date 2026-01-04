@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import RecentProjects from "@/components/RecentProjects";
 import React from "react";
 import { FaCode, FaRocket, FaLayerGroup } from "react-icons/fa";
