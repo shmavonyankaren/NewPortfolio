@@ -12,6 +12,7 @@ import SkillsAndExpertiseManager from "@/components/admin/SkillsAndExpertiseMana
 import CertificateSectionManager from "@/components/admin/CertificateSectionManager";
 import GeneralInformationManager from "@/components/admin/GeneralInformationManager";
 import CommentsSectionManager from "@/components/admin/CommentsSectionManager";
+import BlogPostManager from "@/components/admin/BlogPostManager";
 
 export default function AdminDashboard() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -25,6 +26,7 @@ export default function AdminDashboard() {
     | "certificates"
     | "general-information"
     | "comments"
+    | "posts"
   >("projects");
 
   const handleLogout = async () => {
@@ -42,6 +44,7 @@ export default function AdminDashboard() {
     { id: "certificates", label: "Certificates" },
     { id: "general-information", label: "General Information" },
     { id: "comments", label: "Comments Section" },
+    { id: "posts", label: "Blog Posts" },
   ] as const;
 
   return (
@@ -95,6 +98,7 @@ export default function AdminDashboard() {
           {activeTab === "certificates" && <CertificateSectionManager />}
           {activeTab === "general-information" && <GeneralInformationManager />}
           {activeTab === "comments" && <CommentsSectionManager />}
+          {activeTab === "posts" && <BlogPostManager />}
         </div>
       </div>
     </div>

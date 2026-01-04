@@ -13,6 +13,7 @@ export const navItems: NavItem[] = [
   { name: "Projects", link: "/projects" },
   { name: "About", link: "/about" },
   { name: "Contact", link: "/contact" },
+  { name: "Blog", link: "/posts" },
 ];
 
 export const gridItems: GridItem[] = [
