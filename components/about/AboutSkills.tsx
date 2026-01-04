@@ -85,11 +85,15 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
 
   const skillsData =
     skillsets && skillsets.length > 0
-      ? skillsets.map((skillset) => ({
-          title: skillset.title,
-          emoji: "🎯",
-          skills: skillset.skills?.map((s: { name: string }) => s.name) || [],
-        }))
+      ? skillsets
+          .map((skillset) => ({
+            title: skillset.title,
+            emoji:
+              fallbackSkills.find((s) => s.title === skillset.title)?.emoji ||
+              "💡",
+            skills: skillset.skills?.map((s: { name: string }) => s.name) || [],
+          }))
+          .reverse()
       : fallbackSkills;
 
   return (

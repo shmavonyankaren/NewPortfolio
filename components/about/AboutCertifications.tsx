@@ -1,4 +1,19 @@
+"use client";
+
 import React from "react";
+
+function getFilenameFromUrl(url: string, fallback: string) {
+  try {
+    const pathname = new URL(
+      url,
+      typeof window !== "undefined" ? window.location.href : "http://localhost"
+    ).pathname;
+    const last = pathname.split("/").filter(Boolean).pop();
+    return last || fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 interface AboutCertificationsProps {
   certificates?: {
@@ -47,6 +62,28 @@ const AboutCertifications = ({ certificates }: AboutCertificationsProps) => {
         }))
       : fallbackCertifications;
 
+  const handleDownload = async (fileUrl: string, filename: string) => {
+    const safeName = filename
+      ? `${filename.replace(/\s+/g, "_")}.pdf`
+      : "certificate.pdf";
+    try {
+      const res = await fetch(fileUrl);
+      if (!res.ok) throw new Error("Failed to fetch certificate");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = getFilenameFromUrl(fileUrl, safeName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Certificate download failed, opening in new tab", err);
+      window.open(fileUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
     <section className="py-12 sm:py-16 md:py-20">
       <div className="space-y-8 md:space-y-12">
@@ -76,13 +113,13 @@ const AboutCertifications = ({ certificates }: AboutCertificationsProps) => {
                 </span>
               </div>
               <div className="mt-4 flex gap-2 md:gap-3 flex-wrap">
-                <a
-                  href={cert.file}
-                  download
+                <button
+                  type="button"
+                  onClick={() => handleDownload(cert.file, cert.title)}
                   className="px-3 md:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 transition-colors"
                 >
                   Download certificate
-                </a>
+                </button>
                 <a
                   href={cert.file}
                   target="_blank"

@@ -1,6 +1,21 @@
-import React from "react";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+
+function getFilenameFromUrl(url: string, fallback: string) {
+  try {
+    const pathname = new URL(
+      url,
+      typeof window !== "undefined" ? window.location.href : "http://localhost"
+    ).pathname;
+    const last = pathname.split("/").filter(Boolean).pop();
+    if (last && last.includes(".")) return last;
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 interface AboutHeroProps {
   generalInfo?: {
@@ -9,9 +24,10 @@ interface AboutHeroProps {
     fullDescription?: string;
     userPhoto?: string;
   } | null;
+  cvUrl: string;
 }
 
-const AboutHero = ({ generalInfo }: AboutHeroProps) => {
+const AboutHero = ({ generalInfo, cvUrl }: AboutHeroProps) => {
   const description =
     generalInfo?.fullDescription ||
     "Hi! I'm Karen, a passionate full-stack developer with a keen interest in creating beautiful and functional web applications. With over 5 years of experience in web development, I've worked with startups and established companies to bring their visions to life.";
@@ -19,6 +35,28 @@ const AboutHero = ({ generalInfo }: AboutHeroProps) => {
     generalInfo?.userPhoto && generalInfo.userPhoto.trim() !== ""
       ? generalInfo.userPhoto
       : "/assets/images/image6.png";
+
+  const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const downloadUrl = cvUrl;
+    const filename = getFilenameFromUrl(downloadUrl, "Karen_Shmavonyan_CV.pdf");
+    try {
+      const res = await fetch(downloadUrl);
+      if (!res.ok) throw new Error("Failed to fetch CV");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download failed, opening in new tab", err);
+      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+    }
+  };
 
   return (
     <section className="pt-30 py-12 sm:py-16 sm:pt-33 md:py-20 md:pt-36 min-h-screen flex items-center justify-center">
@@ -49,13 +87,13 @@ const AboutHero = ({ generalInfo }: AboutHeroProps) => {
             {description}
           </p>
           <div className="pt-4 md:pt-6 flex gap-3 md:gap-4 flex-wrap">
-            <Link
-              href="/assets/CV.pdf"
-              download="Karen-Resume.pdf"
+            <a
+              href={cvUrl || "/assets/resume/Karen_Shmavonyan_Resume.pdf"}
+              onClick={handleDownload}
               className="px-6 sm:px-8 py-2 sm:py-3 bg-purple-600 dark:bg-purple-500 hover:bg-purple-700 dark:hover:bg-purple-600 text-white rounded-lg font-semibold transition-colors inline-block text-sm sm:text-base"
             >
               Download Resume
-            </Link>
+            </a>
             <Link
               href="/contact"
               className="px-6 sm:px-8 py-2 sm:py-3 border-2 border-purple-600 dark:border-purple-500 text-purple-600 dark:text-purple-300 hover:bg-purple-600/10 rounded-lg font-semibold transition-colors inline-block text-sm sm:text-base"

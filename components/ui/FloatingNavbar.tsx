@@ -37,7 +37,9 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
   // set true for the initial state so that nav bar is visible in the hero section
   const [visible, setVisible] = useState(true);
   const [isScrollable, setIsScrollable] = useState(false);
-  const [activeIndex, setActiveIndex] = useState<number>(() => computeActiveIndex());
+  const [activeIndex, setActiveIndex] = useState<number>(() =>
+    computeActiveIndex()
+  );
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
   // Update active index when path changes

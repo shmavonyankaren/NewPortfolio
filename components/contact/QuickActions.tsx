@@ -1,6 +1,21 @@
+"use client";
+
 import React from "react";
-import Link from "next/link";
 import { Download, Mail, Phone, Send } from "lucide-react";
+
+function getFilenameFromUrl(url: string, fallback: string) {
+  try {
+    const pathname = new URL(
+      url,
+      typeof window !== "undefined" ? window.location.href : "http://localhost"
+    ).pathname;
+    const last = pathname.split("/").filter(Boolean).pop();
+    if (last && last.includes(".")) return last;
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 type QuickActionsProps = {
   email: string;
@@ -9,6 +24,28 @@ type QuickActionsProps = {
 };
 
 export function QuickActions({ email, phone, cvLink }: QuickActionsProps) {
+  const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const downloadUrl = cvLink;
+    const filename = getFilenameFromUrl(downloadUrl, "Karen_Shmavonyan_CV.pdf");
+    try {
+      const res = await fetch(downloadUrl);
+      if (!res.ok) throw new Error("Failed to fetch CV");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download failed, opening in new tab", err);
+      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
     <div className="lg:col-span-1 space-y-4">
       <div className="rounded-2xl border border-slate-200/70 bg-white/90 dark:border-white/10 dark:bg-white/5 p-5 sm:p-6 shadow-md">
@@ -18,9 +55,9 @@ export function QuickActions({ email, phone, cvLink }: QuickActionsProps) {
         </p>
 
         <div className="space-y-3">
-          <Link
-            href={cvLink}
-            download
+          <a
+            href={cvLink || "/assets/resume/Karen_Shmavonyan_Resume.pdf"}
+            onClick={handleDownload}
             className="flex items-center justify-between rounded-xl border border-purple-200 bg-purple-50 text-purple-800 dark:border-purple-500/40 dark:bg-purple-500/10 dark:text-purple-100 px-4 py-3 hover:bg-purple-100 hover:border-purple-300 dark:hover:bg-purple-500/20 transition-all"
           >
             <div>
@@ -30,7 +67,7 @@ export function QuickActions({ email, phone, cvLink }: QuickActionsProps) {
               </p>
             </div>
             <Download className="h-5 w-5" aria-hidden />
-          </Link>
+          </a>
 
           <a
             href={`mailto:${email}`}

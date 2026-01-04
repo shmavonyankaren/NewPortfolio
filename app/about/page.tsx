@@ -135,6 +135,25 @@ async function fetchComments() {
   }
 }
 
+async function fetchContactInfo() {
+  try {
+    const res = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+      }/api/admin/contacts`,
+      {
+        next: { revalidate: 60 },
+      }
+    );
+    if (!res.ok) return null;
+    const contacts = await res.json();
+    return contacts[0] || null;
+  } catch (error) {
+    console.error("Failed to fetch contact info:", error);
+    return null;
+  }
+}
+
 async function AboutMePage() {
   const [
     generalInfo,
@@ -144,6 +163,7 @@ async function AboutMePage() {
     certificates,
     projects,
     comments,
+    contactInfo,
   ] = await Promise.all([
     fetchGeneralInfo(),
     fetchEducations(),
@@ -152,19 +172,22 @@ async function AboutMePage() {
     fetchCertificates(),
     fetchProjects(),
     fetchComments(),
+    fetchContactInfo(),
   ]);
+
+  const cvUrl = contactInfo?.cvUrl;
 
   return (
     <main className="relative bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)] dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)] text-gray-900 dark:text-white flex justify-center items-center flex-col overflow-hidden mx-auto sm:px-10 lg:px-10 px-5">
       <div className="max-w-7xl w-full">
-        <AboutHero generalInfo={generalInfo} />
+        <AboutHero generalInfo={generalInfo} cvUrl={cvUrl} />
         <AboutEducation educations={educations} />
         <AboutExperience jobs={jobs} />
         <AboutSkills skillsets={skillsets} />
         <AboutCertifications certificates={certificates} />
         <AboutProjects projects={projects} />
         <AboutTestimonials comments={comments} />
-        <AboutCTA />
+        <AboutCTA cvUrl={cvUrl} />
       </div>
     </main>
   );
