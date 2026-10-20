@@ -30,8 +30,14 @@ const Clients = ({ insights }: ClientsProps) => {
 
   return (
     <section id="testimonials" className="py-20">
-      <h1 className="heading">
-        🌟 Insights from
+      <h1 className="heading flex  flex-col lg:flex-row justify-center items-center gap-4">
+        <Image
+          src="/assets/images/NotesIcon.png"
+          width={60}
+          height={60}
+          alt="Insights"
+        />
+        Insights from
         <span className="text-purple-500 dark:text-purple-300">
           {" "}
           Famous People

@@ -1,5 +1,7 @@
 "use client";
 
+import AdminForm, { AdminSaveButton } from "../common/AdminForm";
+
 import CVUploader from "../CVUploader";
 
 interface Contact {
@@ -30,7 +32,7 @@ export default function ContactForm({
   onCancel,
 }: ContactFormProps) {
   return (
-    <form
+    <AdminForm
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >
@@ -148,12 +150,12 @@ export default function ContactForm({
       </div>
 
       <div className="flex gap-2">
-        <button
+        <AdminSaveButton
           type="submit"
           className=" cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
           {editingId ? "Update" : "Create"} Contact
-        </button>
+        </AdminSaveButton>
         <button
           type="button"
           onClick={onCancel}
@@ -162,6 +164,6 @@ export default function ContactForm({
           Cancel
         </button>
       </div>
-    </form>
+    </AdminForm>
   );
 }

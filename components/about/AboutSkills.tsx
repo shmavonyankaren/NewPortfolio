@@ -1,8 +1,11 @@
-import React from "react";
+import ContentLogo from "@/components/ContentLogo";
+import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
+import Image from "next/image";
 
 interface AboutSkillsProps {
   skillsets?: {
     title: string;
+    image?: string;
     skills?: { name: string }[];
   }[];
 }
@@ -11,7 +14,7 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
   const fallbackSkills = [
     {
       title: "Frontend Development",
-      emoji: "🎨",
+      image: DEFAULT_CONTENT_IMAGE,
       skills: [
         "React & React Native",
         "TypeScript",
@@ -23,7 +26,7 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
     },
     {
       title: "Backend Development",
-      emoji: "⚙️",
+      image: DEFAULT_CONTENT_IMAGE,
       skills: [
         "Node.js & Express",
         "Python & Django",
@@ -35,7 +38,7 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
     },
     {
       title: "Tools & DevOps",
-      emoji: "🛠️",
+      image: DEFAULT_CONTENT_IMAGE,
       skills: [
         "Git & GitHub",
         "Docker",
@@ -47,7 +50,7 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
     },
     {
       title: "Design & UX",
-      emoji: "🎭",
+      image: DEFAULT_CONTENT_IMAGE,
       skills: [
         "Figma",
         "UI/UX Principles",
@@ -59,7 +62,7 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
     },
     {
       title: "Soft Skills",
-      emoji: "💬",
+      image: DEFAULT_CONTENT_IMAGE,
       skills: [
         "Team Leadership",
         "Communication",
@@ -71,7 +74,7 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
     },
     {
       title: "Other Technologies",
-      emoji: "📚",
+      image: DEFAULT_CONTENT_IMAGE,
       skills: [
         "Three.js & WebGL",
         "Electron",
@@ -85,23 +88,25 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
 
   const skillsData =
     skillsets && skillsets.length > 0
-      ? skillsets
-          .map((skillset) => ({
-            title: skillset.title,
-            emoji:
-              fallbackSkills.find((s) => s.title === skillset.title)?.emoji ||
-              "💡",
-            skills: skillset.skills?.map((s: { name: string }) => s.name) || [],
-          }))
-          .reverse()
+      ? skillsets.map((skillset) => ({
+          title: skillset.title,
+          image: skillset.image || DEFAULT_CONTENT_IMAGE,
+          skills: skillset.skills?.map((s: { name: string }) => s.name) || [],
+        }))
       : fallbackSkills;
 
   return (
     <section className="py-12 sm:py-16 md:py-20">
       <div className="space-y-8 md:space-y-12">
-        <h2 className="heading text-2xl sm:text-3xl md:text-4xl">
-          <span className="text-purple-500 dark:text-purple-300">
-            🧩 Skills & Expertise
+        <h2 className="heading text-2xl! sm:text-3xl! md:text-4xl!">
+          <span className="flex justify-center items-center text-center gap-3  text-purple-500 dark:text-purple-300">
+            <Image
+              src="/assets/images/SkillsIcon.png"
+              width={60}
+              height={60}
+              alt="Skills"
+            />
+            Skills & Expertise
           </span>
         </h2>
 
@@ -111,10 +116,12 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
               key={idx}
               className="bg-white dark:bg-[#1a1f3a] p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-gray-200 dark:border-purple-500/20"
             >
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
-                <span className="text-xl sm:text-2xl">
-                  {skillCategory.emoji}
-                </span>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white md:mb-3 flex items-center gap-2 md:gap-3 min-h-16 ">
+                <ContentLogo
+                  src={skillCategory.image}
+                  alt={skillCategory.title + " image"}
+                />
+
                 <span>{skillCategory.title}</span>
               </h3>
               <ul className="space-y-2 md:space-y-3">

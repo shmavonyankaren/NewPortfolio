@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminSaveButton } from "../common/AdminForm";
+
 import { Trash2 } from "lucide-react";
 
 interface Feature {
@@ -86,13 +88,13 @@ export default function FeatureInput({
               />
             </div>
             <div className="flex gap-2 pt-2">
-              <button
+              <AdminSaveButton disabled={!tempFeature.title.trim() || !tempFeature.description.trim()}
                 type="button"
                 onClick={onAddFeature}
                 className=" cursor-pointer flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
               >
                 Save
-              </button>
+              </AdminSaveButton>
               <button
                 type="button"
                 onClick={() => {

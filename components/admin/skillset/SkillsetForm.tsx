@@ -1,9 +1,16 @@
 "use client";
 
+import AdminForm, { AdminSaveButton } from "../common/AdminForm";
+
+import { useState } from "react";
+import FileUploader from "../FileUploader";
+import NestedItemsEditor from "../common/NestedItemsEditor";
+import OrderField from "../common/OrderField";
+
 import { Skillset } from "../types/skillset";
-import SkillItemInput from "./SkillItemInput";
 
 interface SkillsetFormProps {
+  itemCount: number;
   formData: Skillset;
   editingId: string | null;
   showSkillInput: boolean;
@@ -18,23 +25,22 @@ interface SkillsetFormProps {
 }
 
 export default function SkillsetForm({
+  itemCount,
   formData,
   editingId,
   showSkillInput,
-  tempSkillName,
   onFormChange,
-  onSkillNameChange,
-  onAddSkill,
-  onRemoveSkill,
   onShowSkillInput,
   onSubmit,
   onCancel,
 }: SkillsetFormProps) {
+  const [uploading, setUploading] = useState(false);
   return (
-    <form
+    <AdminForm complete={!!formData.image?.trim()} pendingEdits={showSkillInput}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >
+      <OrderField value={formData.order} maximum={itemCount + (editingId ? 0 : 1)} onChange={order => onFormChange({ order })} />
       <div className="space-y-1">
         <label className="block text-sm font-medium text-slate-900 dark:text-white">
           Skillset Title *
@@ -49,23 +55,30 @@ export default function SkillsetForm({
         />
       </div>
 
-      <SkillItemInput
-        skills={formData.skills}
-        tempSkillName={tempSkillName}
-        showSkillInput={showSkillInput}
-        onSkillNameChange={onSkillNameChange}
-        onAddSkill={onAddSkill}
-        onRemoveSkill={onRemoveSkill}
-        onShowSkillInput={onShowSkillInput}
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-slate-900 dark:text-white">Skillset image *</p>
+        <FileUploader imageUrl={formData.image || null} onFieldChange={image => onFormChange({ image })}
+          onUploadingChange={setUploading} />
+        <p className="text-xs text-slate-500 dark:text-slate-400">An image is required. Replace the placeholder with your own image.</p>
+        {formData.image && <button type="button" disabled={uploading} onClick={() => onFormChange({ image: "" })}
+          className="text-sm text-red-600 dark:text-red-400">Remove image</button>}
+      </div>
+
+      <NestedItemsEditor
+        title="Skills" singular="Skill"
+        items={formData.skills} fields={[{ key: "name", label: "Skill Name", required: true }]}
+        onChange={skills => onFormChange({ skills })}
+        onEditingChange={onShowSkillInput}
       />
 
       <div className="flex gap-2">
-        <button
+        <AdminSaveButton
           type="submit"
-          className="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+          disabled={uploading || !formData.image?.trim()}
+          className="disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
           {editingId ? "Update" : "Create"} Skillset
-        </button>
+        </AdminSaveButton>
         <button
           type="button"
           onClick={onCancel}
@@ -74,6 +87,6 @@ export default function SkillsetForm({
           Cancel
         </button>
       </div>
-    </form>
+    </AdminForm>
   );
 }

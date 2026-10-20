@@ -16,6 +16,7 @@ export interface Challenge {
 }
 
 export interface Project {
+  order?: number;
   _id?: string;
   title: string;
   description: string;
@@ -147,7 +148,7 @@ export function useProjectsManager() {
         }
         const updated = await res.json();
         console.log("Update successful:", updated);
-        setProjects(projects.map((p) => (p._id === editingId ? updated : p)));
+        await fetchProjects();
       } else {
         console.log("Creating new project with FormData:", formData);
         // Don't send _id in the POST request body either
@@ -164,7 +165,7 @@ export function useProjectsManager() {
         }
         const newProject = await res.json();
         console.log("Project created successfully:", newProject);
-        setProjects([...projects, newProject]);
+        await fetchProjects();
       }
       resetForm();
     } catch (error) {
@@ -193,7 +194,7 @@ export function useProjectsManager() {
             const err = await res.json().catch(() => ({}));
             throw new Error(err.error || "Failed to delete project");
           }
-          setProjects(projects.filter((p) => p._id !== id));
+          await fetchProjects();
         } catch (error) {
           console.error("Failed to delete project:", error);
         } finally {
@@ -295,6 +296,7 @@ export function useProjectsManager() {
   };
 
   return {
+    fetchProjects,
     projects,
     loading,
     showForm,

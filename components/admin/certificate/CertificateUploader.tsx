@@ -1,8 +1,9 @@
 "use client";
 
+import { useAdminUpload } from "../common/AdminForm";
+
 import { useState, useCallback } from "react";
 import { useUploadThing } from "@/lib/utils/uploadthing";
-import handleError from "@/lib/utils/handleError";
 import { FileText, X } from "lucide-react";
 
 type CertificateUploaderProps = {
@@ -14,6 +15,7 @@ export default function CertificateUploader({
   fileUrl,
   onFieldChange,
 }: CertificateUploaderProps) {
+  const beginUpload = useAdminUpload();
   const { startUpload } = useUploadThing("certificateUploader");
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,23 +34,26 @@ export default function CertificateUploader({
       }
 
       setError(null);
+      const finishUpload = beginUpload();
       setIsUploading(true);
       setFileName(file.name);
 
       try {
         const uploaded = await startUpload([file]);
         const url = uploaded?.[0]?.url;
+        if (!url) throw new Error("Upload did not return a file URL.");
         if (url) {
           onFieldChange(url, file.name, file.type);
         }
       } catch (err) {
-        handleError(err);
+        console.error("Upload failed", err);
         setError("Upload failed. Please try again.");
       } finally {
+        finishUpload();
         setIsUploading(false);
       }
     },
-    [startUpload, onFieldChange]
+    [beginUpload, startUpload, onFieldChange]
   );
 
   const removeFile = () => {

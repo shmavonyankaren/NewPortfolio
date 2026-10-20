@@ -11,6 +11,7 @@ import {
 export default function ProjectsManager() {
   const {
     projects,
+    fetchProjects,
     loading,
     showForm,
     editingId,
@@ -44,6 +45,33 @@ export default function ProjectsManager() {
     handleAddChallenge,
   } = useProjectsManager();
 
+  const form = (
+    <ProjectForm
+      itemCount={projects.length}
+      formData={formData}
+      editingId={editingId}
+      errorMessage={errorMessage}
+      showTechInput={showTechInput}
+      tempTech={tempTech}
+      showFeatureInput={showFeatureInput}
+      tempFeature={tempFeature}
+      showChallengeInput={showChallengeInput}
+      tempChallenge={tempChallenge}
+      onFormDataChange={setFormData}
+      onSubmit={handleSubmit}
+      onCancel={resetForm}
+      onShowTechInput={setShowTechInput}
+      onTempTechChange={setTempTech}
+      onAddTechnology={handleAddTechnology}
+      onShowFeatureInput={setShowFeatureInput}
+      onTempFeatureChange={setTempFeature}
+      onAddFeature={handleAddFeature}
+      onShowChallengeInput={setShowChallengeInput}
+      onTempChallengeChange={setTempChallenge}
+      onAddChallenge={handleAddChallenge}
+    />
+  );
+
   if (loading)
     return (
       <div className="text-slate-900 dark:text-white">Loading projects...</div>
@@ -68,33 +96,11 @@ export default function ProjectsManager() {
         confirmText="Delete"
       />
 
-      {showForm && (
-        <ProjectForm
-          formData={formData}
-          editingId={editingId}
-          errorMessage={errorMessage}
-          showTechInput={showTechInput}
-          tempTech={tempTech}
-          showFeatureInput={showFeatureInput}
-          tempFeature={tempFeature}
-          showChallengeInput={showChallengeInput}
-          tempChallenge={tempChallenge}
-          onFormDataChange={setFormData}
-          onSubmit={handleSubmit}
-          onCancel={resetForm}
-          onShowTechInput={setShowTechInput}
-          onTempTechChange={setTempTech}
-          onAddTechnology={handleAddTechnology}
-          onShowFeatureInput={setShowFeatureInput}
-          onTempFeatureChange={setTempFeature}
-          onAddFeature={handleAddFeature}
-          onShowChallengeInput={setShowChallengeInput}
-          onTempChallengeChange={setTempChallenge}
-          onAddChallenge={handleAddChallenge}
-        />
-      )}
+      {showForm && !editingId && form}
 
       <ProjectList
+        editForm={showForm ? form : null}
+        onReordered={fetchProjects}
         projects={projects}
         editingId={editingId}
         disabled={showForm}

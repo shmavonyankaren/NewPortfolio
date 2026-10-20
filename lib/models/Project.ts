@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IProject extends Document {
+  order: number;
   title: string;
   description: string;
   shortDescription: string;
@@ -19,6 +20,7 @@ export interface IProject extends Document {
 
 const ProjectSchema = new Schema<IProject>(
   {
+    order: { type: Number, min: 1, index: true, validate: Number.isInteger },
     title: { type: String, required: true },
     description: { type: String, required: true },
     shortDescription: { type: String, required: true },
@@ -57,6 +59,12 @@ const ProjectSchema = new Schema<IProject>(
   },
   { timestamps: true }
 );
+
+// Next.js hot reload can retain a model compiled before these fields existed.
+const cachedModel = mongoose.models.Project;
+if (cachedModel && (!cachedModel.schema.path("order"))) {
+  mongoose.deleteModel("Project");
+}
 
 export const Project =
   mongoose.models.Project || mongoose.model<IProject>("Project", ProjectSchema);

@@ -1,8 +1,9 @@
 "use client";
 
+import { useAdminUpload } from "./common/AdminForm";
+
 import { useState, useCallback } from "react";
 import { useUploadThing } from "@/lib/utils/uploadthing";
-import handleError from "@/lib/utils/handleError";
 
 interface CVUploaderProps {
   fileUrl: string;
@@ -10,6 +11,7 @@ interface CVUploaderProps {
 }
 
 export default function CVUploader({ fileUrl, onUrlChange }: CVUploaderProps) {
+  const beginUpload = useAdminUpload();
   const { startUpload } = useUploadThing("cvUploader");
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,19 +24,22 @@ export default function CVUploader({ fileUrl, onUrlChange }: CVUploaderProps) {
         return;
       }
       setError(null);
+      const finishUpload = beginUpload();
       setIsUploading(true);
       try {
         const uploaded = await startUpload([file]);
         const url = uploaded?.[0]?.url;
+        if (!url) throw new Error("Upload did not return a file URL.");
         if (url) onUrlChange(url);
       } catch (err) {
-        handleError(err);
+        console.error("Upload failed", err);
         setError("Upload failed. Please try again.");
       } finally {
+        finishUpload();
         setIsUploading(false);
       }
     },
-    [startUpload, onUrlChange]
+    [beginUpload, startUpload, onUrlChange]
   );
 
   return (

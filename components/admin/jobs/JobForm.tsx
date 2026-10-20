@@ -1,12 +1,17 @@
 "use client";
 
+import AdminForm, { AdminSaveButton } from "../common/AdminForm";
+
+import { useState } from "react";
+import NestedItemsEditor from "../common/NestedItemsEditor";
+import OrderField from "../common/OrderField";
+
 import { Job } from "../types/job";
 import FileUploader from "../FileUploader";
-import SkillInput from "./SkillInput";
-import ResponsibilityInput from "./ResponsibilityInput";
 import DatePicker from "../ui/DatePicker";
 
 interface JobFormProps {
+  itemCount: number;
   formData: Job;
   editingId: string | null;
   showSkillInput: boolean;
@@ -29,31 +34,24 @@ interface JobFormProps {
 }
 
 export default function JobForm({
+  itemCount,
   formData,
   editingId,
   showSkillInput,
   showResponsibilityInput,
-  tempSkill,
-  tempSkillImage,
-  tempResponsibility,
   onFormChange,
-  onSkillChange,
-  onSkillImageChange,
-  onAddSkill,
-  onRemoveSkill,
   onShowSkillInput,
-  onResponsibilityChange,
-  onAddResponsibility,
-  onRemoveResponsibility,
   onShowResponsibilityInput,
   onSubmit,
   onCancel,
 }: JobFormProps) {
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   return (
-    <form
+    <AdminForm complete={!!formData.logo?.trim()} pendingEdits={showSkillInput || showResponsibilityInput}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >
+      <OrderField value={formData.order} maximum={itemCount + (editingId ? 0 : 1)} onChange={order => onFormChange({ order })} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
           <label className="block text-sm font-medium text-slate-900 dark:text-white">
@@ -95,12 +93,16 @@ export default function JobForm({
         />
         <div className="space-y-1">
           <label className="block text-sm font-medium text-slate-900 dark:text-white">
-            Company Logo
+            Company Logo *
           </label>
           <FileUploader
             imageUrl={formData.logo || ""}
             onFieldChange={(url) => onFormChange({ logo: url })}
+            onUploadingChange={setUploadingLogo}
           />
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">A logo is required. Replace the placeholder with your own image.</p>
+          {formData.logo && <button type="button" disabled={uploadingLogo} onClick={() => onFormChange({ logo: "" })}
+            className="mt-2 text-sm text-red-600 dark:text-red-400">Remove logo</button>}
         </div>
         <div className="flex items-end">
           <label className="flex items-center gap-2 text-slate-900 dark:text-white pb-2">
@@ -131,35 +133,28 @@ export default function JobForm({
         />
       </div>
 
-      <SkillInput
-        skills={formData.skills}
-        tempSkill={tempSkill}
-        tempSkillImage={tempSkillImage}
-        showSkillInput={showSkillInput}
-        onSkillChange={onSkillChange}
-        onSkillImageChange={onSkillImageChange}
-        onAddSkill={onAddSkill}
-        onRemoveSkill={onRemoveSkill}
-        onShowSkillInput={onShowSkillInput}
+      <NestedItemsEditor
+        title="Skills" singular="Skill"
+        items={formData.skills} fields={[{ key: "name", label: "Skill Name", required: true }, { key: "image", label: "Icon/Logo", kind: "image" }]}
+        onChange={skills => onFormChange({ skills })}
+        onEditingChange={onShowSkillInput}
       />
 
-      <ResponsibilityInput
-        responsibilities={formData.responsibilities}
-        tempResponsibility={tempResponsibility}
-        showResponsibilityInput={showResponsibilityInput}
-        onResponsibilityChange={onResponsibilityChange}
-        onAddResponsibility={onAddResponsibility}
-        onRemoveResponsibility={onRemoveResponsibility}
-        onShowResponsibilityInput={onShowResponsibilityInput}
+      <NestedItemsEditor
+        title="Responsibilities" singular="Responsibility"
+        items={formData.responsibilities} fields={[{ key: "name", label: "Responsibility Description", kind: "textarea", required: true }]}
+        onChange={responsibilities => onFormChange({ responsibilities })}
+        onEditingChange={onShowResponsibilityInput}
       />
 
       <div className="flex gap-2">
-        <button
+        <AdminSaveButton
           type="submit"
-          className="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+          disabled={uploadingLogo || !formData.logo?.trim()}
+          className="disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
           {editingId ? "Update" : "Create"} Job
-        </button>
+        </AdminSaveButton>
         <button
           type="button"
           onClick={onCancel}
@@ -168,6 +163,6 @@ export default function JobForm({
           Cancel
         </button>
       </div>
-    </form>
+    </AdminForm>
   );
 }

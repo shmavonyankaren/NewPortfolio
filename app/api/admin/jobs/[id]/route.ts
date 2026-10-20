@@ -1,8 +1,11 @@
+import { orderHandler } from "@/lib/db/order-handler";
+import { OrderError, updateOrdered, deleteOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import { Job as JobModel } from "@/lib/models/Job";
 import { NextRequest, NextResponse } from "next/server";
 
 type Job = {
+  order?: number;
   _id?: string;
   company: string;
   position: string;
@@ -17,7 +20,7 @@ type Job = {
   responsibilities: Array<{
     name: string;
   }>;
-  logo?: string;
+  logo: string;
 };
 
 export async function GET(
@@ -33,6 +36,7 @@ export async function GET(
     }
     return NextResponse.json(job);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       {
         error: `Failed to fetch job: ${
@@ -52,6 +56,10 @@ export async function PUT(
     await connectDB();
     const { id } = await params;
     const data: Job = await request.json();
+    if (typeof data.logo !== "string" || !data.logo.trim()) {
+      return NextResponse.json({ error: "An institution or company logo is required." }, { status: 400 });
+    }
+    data.logo = data.logo.trim();
 
     // Log incoming data for debugging
     console.log(
@@ -125,13 +133,15 @@ export async function PUT(
       JSON.stringify(updateData, null, 2)
     );
 
-    const job = await JobModel.findByIdAndUpdate(id, updateData, { new: true });
+    const job = await updateOrdered(JobModel, id, updateData);
     if (!job) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
+    if (!job) return NextResponse.json({ error: "Item not found" }, { status: 404 });
     console.log("Job updated successfully:", job._id);
     return NextResponse.json(job);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : "";
     console.error("Failed to update job - Error:", errorMessage);
@@ -155,12 +165,13 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
-    const job = await JobModel.findByIdAndDelete(id);
+    const job = await deleteOrdered(JobModel, id);
     if (!job) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
     return NextResponse.json({ message: "Job deleted successfully" });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       {
         error: `Failed to delete job: ${
@@ -171,3 +182,5 @@ export async function DELETE(
     );
   }
 }
+
+export const PATCH = orderHandler(JobModel);

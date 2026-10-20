@@ -15,7 +15,7 @@ const Experience = () => {
       return 10000 + (hash % 10000);
     };
     return workExperience.map((card, idx) =>
-      hashToDuration(`${card.id}-${idx}`)
+      hashToDuration(`${card.id}-${idx}`),
     );
   }, []);
 

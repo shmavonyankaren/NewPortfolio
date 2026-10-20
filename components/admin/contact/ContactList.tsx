@@ -1,10 +1,13 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import { Contact } from "./useContactManager";
 import ContactCard from "./ContactCard";
 
 interface ContactListProps {
   contacts: Contact[];
+  editForm: ReactNode;
   editingId: string | null;
   disabled: boolean;
   onEdit: (contact: Contact) => void;
@@ -13,6 +16,7 @@ interface ContactListProps {
 
 export default function ContactList({
   contacts,
+  editForm,
   editingId,
   disabled,
   onEdit,
@@ -32,15 +36,16 @@ export default function ContactList({
   return (
     <div className="grid grid-cols-1 gap-4">
       {contacts
-        .filter((contact) => !editingId || contact._id !== editingId)
         .map((contact, index) => (
-          <ContactCard
+          <div key={contact._id || index} data-contact-id={contact._id}>
+          {contact._id === editingId ? editForm : <ContactCard
             key={contact._id || `contact-${index}-${contact.email}`}
             contact={contact}
             onEdit={() => onEdit(contact)}
             onDelete={() => onDelete(contact._id!)}
             disabled={disabled}
-          />
+          />}
+          </div>
         ))}
     </div>
   );

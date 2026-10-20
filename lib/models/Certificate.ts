@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ICertificate extends Document {
+  order: number;
+  logo?: string;
   title: string;
   issuer: string;
   dateIssued: Date;
@@ -14,6 +16,8 @@ export interface ICertificate extends Document {
 
 const CertificateSchema = new Schema<ICertificate>(
   {
+    logo: { type: String, default: "", trim: true },
+    order: { type: Number, min: 1, index: true, validate: Number.isInteger },
     title: { type: String, required: true },
     issuer: { type: String, required: true },
     dateIssued: { type: Date, required: true },
@@ -24,6 +28,12 @@ const CertificateSchema = new Schema<ICertificate>(
   },
   { timestamps: true }
 );
+
+// Next.js hot reload can retain a model compiled before these fields existed.
+const cachedModel = mongoose.models.Certificate;
+if (cachedModel && (!cachedModel.schema.path("order") || !cachedModel.schema.path("logo"))) {
+  mongoose.deleteModel("Certificate");
+}
 
 export const Certificate =
   mongoose.models.Certificate ||

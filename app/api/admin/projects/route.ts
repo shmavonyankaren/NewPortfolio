@@ -1,3 +1,4 @@
+import { OrderError, listOrdered, createOrdered, clearOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import { Project } from "@/lib/models/Project";
 import { NextRequest, NextResponse } from "next/server";
@@ -5,9 +6,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    const projects = await Project.find().sort({ createdAt: -1 });
+    const projects = await listOrdered(Project);
     return NextResponse.json(projects);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       { error: `Failed to fetch projects: ${error}` },
       { status: 500 }
@@ -94,9 +96,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const project = await Project.create(data);
+    const project = await createOrdered(Project, data);
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Project creation error:", error);
     return NextResponse.json(
       { error: "Failed to create project" },
@@ -108,13 +111,14 @@ export async function POST(request: NextRequest) {
 export async function DELETE() {
   try {
     await connectDB();
-    const result = await Project.deleteMany({});
+    const result = await clearOrdered(Project);
     console.log("Projects deleted:", result.deletedCount);
     return NextResponse.json({
       message: "All projects deleted",
       deletedCount: result.deletedCount,
     });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to delete projects:", error);
     return NextResponse.json(
       { error: "Failed to delete projects" },

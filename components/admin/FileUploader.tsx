@@ -1,13 +1,15 @@
 "use client";
 
+import { useAdminUpload } from "./common/AdminForm";
+
 import { useRef, useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { useUploadThing } from "@/lib/utils/uploadthing";
-import handleError from "@/lib/utils/handleError";
 
 type FileUploaderProps = {
   imageUrl: string | null;
+  onUploadingChange?: (uploading: boolean) => void;
   onFieldChange: (url: string) => void;
   setFiles?: React.Dispatch<React.SetStateAction<string | null>>;
 };
@@ -15,11 +17,14 @@ type FileUploaderProps = {
 export default function FileUploader({
   imageUrl,
   onFieldChange,
+  onUploadingChange,
 }: FileUploaderProps) {
+  const beginUpload = useAdminUpload();
   const { startUpload } = useUploadThing("imageUploader");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(imageUrl);
   const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Update preview when imageUrl changes
   useEffect(() => {
@@ -31,12 +36,16 @@ export default function FileUploader({
       // Show preview immediately
       const localPreview = URL.createObjectURL(file);
       setPreviewUrl(localPreview);
+      setError(null);
+      const finishUpload = beginUpload();
       setIsUploading(true);
+      onUploadingChange?.(true);
 
       try {
         const uploaded = await startUpload([file]);
 
-        if (uploaded?.[0]?.url) {
+        if (!uploaded?.[0]?.url) throw new Error("Image upload failed. Please try again.");
+        if (uploaded[0].url) {
           // Replace local preview with uploaded URL
           URL.revokeObjectURL(localPreview);
           setPreviewUrl(uploaded[0].url);
@@ -46,12 +55,15 @@ export default function FileUploader({
         // Revert to original imageUrl on error
         URL.revokeObjectURL(localPreview);
         setPreviewUrl(imageUrl);
-        handleError(error);
+        console.error("Image upload failed", error);
+        setError("Upload failed. Please try again.");
       } finally {
+        finishUpload();
         setIsUploading(false);
+        onUploadingChange?.(false);
       }
     },
-    [startUpload, onFieldChange, imageUrl]
+    [beginUpload, startUpload, onFieldChange, imageUrl, onUploadingChange]
   );
 
   const onDrop = useCallback(
@@ -65,11 +77,12 @@ export default function FileUploader({
     onDrop,
     accept: { "image/*": [] },
     multiple: false,
+    disabled: isUploading,
   });
 
   const triggerFileDialog = useCallback(() => {
-    fileInputRef.current?.click();
-  }, [fileInputRef]);
+    if (!isUploading) fileInputRef.current?.click();
+  }, [isUploading]);
 
   const manualSelect = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +93,7 @@ export default function FileUploader({
   );
 
   return (
+    <>
     <div
       {...getRootProps()}
       className="flex flex-col items-center justify-center h-50 w-full bg-white/5 dark:bg-slate-800/30 border-2 border-dashed border-purple-300 dark:border-purple-500/50 rounded-lg cursor-pointer overflow-hidden relative transition-all duration-300 hover:border-purple-500 dark:hover:border-purple-400 hover:bg-white/10 dark:hover:bg-slate-700/30 py-3 px-3"
@@ -90,6 +104,7 @@ export default function FileUploader({
         {...getInputProps()}
         ref={fileInputRef}
         type="file"
+        disabled={isUploading}
         accept="image/*"
         onChange={manualSelect}
         className="hidden"
@@ -103,7 +118,7 @@ export default function FileUploader({
               alt="Uploaded"
               fill
               className="object-cover rounded"
-              unoptimized={previewUrl.startsWith("blob:")}
+              unoptimized
             />
           </div>
           {isUploading && (
@@ -141,5 +156,7 @@ export default function FileUploader({
         </div>
       )}
     </div>
+    {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
+    </>
   );
 }

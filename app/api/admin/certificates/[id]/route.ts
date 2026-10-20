@@ -1,8 +1,12 @@
+import { orderHandler } from "@/lib/db/order-handler";
+import { OrderError, updateOrdered, deleteOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import { Certificate as CertificateModel } from "@/lib/models/Certificate";
 import { NextRequest, NextResponse } from "next/server";
 
 type Certificate = {
+  order?: number;
+  logo?: string;
   _id?: string;
   title: string;
   issuer: string;
@@ -29,6 +33,7 @@ export async function GET(
     }
     return NextResponse.json(certificate);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       {
         error: `Failed to fetch certificate: ${
@@ -48,6 +53,9 @@ export async function PUT(
     await connectDB();
     const { id } = await params;
     const data: Certificate = await request.json();
+    if (data.logo !== undefined && typeof data.logo !== "string") {
+      return NextResponse.json({ error: "Logo must be an image URL." }, { status: 400 });
+    }
 
     console.log(
       "Updating certificate",
@@ -62,19 +70,19 @@ export async function PUT(
         { status: 400 }
       );
     }
-    const updatedCertificate = await CertificateModel.findByIdAndUpdate(
+    const updatedCertificate = await updateOrdered(CertificateModel,
       id,
       {
-        title: data.title,
+        order: data.order,
+        ...(data.logo !== undefined ? { logo: data.logo.trim() } : {}),
+      title: data.title,
         issuer: data.issuer,
         dateIssued: new Date(data.dateIssued),
         description: data.description,
         fileUrl: data.fileUrl,
         fileName: data.fileName,
         fileType: data.fileType,
-      },
-      { new: true, runValidators: true }
-    ).lean();
+      });
 
     if (!updatedCertificate) {
       return NextResponse.json(
@@ -86,6 +94,7 @@ export async function PUT(
     console.log("Certificate updated successfully:", updatedCertificate._id);
     return NextResponse.json(updatedCertificate);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to update certificate:", error);
     return NextResponse.json(
       {
@@ -105,7 +114,7 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
-    const deletedCertificate = await CertificateModel.findByIdAndDelete(id);
+    const deletedCertificate = await deleteOrdered(CertificateModel, id);
     if (!deletedCertificate) {
       return NextResponse.json(
         { error: "Certificate not found" },
@@ -115,6 +124,7 @@ export async function DELETE(
     console.log("Certificate deleted successfully:", id);
     return NextResponse.json({ message: "Certificate deleted successfully" });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       {
         error: `Failed to delete certificate: ${
@@ -125,3 +135,5 @@ export async function DELETE(
     );
   }
 }
+
+export const PATCH = orderHandler(CertificateModel);

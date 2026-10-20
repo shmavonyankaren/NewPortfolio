@@ -1,8 +1,11 @@
+import { OrderError, listOrdered, clearOrdered, createOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import { Skillset as SkillsetModel } from "@/lib/models/Skillset";
 import { NextRequest, NextResponse } from "next/server";
 
 type Skillset = {
+  order?: number;
+  image: string;
   _id?: string;
   title: string;
   skills: Array<{
@@ -13,9 +16,10 @@ type Skillset = {
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    const skillsets = await SkillsetModel.find().sort({ createdAt: -1 });
+    const skillsets = await listOrdered(SkillsetModel);
     return NextResponse.json(skillsets);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to fetch skillsets:", error);
     return NextResponse.json(
       { error: "Failed to fetch skillsets" },
@@ -28,6 +32,9 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
     const data: Skillset = await request.json();
+    if (typeof data.image !== "string" || !data.image.trim()) {
+      return NextResponse.json({ error: "A skillset image is required." }, { status: 400 });
+    }
 
     // Log incoming data for debugging
     console.log("Incoming skillset data:", JSON.stringify(data, null, 2));
@@ -65,16 +72,19 @@ export async function POST(request: NextRequest) {
 
     console.log("Skills after processing:", JSON.stringify(data.skills));
 
-    const newSkillset = new SkillsetModel({
+    const newSkillset = await createOrdered(SkillsetModel, {
+      order: data.order,
+      image: data.image.trim(),
       title: data.title,
       skills: data.skills,
     });
 
-    await newSkillset.save();
+
     console.log("Skillset created successfully:", newSkillset._id);
 
     return NextResponse.json(newSkillset, { status: 201 });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to create skillset:", error);
     if (error instanceof Error) {
       return NextResponse.json(
@@ -92,13 +102,14 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     await connectDB();
-    await SkillsetModel.deleteMany({});
+    await clearOrdered(SkillsetModel);
     console.log("All skillsets deleted successfully");
     return NextResponse.json(
       { message: "All skillsets deleted successfully" },
       { status: 200 }
     );
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to delete all skillsets:", error);
     return NextResponse.json(
       { error: "Failed to delete all skillsets" },

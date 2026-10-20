@@ -23,7 +23,7 @@ const AboutTestimonials = ({ comments }: AboutTestimonialsProps) => {
   return (
     <section className="py-12 sm:py-16 md:py-20">
       <div className="space-y-8 md:space-y-12">
-        <h2 className="heading text-2xl sm:text-3xl md:text-4xl">
+        <h2 className="heading text-2xl! sm:text-3xl! md:text-4xl!">
           <span className="text-purple-500 dark:text-purple-300">
             {" "}
             🗣️ What People Say

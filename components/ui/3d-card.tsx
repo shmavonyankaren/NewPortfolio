@@ -69,8 +69,8 @@ export const CardContainer = ({
     <MouseEnterContext.Provider value={[isMouseEntered, setIsMouseEntered]}>
       <div
         className={cn(
-          "py-20 flex items-center justify-center",
-          containerClassName
+          "pt-5 md:pt-10 flex items-center justify-center",
+          containerClassName,
         )}
         style={{
           perspective: isTouchViewport ? "none" : "1000px",
@@ -83,7 +83,7 @@ export const CardContainer = ({
           onMouseLeave={handleMouseLeave}
           className={cn(
             "flex items-center justify-center relative transition-all duration-200 ease-linear",
-            className
+            className,
           )}
           style={{
             transformStyle: isTouchViewport ? undefined : "preserve-3d",
@@ -108,7 +108,7 @@ export const CardBody = ({ children, className, ...rest }: CardBodyProps) => {
     <div
       className={cn(
         "h-auto w-auto transform-gpu perspective-[1000px]",
-        className
+        className,
       )}
       style={{
         transformStyle: "preserve-3d",
@@ -175,7 +175,7 @@ export const CardItem = ({
       className: cn("w-fit transition duration-200 ease-linear", className),
       ...rest,
     },
-    children
+    children,
   );
 };
 

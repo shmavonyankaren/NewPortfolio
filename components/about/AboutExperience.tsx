@@ -1,8 +1,12 @@
 import React from "react";
+import ContentLogo from "@/components/ContentLogo";
+import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
+import Image from "next/image";
 
 interface AboutExperienceProps {
   jobs?: {
     position: string;
+    logo?: string;
     company: string;
     startDate: string;
     endDate: string;
@@ -16,6 +20,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
   const fallbackExperience = [
     {
       title: "Senior Frontend Developer",
+      logo: DEFAULT_CONTENT_IMAGE,
       company: "Tech Innovations Inc.",
       duration: "Jan 2023 - Present",
       description:
@@ -30,6 +35,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
     },
     {
       title: "Full Stack Developer",
+      logo: DEFAULT_CONTENT_IMAGE,
       company: "StartUp Ventures LLC",
       duration: "Jun 2021 - Dec 2022",
       description:
@@ -38,6 +44,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
     },
     {
       title: "Junior Frontend Developer",
+      logo: DEFAULT_CONTENT_IMAGE,
       company: "Digital Solutions Co.",
       duration: "Sep 2019 - May 2021",
       description:
@@ -50,6 +57,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
     jobs && jobs.length > 0
       ? jobs.map((job) => ({
           title: job.position,
+          logo: job.logo?.trim() || DEFAULT_CONTENT_IMAGE,
           company: job.company,
           duration: `${new Date(job.startDate).toLocaleDateString("en-US", {
             month: "short",
@@ -70,9 +78,15 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
   return (
     <section className="py-12 sm:py-16 md:py-20">
       <div className="space-y-8 md:space-y-12">
-        <h2 className="heading text-2xl sm:text-3xl md:text-4xl">
-          <span className="text-purple-500 dark:text-purple-300">
-            💼 Work Experience
+        <h2 className="heading text-2xl! sm:text-3xl! md:text-4xl!">
+          <span className="flex justify-center items-center text-center gap-3 text-purple-500 dark:text-purple-300">
+            <Image
+              src="/assets/images/WorkExperienceIcon.png"
+              width={60}
+              height={60}
+              alt="Experience"
+            />
+            Work Experience
           </span>
         </h2>
 
@@ -83,13 +97,17 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
               className="bg-white dark:bg-[#1a1f3a] p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-gray-200 dark:border-purple-500/20"
             >
               <div className="flex flex-col gap-3 md:gap-4 mb-4">
-                <div>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                    {exp.title}
-                  </h3>
-                  <p className="text-purple-600 dark:text-purple-400 font-semibold text-sm sm:text-base">
-                    {exp.company}
-                  </p>
+                <div className="flex items-start gap-3">
+                  <ContentLogo src={exp.logo} alt={exp.company + " logo"} />
+
+                  <div className="min-w-0">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                      {exp.title}
+                    </h3>
+                    <p className="text-purple-600 dark:text-purple-400 font-semibold text-sm sm:text-base">
+                      {exp.company}
+                    </p>
+                  </div>
                 </div>
                 <span className="text-gray-600 dark:text-[#bec1dd] text-xs sm:text-sm font-semibold inline-block">
                   {exp.duration}

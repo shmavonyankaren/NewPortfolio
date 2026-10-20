@@ -1,8 +1,12 @@
+import { orderHandler } from "@/lib/db/order-handler";
+import { OrderError, updateOrdered, deleteOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import { Skillset as SkillsetModel } from "@/lib/models/Skillset";
 import { NextRequest, NextResponse } from "next/server";
 
 type Skillset = {
+  order?: number;
+  image: string;
   _id?: string;
   title: string;
   skills: Array<{
@@ -26,6 +30,7 @@ export async function GET(
     }
     return NextResponse.json(skillset);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       {
         error: `Failed to fetch skillset: ${
@@ -45,6 +50,9 @@ export async function PUT(
     await connectDB();
     const { id } = await params;
     const data: Skillset = await request.json();
+    if (typeof data.image !== "string" || !data.image.trim()) {
+      return NextResponse.json({ error: "A skillset image is required." }, { status: 400 });
+    }
 
     // Log incoming data for debugging
     console.log(
@@ -78,14 +86,14 @@ export async function PUT(
 
     console.log("Skills after processing:", JSON.stringify(data.skills));
 
-    const updatedSkillset = await SkillsetModel.findByIdAndUpdate(
+    const updatedSkillset = await updateOrdered(SkillsetModel,
       id,
       {
-        title: data.title,
+        order: data.order,
+      image: data.image.trim(),
+      title: data.title,
         skills: data.skills,
-      },
-      { new: true, runValidators: true }
-    );
+      });
 
     if (!updatedSkillset) {
       return NextResponse.json(
@@ -97,6 +105,7 @@ export async function PUT(
     console.log("Skillset updated successfully:", updatedSkillset._id);
     return NextResponse.json(updatedSkillset);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to update skillset:", error);
     return NextResponse.json(
       {
@@ -116,7 +125,7 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
-    const deletedSkillset = await SkillsetModel.findByIdAndDelete(id);
+    const deletedSkillset = await deleteOrdered(SkillsetModel, id);
     if (!deletedSkillset) {
       return NextResponse.json(
         { error: "Skillset not found" },
@@ -126,6 +135,7 @@ export async function DELETE(
     console.log("Skillset deleted successfully:", id);
     return NextResponse.json({ message: "Skillset deleted successfully" });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       {
         error: `Failed to delete skillset: ${
@@ -136,3 +146,5 @@ export async function DELETE(
     );
   }
 }
+
+export const PATCH = orderHandler(SkillsetModel);

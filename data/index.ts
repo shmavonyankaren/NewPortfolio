@@ -19,12 +19,13 @@ export const navItems: NavItem[] = [
 export const gridItems: GridItem[] = [
   {
     id: 1,
-    title: "I prefer quality over quantity, always delivering my best work.",
+    title:
+      "I value quality over quantity, delivering thoughtful, reliable work.",
     description: "",
     className: "lg:col-span-3 md:col-span-6 md:row-span-4 lg:min-h-[60vh]",
     imgClassName: "w-full h-full",
     titleClassName: "justify-end",
-    img: "/assets/images/image6.png",
+    img: "/assets/images/image7.png",
     spareImg: "",
   },
   {

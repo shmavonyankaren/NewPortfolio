@@ -8,6 +8,7 @@ export interface Responsibility {
 }
 
 export interface Job {
+  order?: number;
   _id?: string;
   company: string;
   position: string;
@@ -17,5 +18,5 @@ export interface Job {
   isCurrentlyWorking: boolean;
   skills: Skill[];
   responsibilities: Responsibility[];
-  logo?: string;
+  logo: string;
 }

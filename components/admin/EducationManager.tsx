@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
 import ConfirmDialog from "./ConfirmDialog";
 import { Education } from "./types/education";
 import { EducationHeader, EducationForm, EducationList } from "./education";
@@ -17,7 +18,7 @@ export default function EducationManager() {
     startDate: "",
     endDate: "",
     description: "",
-    logo: "",
+    logo: DEFAULT_CONTENT_IMAGE,
     isCurrentlyStudying: false,
     skills: [],
   });
@@ -52,6 +53,10 @@ export default function EducationManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.logo?.trim()) {
+      alert("An institution or company logo is required.");
+      return;
+    }
     try {
       // Prepare data with proper date formatting
       const dataToSubmit = {
@@ -90,9 +95,7 @@ export default function EducationManager() {
         }
 
         console.log("Education updated successfully:", responseData);
-        setEducations(
-          educations.map((e) => (e._id === editingId ? responseData : e))
-        );
+        await fetchEducations();
       } else {
         const res = await fetch("/api/admin/educations", {
           method: "POST",
@@ -116,7 +119,7 @@ export default function EducationManager() {
         }
 
         console.log("Education created successfully:", responseData);
-        setEducations([...educations, responseData]);
+        await fetchEducations();
       }
       resetForm();
     } catch (error) {
@@ -138,7 +141,7 @@ export default function EducationManager() {
       onConfirm: async () => {
         try {
           await fetch(`/api/admin/educations/${id}`, { method: "DELETE" });
-          setEducations(educations.filter((e) => e._id !== id));
+          await fetchEducations();
         } catch (error) {
           console.error("Failed to delete education:", error);
         }
@@ -180,6 +183,7 @@ export default function EducationManager() {
 
     setFormData({
       ...education,
+      logo: education.logo?.trim() || DEFAULT_CONTENT_IMAGE,
       startDate: formatDate(education.startDate),
       endDate: formatDate(education.endDate),
       skills: education.skills || [],
@@ -196,7 +200,7 @@ export default function EducationManager() {
       startDate: "",
       endDate: "",
       description: "",
-      logo: "",
+      logo: DEFAULT_CONTENT_IMAGE,
       isCurrentlyStudying: false,
       skills: [],
     });
@@ -279,9 +283,35 @@ export default function EducationManager() {
     if (showForm && !editingId) {
       resetForm();
     } else {
+      resetForm();
       setShowForm(true);
     }
   };
+
+  const form = (
+    <EducationForm
+      itemCount={educations.length}
+      formData={formData}
+      editingId={editingId}
+      showSkillInput={showSkillInput}
+      tempSkill={tempSkill}
+      tempSkillDescription={tempSkillDescription}
+      tempSkillImage={tempSkillImage}
+      editingSkillIndex={editingSkillIndex}
+      onUpdateSkill={handleUpdateSkill}
+      onCancelEditSkill={handleCancelEditSkill}
+      onEditSkill={handleEditSkill}
+      onFormChange={handleFormChange}
+      onSkillChange={setTempSkill}
+      onSkillDescriptionChange={setTempSkillDescription}
+      onSkillImageChange={setTempSkillImage}
+      onAddSkill={handleAddSkill}
+      onRemoveSkill={handleRemoveSkill}
+      onShowSkillInput={setShowSkillInput}
+      onSubmit={handleSubmit}
+      onCancel={resetForm}
+    />
+  );
 
   if (loading)
     return (
@@ -309,31 +339,11 @@ export default function EducationManager() {
         confirmText="Delete"
       />
 
-      {showForm && (
-        <EducationForm
-          formData={formData}
-          editingId={editingId}
-          showSkillInput={showSkillInput}
-          tempSkill={tempSkill}
-          tempSkillDescription={tempSkillDescription}
-          tempSkillImage={tempSkillImage}
-          editingSkillIndex={editingSkillIndex}
-          onUpdateSkill={handleUpdateSkill}
-          onCancelEditSkill={handleCancelEditSkill}
-          onEditSkill={handleEditSkill}
-          onFormChange={handleFormChange}
-          onSkillChange={setTempSkill}
-          onSkillDescriptionChange={setTempSkillDescription}
-          onSkillImageChange={setTempSkillImage}
-          onAddSkill={handleAddSkill}
-          onRemoveSkill={handleRemoveSkill}
-          onShowSkillInput={setShowSkillInput}
-          onSubmit={handleSubmit}
-          onCancel={resetForm}
-        />
-      )}
+      {showForm && !editingId && form}
 
       <EducationList
+        editForm={showForm ? form : null}
+        onReordered={fetchEducations}
         educations={educations}
         editingId={editingId}
         showForm={showForm}

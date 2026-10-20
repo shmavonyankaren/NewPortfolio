@@ -1,4 +1,5 @@
 export type ProjectItem = {
+  order?: number;
   id?: number;
   _id?: string;
   title: string;

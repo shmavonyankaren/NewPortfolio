@@ -26,6 +26,16 @@ export default function ContactManager() {
     resetForm,
   } = useContactManager();
 
+  const form = (
+    <ContactForm
+      formData={formData}
+      editingId={editingId}
+      onFormDataChange={setFormData}
+      onSubmit={handleSubmit}
+      onCancel={resetForm}
+    />
+  );
+
   if (loading)
     return (
       <div className="text-slate-900 dark:text-white">Loading contacts...</div>
@@ -50,17 +60,10 @@ export default function ContactManager() {
         confirmText="Delete"
       />
 
-      {showForm && (
-        <ContactForm
-          formData={formData}
-          editingId={editingId}
-          onFormDataChange={setFormData}
-          onSubmit={handleSubmit}
-          onCancel={resetForm}
-        />
-      )}
+      {showForm && !editingId && form}
 
       <ContactList
+        editForm={showForm ? form : null}
         contacts={contacts}
         editingId={editingId}
         disabled={showForm}

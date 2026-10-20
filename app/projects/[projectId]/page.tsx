@@ -28,7 +28,7 @@ function ProjectPage() {
         if (res.ok) {
           const apiProjects = await res.json();
           const foundProject = apiProjects.find(
-            (p: ProjectItem) => p._id === projectId
+            (p: ProjectItem) => p._id === projectId,
           );
           setProject(foundProject);
         } else {
@@ -84,7 +84,8 @@ function ProjectPage() {
       })) || [],
     technologies:
       project.technologies?.filter(
-        (t) => t && t.name && typeof t.name === "string" && t.name.trim() !== ""
+        (t) =>
+          t && t.name && typeof t.name === "string" && t.name.trim() !== "",
       ) || [],
     stats: {
       duration: project.duration || "N/A",
@@ -96,7 +97,6 @@ function ProjectPage() {
   return (
     <div className="min-h-screen bg-[linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)] dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)] text-slate-900 dark:text-white">
       <div className="max-w-7xl mx-auto px-5 md:px-10 md:py-30 lg:px-20 py-20 pt-25">
-        {/* Back Button */}
         <button
           onClick={() => router.push("/projects")}
           className="cursor-pointer flex items-center gap-2 mb-8 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition group"

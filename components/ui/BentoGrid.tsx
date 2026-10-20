@@ -58,6 +58,8 @@ export const BentoGridItem = ({
   const rightLists = ["NextJS", "MySQL", "NodeJS", "TailwindCSS"];
 
   const [copied, setCopied] = useState(false);
+  const [copying, setCopying] = useState(false);
+  const [copyError, setCopyError] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -88,11 +90,27 @@ export const BentoGridItem = ({
     },
   };
 
-  const handleCopy = useCallback(() => {
-    const text = "hsu@jsmastery.pro";
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = useCallback(async () => {
+    setCopying(true);
+    setCopied(false);
+    setCopyError("");
+    try {
+      const response = await fetch("/api/admin/contacts", { cache: "no-store" });
+      if (!response.ok) throw new Error("Could not load the contact email. Please try again.");
+      const contacts = await response.json();
+      const email = Array.isArray(contacts) && typeof contacts[0]?.email === "string"
+        ? contacts[0].email.trim() : "";
+      if (!email) throw new Error("No contact email is available yet.");
+      await navigator.clipboard.writeText(email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      setCopyError(error instanceof Error && error.message.startsWith("Could not load")
+        ? error.message : error instanceof Error && error.message.startsWith("No contact")
+          ? error.message : "Could not copy the email. Please allow clipboard access and try again.");
+    } finally {
+      setCopying(false);
+    }
   }, []);
 
   return (
@@ -214,12 +232,14 @@ export const BentoGridItem = ({
               </div>
 
               <MagicButton
-                title={copied ? "Email is Copied!" : "Copy my email address"}
+                title={copying ? "Copying..." : copied ? "Email is Copied!" : "Copy my email address"}
+                disabled={copying}
                 icon={<IoCopyOutline />}
                 position="left"
                 handleClick={handleCopy}
                 otherClasses="bg-[#161A31]!"
               />
+              {copyError && <p role="alert" className="mt-2 text-sm text-white">{copyError}</p>}
             </div>
           )}
         </div>

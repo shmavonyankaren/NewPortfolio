@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IJob extends Document {
+  order: number;
   company: string;
   position: string;
   description: string;
@@ -14,13 +15,14 @@ export interface IJob extends Document {
   responsibilities: Array<{
     name: string;
   }>;
-  logo?: string;
+  logo: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const JobSchema = new Schema<IJob>(
   {
+    order: { type: Number, min: 1, index: true, validate: Number.isInteger },
     company: { type: String, required: true },
     position: { type: String, required: true },
     description: { type: String, required: true },
@@ -38,10 +40,16 @@ const JobSchema = new Schema<IJob>(
         name: { type: String, required: true },
       },
     ],
-    logo: String,
+    logo: { type: String, required: true, trim: true },
   },
   { timestamps: true }
 );
+
+// Next.js hot reload can retain a model compiled before these fields existed.
+const cachedModel = mongoose.models.Job;
+if (cachedModel && (!cachedModel.schema.path("order") || cachedModel.schema.path("logo")?.options.required !== true)) {
+  mongoose.deleteModel("Job");
+}
 
 export const Job =
   mongoose.models.Job || mongoose.model<IJob>("Job", JobSchema);

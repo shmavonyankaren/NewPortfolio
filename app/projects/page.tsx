@@ -12,7 +12,7 @@ async function fetchProjects() {
       }/api/admin/projects`,
       {
         next: { revalidate: 60 },
-      }
+      },
     );
     if (!res.ok) return [];
     return res.json();
@@ -31,8 +31,8 @@ async function MyProjects() {
     projects.length > 0
       ? new Set(
           projects.flatMap(
-            (p: any) => p.technologies?.map((t: any) => t.name) || []
-          )
+            (p: any) => p.technologies?.map((t: any) => t.name) || [],
+          ),
         ).size
       : 20;
 
@@ -42,7 +42,7 @@ async function MyProjects() {
         {/* Hero Section */}
         <div className="text-center mb-16 mt-10">
           <div className="inline-block">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.1] font-bold mb-4 bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 bg-clip-text text-transparent">
               My Projects
             </h1>
             <div className="h-1 w-full bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 rounded-full"></div>

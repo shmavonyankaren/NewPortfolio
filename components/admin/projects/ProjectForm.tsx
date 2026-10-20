@@ -1,9 +1,11 @@
 "use client";
 
+import AdminForm, { AdminSaveButton } from "../common/AdminForm";
+
+import NestedItemsEditor from "../common/NestedItemsEditor";
+import OrderField from "../common/OrderField";
+
 import FileUploader from "../FileUploader";
-import TechnologyInput from "./TechnologyInput";
-import FeatureInput from "./FeatureInput";
-import ChallengeInput from "./ChallengeInput";
 
 interface Technology {
   name: string;
@@ -21,6 +23,7 @@ interface Challenge {
 }
 
 interface Project {
+  order?: number;
   _id?: string;
   title: string;
   description: string;
@@ -37,6 +40,7 @@ interface Project {
 }
 
 interface ProjectFormProps {
+  itemCount: number;
   formData: Project;
   editingId: string | null;
   errorMessage?: string;
@@ -67,33 +71,26 @@ interface ProjectFormProps {
 }
 
 export default function ProjectForm({
+  itemCount,
   formData,
   editingId,
   errorMessage,
   showTechInput,
-  tempTech,
   showFeatureInput,
-  tempFeature,
   showChallengeInput,
-  tempChallenge,
   onFormDataChange,
   onSubmit,
   onCancel,
   onShowTechInput,
-  onTempTechChange,
-  onAddTechnology,
   onShowFeatureInput,
-  onTempFeatureChange,
-  onAddFeature,
   onShowChallengeInput,
-  onTempChallengeChange,
-  onAddChallenge,
 }: ProjectFormProps) {
   return (
-    <form
+    <AdminForm complete={!!formData.image?.trim()} pendingEdits={showTechInput || showFeatureInput || showChallengeInput}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-6"
     >
+      <OrderField value={formData.order} maximum={itemCount + (editingId ? 0 : 1)} onChange={order => onFormDataChange({ ...formData, order })} />
       {/* Basic Information */}
       <div className="space-y-4">
         <h4 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -249,47 +246,27 @@ export default function ProjectForm({
       </div>
 
       {/* Technologies */}
-      <TechnologyInput
-        technologies={formData.technologies}
-        showInput={showTechInput}
-        tempTech={tempTech}
-        onShowInput={onShowTechInput}
-        onTempTechChange={onTempTechChange}
-        onAddTechnology={onAddTechnology}
-        onRemoveTechnology={(index) => {
-          const newTechs = formData.technologies.filter((_, i) => i !== index);
-          onFormDataChange({ ...formData, technologies: newTechs });
-        }}
+      <NestedItemsEditor
+        title="Technologies & Tools" singular="Technology"
+        items={formData.technologies} fields={[{ key: "name", label: "Technology Name", required: true }, { key: "icon", label: "Icon", kind: "image" }]}
+        onChange={technologies => onFormDataChange({ ...formData, technologies })}
+        onEditingChange={onShowTechInput}
       />
 
       {/* Features */}
-      <FeatureInput
-        features={formData.features}
-        showInput={showFeatureInput}
-        tempFeature={tempFeature}
-        onShowInput={onShowFeatureInput}
-        onTempFeatureChange={onTempFeatureChange}
-        onAddFeature={onAddFeature}
-        onRemoveFeature={(index) => {
-          const newFeatures = formData.features.filter((_, i) => i !== index);
-          onFormDataChange({ ...formData, features: newFeatures });
-        }}
+      <NestedItemsEditor
+        title="Key Features" singular="Feature"
+        items={formData.features} fields={[{ key: "title", label: "Feature Title", required: true }, { key: "description", label: "Description", kind: "textarea", required: true }]}
+        onChange={features => onFormDataChange({ ...formData, features })}
+        onEditingChange={onShowFeatureInput}
       />
 
       {/* Challenges */}
-      <ChallengeInput
-        challenges={formData.challenges}
-        showInput={showChallengeInput}
-        tempChallenge={tempChallenge}
-        onShowInput={onShowChallengeInput}
-        onTempChallengeChange={onTempChallengeChange}
-        onAddChallenge={onAddChallenge}
-        onRemoveChallenge={(index) => {
-          const newChallenges = formData.challenges.filter(
-            (_, i) => i !== index
-          );
-          onFormDataChange({ ...formData, challenges: newChallenges });
-        }}
+      <NestedItemsEditor
+        title="Challenges & Solutions" singular="Challenge"
+        items={formData.challenges} fields={[{ key: "challenge", label: "Challenge", kind: "textarea", required: true }, { key: "solution", label: "Solution", kind: "textarea", required: true }]}
+        onChange={challenges => onFormDataChange({ ...formData, challenges })}
+        onEditingChange={onShowChallengeInput}
       />
 
       {errorMessage && (
@@ -299,12 +276,12 @@ export default function ProjectForm({
       )}
 
       <div className="flex gap-2 border-t border-slate-300 dark:border-white/10 pt-4">
-        <button
+        <AdminSaveButton
           type="submit"
           className=" cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
           {editingId ? "Update" : "Create"} Project
-        </button>
+        </AdminSaveButton>
         <button
           type="button"
           onClick={onCancel}
@@ -313,6 +290,6 @@ export default function ProjectForm({
           Cancel
         </button>
       </div>
-    </form>
+    </AdminForm>
   );
 }

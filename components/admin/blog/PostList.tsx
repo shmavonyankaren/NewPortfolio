@@ -1,20 +1,28 @@
 "use client";
 
+import type { ReactNode } from "react";
+
+import ReorderableList from "../common/ReorderableList";
+
 import { BlogPost } from "../types/blogPost";
 import PostCard from "./PostCard";
 
 interface PostListProps {
   posts: BlogPost[];
+  editForm: ReactNode;
   editingId: string | null;
   showForm: boolean;
+  onReordered: () => Promise<void>;
   onEdit: (post: BlogPost) => void;
   onDelete: (id: string) => void;
 }
 
 export default function PostList({
   posts,
+  editForm,
   editingId,
   showForm,
+  onReordered,
   onEdit,
   onDelete,
 }: PostListProps) {
@@ -29,9 +37,8 @@ export default function PostList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <ReorderableList items={posts} editingId={editingId} editForm={editForm} endpoint="/api/admin/posts" disabled={showForm} onReordered={onReordered}>
       {posts
-        .filter((p) => p._id !== editingId)
         .map((post, index) => (
           <PostCard
             key={post._id || `post-${index}`}
@@ -42,6 +49,6 @@ export default function PostList({
             onDelete={() => onDelete(post._id!)}
           />
         ))}
-    </div>
+    </ReorderableList>
   );
 }

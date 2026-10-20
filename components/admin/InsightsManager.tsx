@@ -48,20 +48,23 @@ export default function InsightsManager() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-        const updated = await res.json();
-        setInsights(insights.map((i) => (i._id === editingId ? updated : i)));
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "Failed to save item");
+        await fetchInsights();
       } else {
         const res = await fetch("/api/admin/comments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
-        const newInsight = await res.json();
-        setInsights([...insights, newInsight]);
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "Failed to save item");
+        await fetchInsights();
       }
       resetForm();
     } catch (error) {
       console.error("Failed to save insight:", error);
+      alert(error instanceof Error ? error.message : "Failed to save item");
     }
   };
 
@@ -74,7 +77,7 @@ export default function InsightsManager() {
       onConfirm: async () => {
         try {
           await fetch(`/api/admin/comments/${id}`, { method: "DELETE" });
-          setInsights(insights.filter((i) => i._id !== id));
+          await fetchInsights();
         } catch (error) {
           console.error("Failed to delete insight:", error);
         }
@@ -123,9 +126,21 @@ export default function InsightsManager() {
     if (showForm && !editingId) {
       resetForm();
     } else {
+      resetForm();
       setShowForm(true);
     }
   };
+
+  const form = (
+    <InsightForm
+      itemCount={insights.length}
+      formData={formData}
+      editingId={editingId}
+      onFormChange={handleFormChange}
+      onSubmit={handleSubmit}
+      onCancel={resetForm}
+    />
+  );
 
   if (loading)
     return (
@@ -151,17 +166,11 @@ export default function InsightsManager() {
         confirmText="Delete"
       />
 
-      {showForm && (
-        <InsightForm
-          formData={formData}
-          editingId={editingId}
-          onFormChange={handleFormChange}
-          onSubmit={handleSubmit}
-          onCancel={resetForm}
-        />
-      )}
+      {showForm && !editingId && form}
 
       <InsightList
+        editForm={showForm ? form : null}
+        onReordered={fetchInsights}
         insights={insights}
         editingId={editingId}
         showForm={showForm}

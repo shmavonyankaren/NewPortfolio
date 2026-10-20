@@ -1,4 +1,6 @@
 import React from "react";
+import ContentLogo from "@/components/ContentLogo";
+import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
 import Image from "next/image";
 
 interface AboutEducationProps {
@@ -25,7 +27,7 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
       degree: "Bachelor of Science",
       field: "Computer Science",
       institution: "University of Technology, California",
-      logo: "/app.svg",
+      logo: DEFAULT_CONTENT_IMAGE,
       duration: "2018-2022",
       description:
         "Focused on software development, web technologies, and computer architecture. Achieved a 3.8 GPA with honors.",
@@ -35,7 +37,7 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
       degree: "Master of Science",
       field: "Web Development",
       institution: "Institute of Digital Innovation, New York",
-      logo: "/app.svg",
+      logo: DEFAULT_CONTENT_IMAGE,
       duration: "2022-2024",
       description:
         "Specialized in full-stack development, cloud technologies, and modern web frameworks.",
@@ -49,7 +51,7 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
           degree: edu.degree || "",
           field: edu.field,
           institution: edu.institution,
-          logo: edu.logo,
+          logo: edu.logo?.trim() || DEFAULT_CONTENT_IMAGE,
           duration: `${new Date(edu.startDate).getFullYear()} - ${
             edu.isCurrentlyStudying
               ? "Present"
@@ -63,9 +65,15 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
   return (
     <section className="py-12 sm:py-16 md:py-20">
       <div className="space-y-8 md:space-y-12">
-        <h2 className="heading text-2xl sm:text-3xl md:text-4xl">
-          <span className="text-purple-500 dark:text-purple-300">
-            🎓 Education
+        <h2 className="heading text-2xl! sm:text-3xl! md:text-4xl!">
+          <span className="flex justify-center items-center text-center gap-3 text-purple-500 dark:text-purple-300">
+            <Image
+              src="/assets/images/EducationIcon.png"
+              width={60}
+              height={60}
+              alt="Education"
+            />
+            Education
           </span>
         </h2>
 
@@ -84,13 +92,16 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
                     {edu.field}
                   </p>
                 </div>
-                <span className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap">
+                <span className="self-start px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap">
                   {edu.duration}
                 </span>
               </div>
-              <p className="text-gray-600 dark:text-[#bec1dd] mb-4 text-sm sm:text-base">
-                {edu.institution}
-              </p>
+              <div className="flex items-center gap-3 mb-4">
+                <ContentLogo src={edu.logo} alt={edu.institution + " logo"} />
+                <p className="text-gray-600 dark:text-[#bec1dd] text-sm sm:text-base">
+                  {edu.institution}
+                </p>
+              </div>
               <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">
                 {edu.description}
               </p>

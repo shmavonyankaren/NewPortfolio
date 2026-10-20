@@ -1,20 +1,28 @@
 "use client";
 
+import type { ReactNode } from "react";
+
+import ReorderableList from "../common/ReorderableList";
+
 import { Insight } from "../types/insight";
 import InsightCard from "./InsightCard";
 
 interface InsightListProps {
   insights: Insight[];
+  editForm: ReactNode;
   editingId: string | null;
   showForm: boolean;
+  onReordered: () => Promise<void>;
   onEdit: (insight: Insight) => void;
   onDelete: (id: string) => void;
 }
 
 export default function InsightList({
   insights,
+  editForm,
   editingId,
   showForm,
+  onReordered,
   onEdit,
   onDelete,
 }: InsightListProps) {
@@ -29,9 +37,8 @@ export default function InsightList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <ReorderableList items={insights} editingId={editingId} editForm={editForm} endpoint="/api/admin/comments" disabled={showForm} onReordered={onReordered}>
       {insights
-        .filter((i) => i._id !== editingId)
         .map((insight) => (
           <InsightCard
             key={insight._id}
@@ -42,6 +49,6 @@ export default function InsightList({
             onDelete={() => onDelete(insight._id!)}
           />
         ))}
-    </div>
+    </ReorderableList>
   );
 }

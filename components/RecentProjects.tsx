@@ -21,7 +21,6 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
     <CardContainer
       key={projectId}
       className="min-w-80 flex justify-center items-center md:flex-none md:w-160 max-w-154"
-      containerClassName="pb-20"
     >
       <CardBody
         className="h-auto w-full flex flex-col p-6 rounded-2xl shadow-[0_8px_16px_rgb(0_0_0/0.4)] border border-white/10 group-hover/pin:border-white/20 transition duration-700 cursor-pointer group"
@@ -96,7 +95,7 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
             ).map(
               (
                 tech: { icon?: string; name?: string } | string,
-                index: number
+                index: number,
               ) => {
                 const icon = typeof tech === "string" ? tech : tech.icon;
                 const name = typeof tech === "string" ? "" : tech.name;
@@ -115,15 +114,45 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
                   "Name:",
                   name,
                   "HasValidIcon:",
-                  hasValidIcon
+                  hasValidIcon,
                 );
 
                 return (
                   <div
                     key={index}
-                    className="border border-none dark:border-white/20 bg-back/90 shadow-lg bg-linear-to-br from-white-400 to-purple-700 dark:from-[#161a31] dark:to-[#06091f] rounded-full  lg:w-10 lg:h-10 w-8 h-8 flex justify-center items-center"
+                    title={name || undefined}
+                    className="
+    relative group/tech
+    flex items-center justify-center
+    w-8 h-8 lg:w-10 lg:h-10
+    shrink-0 rounded-full
+
+    /* Light mode */
+    bg-linear-to-br
+    from-white via-[#F5F1FF] to-[#DDD6FE]
+    border border-purple-300/70
+    shadow-[0_3px_8px_rgba(109,40,217,0.18)]
+
+    /* Dark mode */
+    dark:from-[#252044]
+    dark:via-[#161A31]
+    dark:to-[#06091F]
+    dark:border-white/20
+    dark:shadow-[0_4px_10px_rgba(0,0,0,0.4)]
+
+    /* 3D and hover */
+    transition-all duration-300 ease-out
+    hover:z-20
+    hover:-translate-y-1
+    hover:scale-110
+    hover:border-purple-400
+    hover:shadow-[0_6px_16px_rgba(168,85,247,0.30)]
+
+    dark:hover:shadow-[0_6px_18px_rgba(168,85,247,0.35)]
+  "
                     style={{
-                      transform: `translateX(-${5 * index + 2}px)`,
+                      marginLeft: index === 0 ? 0 : "-6px",
+                      zIndex: index + 1,
                     }}
                   >
                     {hasValidIcon ? (
@@ -131,19 +160,24 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
                         width={40}
                         height={40}
                         src={icon as string}
-                        alt={name || `tech-${index}`}
-                        className="p-2"
-                        sizes="32px"
+                        alt={name || `Technology ${index + 1}`}
+                        className="
+        w-full h-full object-contain p-1.5
+        drop-shadow-sm
+        transition-transform duration-300
+        group-hover/tech:scale-110
+      "
+                        sizes="40px"
                         loading="lazy"
                       />
                     ) : (
-                      <span className="text-white dark:text-white text-xs font-bold">
+                      <span className="text-xs font-bold text-purple-700 dark:text-white">
                         {(name || `T${index}`).charAt(0).toUpperCase()}
                       </span>
                     )}
                   </div>
                 );
-              }
+              },
             )}
           </div>
 
@@ -201,9 +235,15 @@ const RecentProjects = ({ projects }: RecentProjectsProps) => {
   const projectsData = projects && projects.length > 0 ? projects : [];
 
   return (
-    <div className="py-20">
-      <h1 className="heading">
-        🚀 Small Selection of{" "}
+    <div className="lg:py-10">
+      <h1 className="heading flex flex-col lg:flex-row justify-center items-center gap-4">
+        <Image
+          src="/assets/images/CodingIcon.png"
+          width={60}
+          height={60}
+          alt="Projects"
+        />
+        Small Selection of{" "}
         <span className="text-purple-500 dark:text-purple-300">
           Recent Projects
         </span>

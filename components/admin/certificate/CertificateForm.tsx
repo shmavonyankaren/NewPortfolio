@@ -1,10 +1,17 @@
 "use client";
 
+import AdminForm, { AdminSaveButton } from "../common/AdminForm";
+
+import { useState } from "react";
+import FileUploader from "../FileUploader";
+import OrderField from "../common/OrderField";
+
 import { Certificate } from "../types/certificate";
 import CertificateUploader from "./CertificateUploader";
 import DatePicker from "../ui/DatePicker";
 
 interface CertificateFormProps {
+  itemCount: number;
   formData: Certificate;
   editingId: string | null;
   onFormChange: (data: Partial<Certificate>) => void;
@@ -13,19 +20,22 @@ interface CertificateFormProps {
 }
 
 export default function CertificateForm({
+  itemCount,
   formData,
   editingId,
   onFormChange,
   onSubmit,
   onCancel,
 }: CertificateFormProps) {
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const normalizeDate = (value: string) => value || "";
 
   return (
-    <form
+    <AdminForm complete={!!formData.fileUrl?.trim()}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >
+      <OrderField value={formData.order} maximum={itemCount + (editingId ? 0 : 1)} onChange={order => onFormChange({ order })} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
           <label className="block text-sm font-medium text-slate-900 dark:text-white">
@@ -53,6 +63,15 @@ export default function CertificateForm({
             required
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-slate-900 dark:text-white">Institution logo (optional)</p>
+        <FileUploader imageUrl={formData.logo || null} onFieldChange={logo => onFormChange({ logo })}
+          onUploadingChange={setUploadingLogo} />
+        <p className="text-xs text-slate-500 dark:text-slate-400">A building icon is shown when no logo is selected.</p>
+        {formData.logo && <button type="button" disabled={uploadingLogo} onClick={() => onFormChange({ logo: "" })}
+          className="text-sm text-red-600 dark:text-red-400">Remove logo</button>}
       </div>
 
       <DatePicker
@@ -89,13 +108,13 @@ export default function CertificateForm({
       </div>
 
       <div className="flex gap-2">
-        <button
+        <AdminSaveButton
           type="submit"
-          disabled={!formData.fileUrl}
+          disabled={!formData.fileUrl || uploadingLogo}
           className="cursor-pointer bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
           {editingId ? "Update" : "Create"} Certificate
-        </button>
+        </AdminSaveButton>
         <button
           type="button"
           onClick={onCancel}
@@ -104,6 +123,6 @@ export default function CertificateForm({
           Cancel
         </button>
       </div>
-    </form>
+    </AdminForm>
   );
 }

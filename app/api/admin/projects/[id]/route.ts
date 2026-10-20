@@ -1,3 +1,5 @@
+import { orderHandler } from "@/lib/db/order-handler";
+import { OrderError, updateOrdered, deleteOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import { Project } from "@/lib/models/Project";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,6 +19,7 @@ export async function GET(
     }
     return NextResponse.json(project);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("GET project error:", error);
     return NextResponse.json(
       { error: "Failed to fetch project" },
@@ -104,6 +107,7 @@ export async function PUT(
 
     // Build the update object - only include fields that are provided
     const updateData: Record<string, unknown> = {};
+    if (data.order !== undefined) updateData.order = data.order;
     if (data.title !== undefined) updateData.title = data.title;
     if (data.description !== undefined)
       updateData.description = data.description;
@@ -130,10 +134,7 @@ export async function PUT(
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    const project = await Project.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: false, // Disable validators on partial updates to avoid issues
-    });
+    const project = await updateOrdered(Project, id, updateData);
     if (!project) {
       console.error("Failed to update project with ID:", id);
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
@@ -141,6 +142,7 @@ export async function PUT(
     console.log("Project updated successfully:", project);
     return NextResponse.json(project);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Project update error:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("Detailed error:", errorMessage);
@@ -160,12 +162,13 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
-    const project = await Project.findByIdAndDelete(id);
+    const project = await deleteOrdered(Project, id);
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
     return NextResponse.json({ message: "Project deleted successfully" });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       {
         error: `Failed to delete project: ${
@@ -176,3 +179,5 @@ export async function DELETE(
     );
   }
 }
+
+export const PATCH = orderHandler(Project);

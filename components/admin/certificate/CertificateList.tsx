@@ -1,20 +1,28 @@
 "use client";
 
+import type { ReactNode } from "react";
+
+import ReorderableList from "../common/ReorderableList";
+
 import { Certificate } from "../types/certificate";
 import CertificateCard from "./CertificateCard";
 
 interface CertificateListProps {
   certificates: Certificate[];
+  editForm: ReactNode;
   editingId: string | null;
   showForm: boolean;
+  onReordered: () => Promise<void>;
   onEdit: (certificate: Certificate) => void;
   onDelete: (id: string) => void;
 }
 
 export default function CertificateList({
   certificates,
+  editForm,
   editingId,
   showForm,
+  onReordered,
   onEdit,
   onDelete,
 }: CertificateListProps) {
@@ -29,9 +37,8 @@ export default function CertificateList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <ReorderableList items={certificates} editingId={editingId} editForm={editForm} endpoint="/api/admin/certificates" disabled={showForm} onReordered={onReordered}>
       {certificates
-        .filter((c) => c._id !== editingId)
         .map((certificate, index) => (
           <CertificateCard
             key={certificate._id || `certificate-${index}`}
@@ -42,6 +49,6 @@ export default function CertificateList({
             onDelete={() => onDelete(certificate._id!)}
           />
         ))}
-    </div>
+    </ReorderableList>
   );
 }

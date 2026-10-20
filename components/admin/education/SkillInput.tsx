@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminSaveButton } from "../common/AdminForm";
+
 import { Skill } from "../types/education";
 import FileUploader from "../FileUploader";
 import { X, Edit2 } from "lucide-react";
@@ -67,11 +69,6 @@ export default function SkillInput({
                 placeholder="e.g., React, TypeScript"
                 value={tempSkill}
                 onChange={(e) => onSkillChange(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter" && tempSkill.trim()) {
-                    onAddSkill();
-                  }
-                }}
                 className="w-full bg-white text-slate-900 border border-slate-300 rounded px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder-gray-500"
                 autoFocus
               />
@@ -99,13 +96,13 @@ export default function SkillInput({
               />
             </div>
             <div className="flex w-full gap-2">
-              <button
+              <AdminSaveButton disabled={!tempSkill.trim() || !tempSkillDescription.trim()}
                 type="button"
                 onClick={onAddSkill}
                 className=" cursor-pointer flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
               >
                 Save
-              </button>
+              </AdminSaveButton>
               <button
                 type="button"
                 onClick={() => {
@@ -176,13 +173,13 @@ export default function SkillInput({
             </div>
 
             <div className="flex w-full gap-2">
-              <button
+              <AdminSaveButton disabled={!tempSkill.trim()}
                 type="button"
                 onClick={onUpdateSkill}
                 className="cursor-pointer flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2.5 rounded transition-colors text-sm font-semibold"
               >
                 Update Skill
-              </button>
+              </AdminSaveButton>
               <button
                 type="button"
                 onClick={onCancelEditSkill}

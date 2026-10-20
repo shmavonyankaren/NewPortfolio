@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
 import ConfirmDialog from "./ConfirmDialog";
 import JobHeader from "./jobs/JobHeader";
 import JobForm from "./jobs/JobForm";
@@ -21,7 +22,7 @@ export default function JobsManager() {
     isCurrentlyWorking: false,
     skills: [],
     responsibilities: [],
-    logo: "",
+    logo: DEFAULT_CONTENT_IMAGE,
   });
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -53,6 +54,10 @@ export default function JobsManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.logo?.trim()) {
+      alert("An institution or company logo is required.");
+      return;
+    }
     try {
       // Prepare data with proper date formatting
       const dataToSubmit = {
@@ -88,7 +93,7 @@ export default function JobsManager() {
         }
 
         console.log("Job updated successfully:", responseData);
-        setJobs(jobs.map((j) => (j._id === editingId ? responseData : j)));
+        await fetchJobs();
       } else {
         const res = await fetch("/api/admin/jobs", {
           method: "POST",
@@ -110,7 +115,7 @@ export default function JobsManager() {
         }
 
         console.log("Job created successfully:", responseData);
-        setJobs([...jobs, responseData]);
+        await fetchJobs();
       }
       resetForm();
     } catch (error) {
@@ -132,7 +137,7 @@ export default function JobsManager() {
       onConfirm: async () => {
         try {
           await fetch(`/api/admin/jobs/${id}`, { method: "DELETE" });
-          setJobs(jobs.filter((j) => j._id !== id));
+          await fetchJobs();
         } catch (error) {
           console.error("Failed to delete job:", error);
         }
@@ -173,6 +178,7 @@ export default function JobsManager() {
 
     setFormData({
       ...job,
+      logo: job.logo?.trim() || DEFAULT_CONTENT_IMAGE,
       startDate: formatDate(job.startDate),
       endDate: formatDate(job.endDate),
       skills: (job.skills || []).map((s) =>
@@ -194,7 +200,7 @@ export default function JobsManager() {
       isCurrentlyWorking: false,
       skills: [],
       responsibilities: [],
-      logo: "",
+      logo: DEFAULT_CONTENT_IMAGE,
     });
     setEditingId(null);
     setShowForm(false);
@@ -248,6 +254,31 @@ export default function JobsManager() {
     });
   };
 
+  const form = (
+    <JobForm
+      itemCount={jobs.length}
+      formData={formData}
+      editingId={editingId}
+      showSkillInput={showSkillInput}
+      showResponsibilityInput={showResponsibilityInput}
+      tempSkill={tempSkill}
+      tempSkillImage={tempSkillImage}
+      tempResponsibility={tempResponsibility}
+      onFormChange={(data) => setFormData({ ...formData, ...data })}
+      onSkillChange={setTempSkill}
+      onSkillImageChange={setTempSkillImage}
+      onAddSkill={handleAddSkill}
+      onRemoveSkill={handleRemoveSkill}
+      onShowSkillInput={setShowSkillInput}
+      onResponsibilityChange={setTempResponsibility}
+      onAddResponsibility={handleAddResponsibility}
+      onRemoveResponsibility={handleRemoveResponsibility}
+      onShowResponsibilityInput={setShowResponsibilityInput}
+      onSubmit={handleSubmit}
+      onCancel={resetForm}
+    />
+  );
+
   if (loading)
     return (
       <div className="text-slate-900 dark:text-white">Loading jobs...</div>
@@ -278,31 +309,11 @@ export default function JobsManager() {
         confirmText="Delete"
       />
 
-      {showForm && (
-        <JobForm
-          formData={formData}
-          editingId={editingId}
-          showSkillInput={showSkillInput}
-          showResponsibilityInput={showResponsibilityInput}
-          tempSkill={tempSkill}
-          tempSkillImage={tempSkillImage}
-          tempResponsibility={tempResponsibility}
-          onFormChange={(data) => setFormData({ ...formData, ...data })}
-          onSkillChange={setTempSkill}
-          onSkillImageChange={setTempSkillImage}
-          onAddSkill={handleAddSkill}
-          onRemoveSkill={handleRemoveSkill}
-          onShowSkillInput={setShowSkillInput}
-          onResponsibilityChange={setTempResponsibility}
-          onAddResponsibility={handleAddResponsibility}
-          onRemoveResponsibility={handleRemoveResponsibility}
-          onShowResponsibilityInput={setShowResponsibilityInput}
-          onSubmit={handleSubmit}
-          onCancel={resetForm}
-        />
-      )}
+      {showForm && !editingId && form}
 
       <JobList
+        editForm={showForm ? form : null}
+        onReordered={fetchJobs}
         jobs={jobs}
         editingId={editingId}
         showForm={showForm}

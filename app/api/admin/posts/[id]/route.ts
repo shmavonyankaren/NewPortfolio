@@ -1,8 +1,12 @@
+import { orderHandler } from "@/lib/db/order-handler";
+import { NextResponse } from "next/server";
+import { OrderError, updateOrdered, deleteOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import BlogPost from "@/lib/models/BlogPost";
 import { NextRequest } from "next/server";
 
 type Post = {
+  order?: number;
   _id?: string;
   title: string;
   content: string;
@@ -30,6 +34,7 @@ export async function GET(
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return new Response(
       JSON.stringify({ message: "Error fetching blog post", error }),
       {
@@ -46,7 +51,7 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
-    const deletedBlog: Post | null = await BlogPost.findByIdAndDelete(id);
+    const deletedBlog: Post | null = await deleteOrdered(BlogPost, id);
     if (!deletedBlog) {
       return new Response(JSON.stringify({ message: "Blog post not found" }), {
         status: 404,
@@ -61,6 +66,7 @@ export async function DELETE(
       }
     );
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return new Response(
       JSON.stringify({ message: "Error deleting blog post", error }),
       {
@@ -80,9 +86,7 @@ export async function PUT(
 
     const { id } = await params;
     const data = await req.json();
-    const updatedBlog = await BlogPost.findByIdAndUpdate(id, data, {
-      new: true,
-    });
+    const updatedBlog = await updateOrdered(BlogPost, id, data);
 
     if (!updatedBlog) {
       console.error("Blog post not found with ID:", id);
@@ -98,6 +102,7 @@ export async function PUT(
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("PUT /api/admin/posts/[id] error:", error);
     return new Response(
       JSON.stringify({
@@ -111,3 +116,5 @@ export async function PUT(
     );
   }
 }
+
+export const PATCH = orderHandler(BlogPost);

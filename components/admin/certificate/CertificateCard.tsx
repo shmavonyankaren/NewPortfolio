@@ -1,5 +1,6 @@
 "use client";
 
+import ContentLogo from "@/components/ContentLogo";
 import { Download, Eye } from "lucide-react";
 import { Certificate } from "../types/certificate";
 import { ItemActionButtons } from "../common";
@@ -56,6 +57,7 @@ export default function CertificateCard({
   return (
     <div className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-3 sm:p-4">
       <div className="flex items-start gap-3 sm:gap-4">
+        <ContentLogo src={certificate.logo} alt={certificate.issuer + " logo"} />
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 mb-2">
             <h4 className="text-slate-900 dark:text-white font-semibold text-sm sm:text-base wrap-break-words">

@@ -1,4 +1,6 @@
 export interface Certificate {
+  order?: number;
+  logo?: string;
   _id?: string;
   title: string;
   issuer: string;

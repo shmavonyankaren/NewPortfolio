@@ -1,20 +1,28 @@
 "use client";
 
+import type { ReactNode } from "react";
+
+import ReorderableList from "../common/ReorderableList";
+
 import { Education } from "../types/education";
 import EducationCard from "./EducationCard";
 
 interface EducationListProps {
   educations: Education[];
+  editForm: ReactNode;
   editingId: string | null;
   showForm: boolean;
+  onReordered: () => Promise<void>;
   onEdit: (education: Education) => void;
   onDelete: (id: string) => void;
 }
 
 export default function EducationList({
   educations,
+  editForm,
   editingId,
   showForm,
+  onReordered,
   onEdit,
   onDelete,
 }: EducationListProps) {
@@ -29,9 +37,8 @@ export default function EducationList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <ReorderableList items={educations} editingId={editingId} editForm={editForm} endpoint="/api/admin/educations" disabled={showForm} onReordered={onReordered}>
       {educations
-        .filter((e) => e._id !== editingId)
         .map((education, index) => (
           <EducationCard
             key={education._id || `education-${index}`}
@@ -42,6 +49,6 @@ export default function EducationList({
             onDelete={() => onDelete(education._id!)}
           />
         ))}
-    </div>
+    </ReorderableList>
   );
 }

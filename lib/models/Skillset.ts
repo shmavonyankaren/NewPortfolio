@@ -1,6 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ISkillset extends Document {
+  order: number;
+  image: string;
+  /** Retained for old records; the UI uses image. */
+  emoji: string;
   title: string;
   skills: Array<{
     name: string;
@@ -11,6 +15,9 @@ export interface ISkillset extends Document {
 
 const SkillsetSchema = new Schema<ISkillset>(
   {
+    image: { type: String, required: true, trim: true },
+    emoji: { type: String, default: "", trim: true },
+    order: { type: Number, min: 1, index: true, validate: Number.isInteger },
     title: { type: String, required: true },
     skills: {
       type: [
@@ -23,6 +30,12 @@ const SkillsetSchema = new Schema<ISkillset>(
   },
   { timestamps: true }
 );
+
+// Next.js hot reload can retain a model compiled before these fields existed.
+const cachedModel = mongoose.models.Skillset;
+if (cachedModel && (!cachedModel.schema.path("order") || !cachedModel.schema.path("emoji") || !cachedModel.schema.path("image"))) {
+  mongoose.deleteModel("Skillset");
+}
 
 export const Skillset =
   mongoose.models.Skillset ||

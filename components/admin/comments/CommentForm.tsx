@@ -1,9 +1,14 @@
 "use client";
 
+import AdminForm, { AdminSaveButton } from "../common/AdminForm";
+
+import OrderField from "../common/OrderField";
+
 import { Comment } from "../types/comment";
 import FileUploader from "../FileUploader";
 
 interface CommentFormProps {
+  itemCount: number;
   formData: Comment;
   editingId: string | null;
   onFormChange: (data: Partial<Comment>) => void;
@@ -12,6 +17,7 @@ interface CommentFormProps {
 }
 
 export default function CommentForm({
+  itemCount,
   formData,
   editingId,
   onFormChange,
@@ -19,10 +25,11 @@ export default function CommentForm({
   onCancel,
 }: CommentFormProps) {
   return (
-    <form
+    <AdminForm
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >
+      <OrderField value={formData.order} maximum={itemCount + (editingId ? 0 : 1)} onChange={order => onFormChange({ order })} />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="space-y-1">
           <label className="block text-sm font-medium text-slate-900 dark:text-white">
@@ -75,12 +82,12 @@ export default function CommentForm({
         />
       </div>
       <div className="flex gap-2">
-        <button
+        <AdminSaveButton
           type="submit"
           className="cursor-pointer bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
           {editingId ? "Update" : "Create"} Comment
-        </button>
+        </AdminSaveButton>
         <button
           type="button"
           onClick={onCancel}
@@ -89,6 +96,6 @@ export default function CommentForm({
           Cancel
         </button>
       </div>
-    </form>
+    </AdminForm>
   );
 }

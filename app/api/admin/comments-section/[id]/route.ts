@@ -1,3 +1,5 @@
+import { orderHandler } from "@/lib/db/order-handler";
+import { OrderError, updateOrdered, deleteOrdered } from "@/lib/db/ordering";
 import { NextRequest, NextResponse } from "next/server";
 import Comment from "@/lib/models/Comment";
 import { connectDB } from "@/lib/db/connection";
@@ -17,6 +19,7 @@ export async function GET(
 
     return NextResponse.json(comment, { status: 200 });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to fetch comment:", error);
     return NextResponse.json(
       { error: "Failed to fetch comment" },
@@ -34,7 +37,7 @@ export async function PUT(
     const { id } = await params;
 
     const body = await request.json();
-    const { name, position, comment, image } = body;
+    const { name, position, comment, image, order } = body;
 
     if (!name || !position || !comment) {
       return NextResponse.json(
@@ -43,16 +46,15 @@ export async function PUT(
       );
     }
 
-    const updatedComment = await Comment.findByIdAndUpdate(
+    const updatedComment = await updateOrdered(Comment,
       id,
       {
         name,
         position,
         comment,
+        order,
         image: image || "",
-      },
-      { new: true, runValidators: true }
-    );
+      });
 
     if (!updatedComment) {
       return NextResponse.json({ error: "Comment not found" }, { status: 404 });
@@ -60,6 +62,7 @@ export async function PUT(
 
     return NextResponse.json(updatedComment, { status: 200 });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to update comment:", error);
     return NextResponse.json(
       { error: "Failed to update comment" },
@@ -76,7 +79,7 @@ export async function DELETE(
     await connectDB();
     const { id } = await params;
 
-    const deletedComment = await Comment.findByIdAndDelete(id);
+    const deletedComment = await deleteOrdered(Comment, id);
 
     if (!deletedComment) {
       return NextResponse.json({ error: "Comment not found" }, { status: 404 });
@@ -87,6 +90,7 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to delete comment:", error);
     return NextResponse.json(
       { error: "Failed to delete comment" },
@@ -94,3 +98,5 @@ export async function DELETE(
     );
   }
 }
+
+export const PATCH = orderHandler(Comment);

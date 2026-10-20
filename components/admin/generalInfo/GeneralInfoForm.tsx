@@ -1,5 +1,7 @@
 "use client";
 
+import AdminForm, { AdminSaveButton } from "../common/AdminForm";
+
 import { GeneralInfo } from "../types/generalInfo";
 import FileUploader from "../FileUploader";
 
@@ -21,7 +23,7 @@ export default function GeneralInfoForm({
   isLoading = false,
 }: GeneralInfoFormProps) {
   return (
-    <form
+    <AdminForm busy={isLoading}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >
@@ -87,13 +89,13 @@ export default function GeneralInfoForm({
       </div>
 
       <div className="flex gap-2 pt-4">
-        <button
+        <AdminSaveButton
           type="submit"
           disabled={isLoading}
           className="cursor-pointer bg-green-600 hover:bg-green-700 disabled:bg-green-600/50 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
         >
           {isLoading ? "Saving..." : isEditing ? "Update Info" : "Create Info"}
-        </button>
+        </AdminSaveButton>
         <button
           type="button"
           onClick={onCancel}
@@ -103,6 +105,6 @@ export default function GeneralInfoForm({
           Cancel
         </button>
       </div>
-    </form>
+    </AdminForm>
   );
 }

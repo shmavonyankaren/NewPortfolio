@@ -13,7 +13,7 @@ export function ProjectHero({ project, overview }: ProjectHeroProps) {
     <div className="mb-16">
       <div className="flex flex-wrap items-start justify-between gap-6 mb-8">
         <div className="flex-1 min-w-75">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.15] font-bold mb-4 bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 bg-clip-text text-transparent">
             {project.title}
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed">

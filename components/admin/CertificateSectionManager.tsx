@@ -107,19 +107,7 @@ export default function CertificateSectionManager() {
         }
 
         console.log("Certificate updated successfully:", responseData);
-        setCertificates(
-          certificates.map((c) =>
-            c._id === editingId
-              ? {
-                  ...c,
-                  ...responseData,
-                  dateIssued: responseData.dateIssued
-                    ? new Date(responseData.dateIssued).toISOString()
-                    : payload.dateIssued,
-                }
-              : c
-          )
-        );
+        await fetchCertificates();
       } else {
         const payload = {
           ...formData,
@@ -150,15 +138,7 @@ export default function CertificateSectionManager() {
         }
 
         console.log("Certificate created successfully:", responseData);
-        setCertificates([
-          ...certificates,
-          {
-            ...responseData,
-            dateIssued: responseData.dateIssued
-              ? new Date(responseData.dateIssued).toISOString()
-              : payload.dateIssued,
-          },
-        ]);
+        await fetchCertificates();
       }
       resetForm();
     } catch (error) {
@@ -180,7 +160,7 @@ export default function CertificateSectionManager() {
       onConfirm: async () => {
         try {
           await fetch(`/api/admin/certificates/${id}`, { method: "DELETE" });
-          setCertificates(certificates.filter((c) => c._id !== id));
+          await fetchCertificates();
         } catch (error) {
           console.error("Failed to delete certificate:", error);
         }
@@ -242,9 +222,21 @@ export default function CertificateSectionManager() {
     if (showForm && !editingId) {
       resetForm();
     } else {
+      resetForm();
       setShowForm(true);
     }
   };
+
+  const form = (
+    <CertificateForm
+      itemCount={certificates.length}
+      formData={formData}
+      editingId={editingId}
+      onFormChange={handleFormChange}
+      onSubmit={handleSubmit}
+      onCancel={resetForm}
+    />
+  );
 
   if (loading)
     return (
@@ -272,17 +264,11 @@ export default function CertificateSectionManager() {
         confirmText="Delete"
       />
 
-      {showForm && (
-        <CertificateForm
-          formData={formData}
-          editingId={editingId}
-          onFormChange={handleFormChange}
-          onSubmit={handleSubmit}
-          onCancel={resetForm}
-        />
-      )}
+      {showForm && !editingId && form}
 
       <CertificateList
+        editForm={showForm ? form : null}
+        onReordered={fetchCertificates}
         certificates={certificates}
         editingId={editingId}
         showForm={showForm}

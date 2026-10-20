@@ -6,6 +6,7 @@ import { BlogPost } from "./types/blogPost";
 import { PostForm, PostHeader, PostList } from "./blog";
 
 const normalizePost = (data: Partial<BlogPost> = {}): BlogPost => ({
+  order: data.order,
   title: data.title ?? "",
   content: data.content ?? "",
   imageUrl: data.imageUrl ?? "",
@@ -52,6 +53,7 @@ export default function BlogPostManager() {
     if (!formData.title.trim() || !formData.content.trim()) return;
 
     const payload = {
+      order: formData.order,
       title: formData.title.trim(),
       content: formData.content.trim(),
       imageUrl: formData.imageUrl?.trim() || "",
@@ -65,10 +67,7 @@ export default function BlogPostManager() {
           body: JSON.stringify(payload),
         });
         if (!res.ok) throw new Error("Update failed");
-        const updated = await res.json();
-        setPosts(
-          posts.map((p) => (p._id === editingId ? normalizePost(updated) : p))
-        );
+        await fetchPosts();
       } else {
         const res = await fetch("/api/admin/posts", {
           method: "POST",
@@ -76,12 +75,12 @@ export default function BlogPostManager() {
           body: JSON.stringify(payload),
         });
         if (!res.ok) throw new Error("Create failed");
-        const newPost = await res.json();
-        setPosts([...posts, normalizePost(newPost)]);
+        await fetchPosts();
       }
       resetForm();
     } catch (error) {
       console.error("Failed to save post:", error);
+      alert(error instanceof Error ? error.message : "Failed to save post");
     }
   };
 
@@ -94,7 +93,7 @@ export default function BlogPostManager() {
       onConfirm: async () => {
         try {
           await fetch(`/api/admin/posts/${id}`, { method: "DELETE" });
-          setPosts(posts.filter((p) => p._id !== id));
+          await fetchPosts();
         } catch (error) {
           console.error("Failed to delete post:", error);
         }
@@ -138,9 +137,21 @@ export default function BlogPostManager() {
     if (showForm && !editingId) {
       resetForm();
     } else {
+      resetForm();
       setShowForm(true);
     }
   };
+
+  const form = (
+    <PostForm
+      itemCount={posts.length}
+      formData={formData}
+      editingId={editingId}
+      onFormChange={handleFormChange}
+      onSubmit={handleSubmit}
+      onCancel={resetForm}
+    />
+  );
 
   if (loading)
     return (
@@ -168,17 +179,11 @@ export default function BlogPostManager() {
         confirmText="Delete"
       />
 
-      {showForm && (
-        <PostForm
-          formData={formData}
-          editingId={editingId}
-          onFormChange={handleFormChange}
-          onSubmit={handleSubmit}
-          onCancel={resetForm}
-        />
-      )}
+      {showForm && !editingId && form}
 
       <PostList
+        editForm={showForm ? form : null}
+        onReordered={fetchPosts}
         posts={posts}
         editingId={editingId}
         showForm={showForm}

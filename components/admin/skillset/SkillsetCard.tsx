@@ -1,5 +1,7 @@
 "use client";
 
+import ContentLogo from "@/components/ContentLogo";
+import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
 import { Skillset } from "../types/skillset";
 import { ItemActionButtons } from "../common";
 
@@ -21,6 +23,7 @@ export default function SkillsetCard({
   return (
     <div className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-3 sm:p-4">
       <div className="flex items-start gap-3 sm:gap-4">
+        <ContentLogo src={skillset.image || DEFAULT_CONTENT_IMAGE} alt={skillset.title + " image"} />
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 mb-3">
             <h4 className="text-slate-900 dark:text-white font-semibold text-base sm:text-lg wrap-break-words">

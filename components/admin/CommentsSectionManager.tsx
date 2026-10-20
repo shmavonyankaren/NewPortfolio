@@ -7,6 +7,7 @@ import { CommentHeader, CommentForm, CommentList } from "./comments";
 
 export default function CommentsSectionManager() {
   const normalizeComment = (data: Partial<Comment> = {}): Comment => ({
+    order: data.order,
     _id: data._id,
     name: data.name ?? "",
     position: data.position ?? "",
@@ -51,20 +52,23 @@ export default function CommentsSectionManager() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(normalizeComment(formData)),
         });
-        const updated = await res.json();
-        setComments(comments.map((c) => (c._id === editingId ? updated : c)));
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "Failed to save item");
+        await fetchComments();
       } else {
         const res = await fetch("/api/admin/comments-section", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(normalizeComment(formData)),
         });
-        const newComment = await res.json();
-        setComments([...comments, newComment]);
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || "Failed to save item");
+        await fetchComments();
       }
       resetForm();
     } catch (error) {
       console.error("Failed to save comment:", error);
+      alert(error instanceof Error ? error.message : "Failed to save item");
     }
   };
 
@@ -79,7 +83,7 @@ export default function CommentsSectionManager() {
           await fetch(`/api/admin/comments-section/${id}`, {
             method: "DELETE",
           });
-          setComments(comments.filter((c) => c._id !== id));
+          await fetchComments();
         } catch (error) {
           console.error("Failed to delete comment:", error);
         }
@@ -123,9 +127,21 @@ export default function CommentsSectionManager() {
     if (showForm && !editingId) {
       resetForm();
     } else {
+      resetForm();
       setShowForm(true);
     }
   };
+
+  const form = (
+    <CommentForm
+      itemCount={comments.length}
+      formData={formData}
+      editingId={editingId}
+      onFormChange={handleFormChange}
+      onSubmit={handleSubmit}
+      onCancel={resetForm}
+    />
+  );
 
   if (loading)
     return (
@@ -151,17 +167,11 @@ export default function CommentsSectionManager() {
         confirmText="Delete"
       />
 
-      {showForm && (
-        <CommentForm
-          formData={formData}
-          editingId={editingId}
-          onFormChange={handleFormChange}
-          onSubmit={handleSubmit}
-          onCancel={resetForm}
-        />
-      )}
+      {showForm && !editingId && form}
 
       <CommentList
+        editForm={showForm ? form : null}
+        onReordered={fetchComments}
         comments={comments}
         editingId={editingId}
         showForm={showForm}

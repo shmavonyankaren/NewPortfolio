@@ -1,21 +1,29 @@
 "use client";
 
+import type { ReactNode } from "react";
+
+import ReorderableList from "../common/ReorderableList";
+
 import Image from "next/image";
 import { Job } from "../types/job";
 import { ItemActionButtons } from "../common";
 
 interface JobListProps {
   jobs: Job[];
+  editForm: ReactNode;
   editingId: string | null;
   showForm: boolean;
+  onReordered: () => Promise<void>;
   onEdit: (job: Job) => void;
   onDelete: (id: string) => void;
 }
 
 export default function JobList({
   jobs,
+  editForm,
   editingId,
   showForm,
+  onReordered,
   onEdit,
   onDelete,
 }: JobListProps) {
@@ -35,9 +43,8 @@ export default function JobList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <ReorderableList items={jobs} editingId={editingId} editForm={editForm} endpoint="/api/admin/jobs" disabled={showForm} onReordered={onReordered}>
       {jobs
-        .filter((j) => j._id !== editingId)
         .map((job, index) => (
           <div
             key={job._id || `job-${index}`}
@@ -118,6 +125,6 @@ export default function JobList({
             </div>
           </div>
         ))}
-    </div>
+    </ReorderableList>
   );
 }

@@ -1,20 +1,28 @@
 "use client";
 
+import type { ReactNode } from "react";
+
+import ReorderableList from "../common/ReorderableList";
+
 import { Comment } from "../types/comment";
 import CommentCard from "./CommentCard";
 
 interface CommentListProps {
   comments: Comment[];
+  editForm: ReactNode;
   editingId: string | null;
   showForm: boolean;
+  onReordered: () => Promise<void>;
   onEdit: (comment: Comment) => void;
   onDelete: (id: string) => void;
 }
 
 export default function CommentList({
   comments,
+  editForm,
   editingId,
   showForm,
+  onReordered,
   onEdit,
   onDelete,
 }: CommentListProps) {
@@ -29,9 +37,8 @@ export default function CommentList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <ReorderableList items={comments} editingId={editingId} editForm={editForm} endpoint="/api/admin/comments-section" disabled={showForm} onReordered={onReordered}>
       {comments
-        .filter((c) => c._id !== editingId)
         .map((comment, index) => (
           <CommentCard
             key={comment._id || `comment-${index}`}
@@ -42,6 +49,6 @@ export default function CommentList({
             onDelete={() => onDelete(comment._id!)}
           />
         ))}
-    </div>
+    </ReorderableList>
   );
 }

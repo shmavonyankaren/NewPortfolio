@@ -1,8 +1,10 @@
+import { OrderError, listOrdered, createOrdered, clearOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import { Job as JobModel } from "@/lib/models/Job";
 import { NextRequest, NextResponse } from "next/server";
 
 type Job = {
+  order?: number;
   _id?: string;
   company: string;
   position: string;
@@ -17,15 +19,16 @@ type Job = {
   responsibilities: Array<{
     name: string;
   }>;
-  logo?: string;
+  logo: string;
 };
 
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    const jobs = await JobModel.find().sort({ startDate: -1 });
+    const jobs = await listOrdered(JobModel);
     return NextResponse.json(jobs);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Failed to fetch jobs:", error);
     return NextResponse.json(
       { error: "Failed to fetch jobs" },
@@ -38,6 +41,10 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
     const data: Job = await request.json();
+    if (typeof data.logo !== "string" || !data.logo.trim()) {
+      return NextResponse.json({ error: "An institution or company logo is required." }, { status: 400 });
+    }
+    data.logo = data.logo.trim();
 
     // Log incoming data for debugging
     console.log("Incoming job data:", JSON.stringify(data, null, 2));
@@ -127,10 +134,11 @@ export async function POST(request: NextRequest) {
     );
 
     console.log("Creating job with data:", JSON.stringify(data, null, 2));
-    const job = await JobModel.create(data);
+    const job = await createOrdered(JobModel, data);
     console.log("Job created successfully:", job._id);
     return NextResponse.json(job, { status: 201 });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : "";
     console.error("Failed to create job - Error:", errorMessage);
@@ -150,13 +158,14 @@ export async function POST(request: NextRequest) {
 export async function DELETE() {
   try {
     await connectDB();
-    const result = await JobModel.deleteMany({});
+    const result = await clearOrdered(JobModel);
     console.log("Jobs deleted:", result.deletedCount);
     return NextResponse.json({
       message: "All jobs deleted",
       deletedCount: result.deletedCount,
     });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("Failed to delete jobs:", errorMessage);
     return NextResponse.json(

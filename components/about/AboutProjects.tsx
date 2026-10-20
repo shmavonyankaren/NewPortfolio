@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
@@ -28,9 +29,15 @@ const AboutProjects = ({ projects }: AboutProjectsProps) => {
   return (
     <section className="py-12 sm:py-16 md:py-20">
       <div className="space-y-8 md:space-y-12">
-        <h2 className="heading text-2xl sm:text-3xl md:text-4xl">
-          <span className="text-purple-500 dark:text-purple-300">
-            🎯 Featured Projects
+        <h2 className="heading text-2xl! sm:text-3xl! md:text-4xl!">
+          <span className="flex justify-center items-center text-center gap-3 text-purple-500 dark:text-purple-300">
+            <Image
+              src="/assets/images/CodingIcon.png"
+              width={60}
+              height={60}
+              alt="Certificates"
+            />
+            Featured Projects
           </span>
         </h2>
 

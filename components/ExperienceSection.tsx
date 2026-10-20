@@ -43,6 +43,8 @@ interface Education {
 }
 
 interface ExperienceCard {
+  company?: string;
+  institution?: string;
   review: string;
   imgPath: string;
   logoPath: string;
@@ -59,10 +61,10 @@ interface ExperienceSectionProps {
 }
 
 const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
-  // Transform jobs to ExperienceCard format
   const jobCards: ExperienceCard[] =
     jobs && jobs.length > 0
       ? jobs.map((job) => ({
+          company: job.company,
           review: job.description || "",
           imgPath: "/exp1.svg",
           logoPath: job.logo || "",
@@ -88,6 +90,7 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
   const educationCards: ExperienceCard[] =
     education && education.length > 0
       ? education.map((edu) => ({
+          institution: edu.institution,
           review: edu.description || "",
           imgPath: "/exp1.svg",
           logoPath: edu.logo || "",
@@ -108,18 +111,17 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
         }))
       : [];
 
-  // Combine all cards and sort by start date (old to new)
-  const allCards = [...jobCards, ...educationCards].sort((a, b) => {
-    // Extract the start date from the date string (before the dash)
-    const aStartDate = new Date(a.date.split(" - ")[0]);
-    const bStartDate = new Date(b.date.split(" - ")[0]);
-    return aStartDate.getTime() - bStartDate.getTime();
-  });
+  // Preserve backend order within each independently managed section.
+  const allCards = [...jobCards, ...educationCards];
 
   // Use combined cards if available, otherwise use fallback
   const experienceCards: ExperienceCard[] =
     allCards.length > 0
-      ? allCards
+      ? allCards.sort((a, b) => {
+          const dateA = new Date(a.date.split(" - ")[0]);
+          const dateB = new Date(b.date.split(" - ")[0]);
+          return dateB.getTime() - dateA.getTime();
+        })
       : expCards.map((card) => ({ ...card, type: "job" as const }));
 
   useGSAP(() => {
@@ -145,10 +147,10 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
     // Responsive alignment for gradient line
     function alignGradientLine() {
       const gradientLine = document.querySelector(
-        ".gradient-line"
+        ".gradient-line",
       ) as HTMLElement;
       const containerElement = document.querySelector(
-        ".experience-timeline-container"
+        ".experience-timeline-container",
       );
       const firstLogo = document.querySelector(".timeline-logo");
 
@@ -178,7 +180,7 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
     // Animate the gradient line from top to bottom
     const gradientLine = document.querySelector(".gradient-line");
     const containerElement = document.querySelector(
-      ".experience-timeline-container"
+      ".experience-timeline-container",
     );
     if (gradientLine && containerElement) {
       gsap.set(gradientLine, { scaleY: 0, transformOrigin: "top top" });
@@ -225,9 +227,22 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
     >
       <div className="w-full h-full px-4 sm:px-5 md:px-10 lg:px-20">
         <h1 className="heading flex flex-col text-center gap-2 sm:gap-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
-          💼 🎓
+          <div className="flex justify-center items-center">
+            <Image
+              src="/assets/images/EducationIcon.png"
+              width={60}
+              height={60}
+              alt="Education"
+            />
+            <Image
+              src="/assets/images/WorkExperienceIcon.png"
+              width={60}
+              height={60}
+              alt="Experience"
+            />
+          </div>
           <p>
-            My{" "}
+            My
             <span className="text-purple-500 dark:text-purple-300">
               {" "}
               Work Experience
@@ -262,7 +277,7 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
                         height={40}
                         src={card.imgPath ? card.imgPath : "/app.svg"}
                         alt="exp-img"
-                      /> */}
+                      /> 
                       {/* {card.type === "job" ? (
                         <p className="text-sm md:text-base lg:text-lg text-white-50">
                           💼 Work Experience
@@ -277,83 +292,179 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
                 </div>
                 <div className="w-full sm:w-full md:w-full xl:w-4/6">
                   <div className="flex items-start">
-                    <div className="expText flex flex-row sm:flex-row gap-4 sm:gap-6 md:gap-10 lg:gap-12 xl:gap-20 ml-2 sm:ml-4 md:ml-8 lg:ml-12 xl:ml-16">
-                      <div className="timeline-logo shrink-0">
-                        {card.logoPath && card.logoPath.trim() !== "" ? (
+                    <div className="expText min-w-0 w-full flex flex-row sm:flex-row gap-4 sm:gap-6 md:gap-10 lg:gap-12 xl:gap-20 ml-2 sm:ml-4 md:ml-8 lg:ml-12 xl:ml-16">
+                      <div
+                        className="timeline-logo group/logo relative shrink-0"
+                        tabIndex={0}
+                        aria-label={
+                          card.company || card.institution || card.title
+                        }
+                      >
+                        {card.logoPath?.trim() ? (
                           <Image
-                            id="logo-element"
                             width={50}
                             height={50}
                             src={card.logoPath}
-                            alt="logo"
+                            alt=""
+                            className="h-[70%] w-[70%] object-contain transition-transform duration-300 group-hover/logo:scale-110"
                           />
                         ) : card.type === "job" ? (
-                          <div className="flex items-center justify-center">
-                            <FaRegBuilding className="w-6 h-6 text-purple-200" />
-                          </div>
+                          <FaRegBuilding className="h-6 w-6 text-purple-600 dark:text-purple-200" />
                         ) : (
-                          <div className="flex items-center justify-center">
-                            <FaUniversity className="w-6 h-6  text-purple-200" />
-                          </div>
+                          <FaUniversity className="h-6 w-6 text-purple-600 dark:text-purple-200" />
                         )}
+
+                        {/* Organization name tooltip */}
+                        <span
+                          role="tooltip"
+                          className="
+      pointer-events-none
+      absolute bottom-full left-1/2 z-50
+      mb-3 -translate-x-1/2 translate-y-1
+      whitespace-nowrap rounded-lg
+      px-3 py-1.5
+
+      bg-slate-900 text-white
+      dark:bg-purple-950 dark:text-purple-100
+      border border-purple-500/20
+
+      text-xs font-medium
+      shadow-lg shadow-purple-500/10
+
+      opacity-0 invisible
+      group-hover/logo:visible
+      group-hover/logo:opacity-100
+      group-hover/logo:translate-y-0
+      group-focus-within/logo:visible
+      group-focus-within/logo:opacity-100
+
+      transition-all duration-200
+    "
+                        >
+                          {card.company || card.institution || card.title}
+
+                          <span
+                            className="
+        absolute top-full left-1/2
+        -translate-x-1/2 -mt-px
+        h-2 w-2 rotate-45
+        bg-slate-900 dark:bg-purple-950
+        border-r border-b border-purple-500/20
+      "
+                          />
+                        </span>
                       </div>
 
                       <div className="flex-1  min-w-0">
                         <h1 className="font-semibold text-xl sm:text-2xl md:text-3xl">
                           {card.type === "job" ? card.title : card.title}
                         </h1>
+                        <p
+                          className="
+                                  mt-1
+                                  text-base md:text-lg
+                                  font-semibold
+                                  text-purple-600 dark:text-purple-400
+                                   "
+                        >
+                          {card.company || card.institution}
+                        </p>
                         <p className="my-3 sm:my-4 md:my-5 text-white-50 text-sm sm:text-base">
                           🗓️&nbsp;{card.date}
                         </p>
-                        <p className="text-[#839CB5] italic text-sm md:text-base">
-                          {card.type === "job" ? "Skills" : "Skills Learned"}
-                        </p>
-                        {card.type === "job" ? (
-                          <div className="mt-3 sm:mt-4 md:mt-5 flex flex-col gap-3 sm:gap-4 md:gap-5">
-                            {card.skills?.map((skill: Skill, index: number) => (
-                              <div
-                                key={index}
-                                className="flex items-center gap-3"
-                              >
-                                <div className="p-3 w-6 h-6 rounded bg-purple-200 dark:bg-purple-700 flex items-center justify-center text-xs">
-                                  ⚙️
-                                </div>
-                                <p>{skill.name}</p>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="mt-3 sm:mt-4 md:mt-5 flex flex-col gap-3 sm:gap-4 md:gap-5">
-                            {card.skills?.map((skill: Skill, index: number) => (
-                              <div key={index} className="flex flex-col gap-2">
-                                <div className="flex items-center gap-3">
-                                  {skill.icon || skill.image ? (
+                        {card.skills?.some(
+                          (skill) => skill.image?.trim() || skill.icon?.trim(),
+                        ) && (
+                          <>
+                            <p className="text-[#839CB5] italic text-sm md:text-base">
+                              {card.type === "job"
+                                ? "Skills"
+                                : "Skills Learned"}
+                            </p>
+
+                            <ul
+                              aria-label={
+                                card.type === "job"
+                                  ? "Work experience skills"
+                                  : "Education skills"
+                              }
+                              className="mt-3 sm:mt-4 md:mt-5 flex flex-wrap items-center gap-3 sm:gap-4 pb-2"
+                            >
+                              {card.skills.map((skill, skillIndex) => {
+                                const src =
+                                  skill.image?.trim() || skill.icon?.trim();
+                                if (!src) return null;
+
+                                return (
+                                  <li
+                                    key={skillIndex}
+                                    className="relative group/skill shrink-0"
+                                    tabIndex={0}
+                                    aria-label={skill.name}
+                                  >
                                     <Image
-                                      width={24}
-                                      height={24}
-                                      src={
-                                        skill.icon || skill.image || "/app.svg"
-                                      }
-                                      alt={skill.name}
-                                      className="w-6 h-6 rounded object-cover"
+                                      src={src}
+                                      alt=""
+                                      width={40}
+                                      height={40}
+                                      unoptimized
+                                      className="
+            h-10 w-10 object-contain
+            transition-transform duration-300
+            group-hover/skill:scale-110
+          "
                                     />
-                                  ) : (
-                                    <div className="w-6 h-6 rounded bg-purple-200 dark:bg-purple-700 flex items-center justify-center text-xs">
-                                      ⚙️
-                                    </div>
-                                  )}
-                                  <span className="text-sm sm:text-base md:text-lg text-black dark:text-white  font-medium">
-                                    {skill.name}
-                                  </span>
-                                </div>
-                                {skill.description && (
-                                  <p className="text-xs sm:text-sm text-white-50 ml-9">
-                                    {skill.description}
-                                  </p>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+
+                                    {/* Custom tooltip */}
+                                    <span
+                                      role="tooltip"
+                                      className="
+            pointer-events-none
+            absolute bottom-full left-1/2 z-50
+            mb-3 -translate-x-1/2 translate-y-1
+            whitespace-nowrap rounded-lg
+            px-3 py-1.5
+
+            bg-slate-900 text-white
+            dark:bg-purple-950 dark:text-purple-100
+
+            border border-purple-500/20
+            shadow-lg shadow-purple-500/10
+
+            text-xs font-medium
+
+            opacity-0 invisible
+            group-hover/skill:visible
+            group-hover/skill:opacity-100
+            group-hover/skill:translate-y-0
+
+            group-focus-within/skill:visible
+            group-focus-within/skill:opacity-100
+            group-focus-within/skill:translate-y-0
+
+            transition-all duration-200
+          "
+                                    >
+                                      {skill.name}
+
+                                      {/* Tooltip arrow */}
+                                      <span
+                                        className="
+              absolute top-full left-1/2
+              -translate-x-1/2 -mt-[1px]
+              h-2 w-2 rotate-45
+
+              bg-slate-900
+              dark:bg-purple-950
+              border-r border-b border-purple-500/20
+            "
+                                      />
+                                    </span>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </>
                         )}
                         {/* Responsibilities Section */}
                         {card.type === "job" &&
@@ -373,7 +484,7 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
                                     >
                                       {responsibility}
                                     </li>
-                                  )
+                                  ),
                                 )}
                               </ul>
                             </>

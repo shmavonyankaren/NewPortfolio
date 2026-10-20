@@ -3,6 +3,8 @@ export interface Skill {
 }
 
 export interface Skillset {
+  order?: number;
+  image: string;
   _id?: string;
   title: string;
   skills: Skill[];

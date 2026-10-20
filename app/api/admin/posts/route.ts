@@ -1,8 +1,10 @@
+import { OrderError, listOrdered, clearOrdered, createOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import BlogPost from "@/lib/models/BlogPost";
 import { NextRequest, NextResponse } from "next/server";
 
 type Post = {
+  order?: number;
   _id?: string;
   title: string;
   content: string;
@@ -14,12 +16,13 @@ type Post = {
 export async function GET(req: Request) {
   try {
     await connectDB();
-    const blogs: Post[] = await BlogPost.find().sort({ createdAt: -1 });
+    const blogs: Post[] = await listOrdered(BlogPost);
     return new Response(JSON.stringify(blogs), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return new Response(
       JSON.stringify({ message: "Error fetching blog posts", error }),
       {
@@ -33,14 +36,15 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     await connectDB();
-    const { title, content, imageUrl } = await req.json();
-    const newBlogPost = new BlogPost({ title, content, imageUrl });
-    const savedPost: Post = await newBlogPost.save();
+    const { title, content, imageUrl, order } = await req.json();
+    const newBlogPost = await createOrdered(BlogPost, { title, content, imageUrl, order });
+    const savedPost: Post = newBlogPost;
     return new Response(JSON.stringify(savedPost), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return new Response(
       JSON.stringify({ message: "Error creating blog post", error }),
       {
@@ -54,12 +58,13 @@ export async function POST(req: Request) {
 export async function DELETE(req: NextRequest) {
   try {
     await connectDB();
-    await BlogPost.deleteMany({});
+    await clearOrdered(BlogPost);
     return NextResponse.json(
       { message: "All blog posts deleted successfully" },
       { status: 200 }
     );
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return new Response(
       JSON.stringify({ message: "Error deleting blog posts", error }),
       {

@@ -30,7 +30,7 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
 
   const computeActiveIndex = useCallback(() => {
     return navItems.findIndex((item) =>
-      item.link === "/" ? pathName === "/" : pathName.startsWith(item.link)
+      item.link === "/" ? pathName === "/" : pathName.startsWith(item.link),
     );
   }, [navItems, pathName]);
 
@@ -38,7 +38,7 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
   const [visible, setVisible] = useState(true);
   const [isScrollable, setIsScrollable] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number>(() =>
-    computeActiveIndex()
+    computeActiveIndex(),
   );
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
@@ -144,7 +144,7 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
         }}
         className={cn(
           "bg-white/80 dark:bg-[#161a31]/80 flex max-w-fit md:min-w-[70vw] lg:min-w-fit fixed z-5000 top-5 md:top-10 inset-x-0 mx-auto px-5 md:px-8 lg:px-10 py-3 md:py-3 rounded-lg border border-gray-200 dark:border-white/12.5 shadow-lg items-center justify-center gap-2.5 md:gap-4 backdrop-blur-md",
-          className
+          className,
         )}
         style={{
           willChange: "auto",
@@ -152,7 +152,6 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
         }}
       >
         <div className="relative flex items-center gap-2.5 md:gap-4">
-          {/* Animated background indicator */}
           {activeIndex >= 0 && (
             <motion.div
               className="absolute border border-purple-400 dark:border-white/20 bg-purple-50 dark:bg-purple-400/10 rounded-full top-0"
@@ -190,7 +189,7 @@ export const FloatingNav = ({ navItems, className }: FloatingNavbarProps) => {
                   "relative z-10 flex items-center gap-1 text-sm sm:text-sm md:text-sm transition-colors duration-200",
                   isActive
                     ? "font-medium text-purple-700 dark:text-purple-300 px-2.5 sm:px-3 md:px-4 py-2 md:py-2 whitespace-nowrap"
-                    : "text-gray-700 dark:text-neutral-50 hover:text-purple-600 dark:hover:text-neutral-300"
+                    : "text-gray-700 dark:text-neutral-50 hover:text-purple-600 dark:hover:text-neutral-300",
                 )}
               >
                 <span className="hidden sm:block">{navItem.icon}</span>

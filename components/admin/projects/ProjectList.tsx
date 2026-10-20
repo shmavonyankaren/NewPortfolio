@@ -1,24 +1,32 @@
 "use client";
 
+import type { ReactNode } from "react";
+
+import ReorderableList from "../common/ReorderableList";
+
 import { Project } from "./useProjectsManager";
 import ProjectCard from "./ProjectCard";
 
 interface ProjectListProps {
   projects: Project[];
+  editForm: ReactNode;
   editingId: string | null;
   disabled: boolean;
   submittingId: string | null;
   deletingId: string | null;
+  onReordered: () => Promise<void>;
   onEdit: (project: Project) => void;
   onDelete: (id: string) => void;
 }
 
 export default function ProjectList({
   projects,
+  editForm,
   editingId,
   disabled,
   submittingId,
   deletingId,
+  onReordered,
   onEdit,
   onDelete,
 }: ProjectListProps) {
@@ -33,9 +41,8 @@ export default function ProjectList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <ReorderableList items={projects} editingId={editingId} editForm={editForm} endpoint="/api/admin/projects" disabled={disabled || !!submittingId || !!deletingId} onReordered={onReordered}>
       {projects
-        .filter((project) => !editingId || project._id !== editingId)
         .map((project, index) => (
           <ProjectCard
             key={project._id || `project-${index}-${project.title}`}
@@ -47,6 +54,6 @@ export default function ProjectList({
             disabled={disabled}
           />
         ))}
-    </div>
+    </ReorderableList>
   );
 }

@@ -1,8 +1,11 @@
+import { orderHandler } from "@/lib/db/order-handler";
+import { OrderError, updateOrdered, deleteOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import { Education as EducationModel } from "@/lib/models/Education";
 import { NextRequest, NextResponse } from "next/server";
 
 type Education = {
+  order?: number;
   _id?: string;
   institution: string;
   degree?: string;
@@ -10,7 +13,7 @@ type Education = {
   startDate: Date;
   endDate?: Date;
   description: string;
-  logo?: string;
+  logo: string;
   isCurrentlyStudying: boolean;
   skills: Array<{
     name: string;
@@ -35,6 +38,7 @@ export async function GET(
     }
     return NextResponse.json(education);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       {
         error: `Failed to fetch education: ${
@@ -54,6 +58,10 @@ export async function PUT(
     await connectDB();
     const { id } = await params;
     const data: Education = await request.json();
+    if (typeof data.logo !== "string" || !data.logo.trim()) {
+      return NextResponse.json({ error: "An institution or company logo is required." }, { status: 400 });
+    }
+    data.logo = data.logo.trim();
 
     // Log incoming data for debugging
     console.log(
@@ -122,14 +130,14 @@ export async function PUT(
     console.log("Updating skills:", JSON.stringify(updateData.skills, null, 2));
 
     // Fetch existing education
-    const education = await EducationModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const education = await updateOrdered(EducationModel, id, updateData);
 
+    if (!education) return NextResponse.json({ error: "Item not found" }, { status: 404 });
     console.log("Education updated successfully:", education._id);
     console.log("Final education object:", JSON.stringify(education, null, 2));
     return NextResponse.json(education);
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : "";
     console.error("Failed to update education - Error:", errorMessage);
@@ -153,7 +161,7 @@ export async function DELETE(
   try {
     await connectDB();
     const { id } = await params;
-    const education = await EducationModel.findByIdAndDelete(id);
+    const education = await deleteOrdered(EducationModel, id);
     if (!education) {
       return NextResponse.json(
         { error: "Education not found" },
@@ -162,6 +170,7 @@ export async function DELETE(
     }
     return NextResponse.json({ message: "Education deleted successfully" });
   } catch (error) {
+    if (error instanceof OrderError) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(
       {
         error: `Failed to delete education: ${
@@ -172,3 +181,5 @@ export async function DELETE(
     );
   }
 }
+
+export const PATCH = orderHandler(EducationModel);

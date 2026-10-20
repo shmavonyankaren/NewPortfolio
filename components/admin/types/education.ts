@@ -5,6 +5,7 @@ export interface Skill {
 }
 
 export interface Education {
+  order?: number;
   _id?: string;
   institution: string;
   degree?: string;
@@ -12,7 +13,7 @@ export interface Education {
   startDate: string;
   endDate?: string;
   description: string;
-  logo?: string;
+  logo: string;
   isCurrentlyStudying: boolean;
   skills: Skill[];
 }

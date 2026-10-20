@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
 import ConfirmDialog from "./ConfirmDialog";
 import { Skillset } from "./types/skillset";
 import { SkillsetHeader, SkillsetForm, SkillsetList } from "./skillset";
@@ -12,6 +13,7 @@ export default function SkillsAndExpertiseManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Skillset>({
     title: "",
+    image: DEFAULT_CONTENT_IMAGE,
     skills: [],
   });
   const [confirmDialog, setConfirmDialog] = useState({
@@ -41,6 +43,10 @@ export default function SkillsAndExpertiseManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.image?.trim()) {
+      alert("A skillset image is required.");
+      return;
+    }
     try {
       console.log("Submitting skillset data:", formData);
 
@@ -67,9 +73,7 @@ export default function SkillsAndExpertiseManager() {
         }
 
         console.log("Skillset updated successfully:", responseData);
-        setSkillsets(
-          skillsets.map((s) => (s._id === editingId ? responseData : s))
-        );
+        await fetchSkillsets();
       } else {
         const res = await fetch("/api/admin/skillsets", {
           method: "POST",
@@ -93,7 +97,7 @@ export default function SkillsAndExpertiseManager() {
         }
 
         console.log("Skillset created successfully:", responseData);
-        setSkillsets([...skillsets, responseData]);
+        await fetchSkillsets();
       }
       resetForm();
     } catch (error) {
@@ -115,7 +119,7 @@ export default function SkillsAndExpertiseManager() {
       onConfirm: async () => {
         try {
           await fetch(`/api/admin/skillsets/${id}`, { method: "DELETE" });
-          setSkillsets(skillsets.filter((s) => s._id !== id));
+          await fetchSkillsets();
         } catch (error) {
           console.error("Failed to delete skillset:", error);
         }
@@ -149,6 +153,7 @@ export default function SkillsAndExpertiseManager() {
   const handleEdit = (skillset: Skillset) => {
     setFormData({
       ...skillset,
+      image: skillset.image || DEFAULT_CONTENT_IMAGE,
       skills: skillset.skills || [],
     });
     setEditingId(skillset._id || null);
@@ -158,6 +163,7 @@ export default function SkillsAndExpertiseManager() {
   const resetForm = () => {
     setFormData({
       title: "",
+      image: DEFAULT_CONTENT_IMAGE,
       skills: [],
     });
     setEditingId(null);
@@ -192,9 +198,27 @@ export default function SkillsAndExpertiseManager() {
     if (showForm && !editingId) {
       resetForm();
     } else {
+      resetForm();
       setShowForm(true);
     }
   };
+
+  const form = (
+    <SkillsetForm
+      itemCount={skillsets.length}
+      formData={formData}
+      editingId={editingId}
+      showSkillInput={showSkillInput}
+      tempSkillName={tempSkillName}
+      onFormChange={handleFormChange}
+      onSkillNameChange={setTempSkillName}
+      onAddSkill={handleAddSkill}
+      onRemoveSkill={handleRemoveSkill}
+      onShowSkillInput={setShowSkillInput}
+      onSubmit={handleSubmit}
+      onCancel={resetForm}
+    />
+  );
 
   if (loading)
     return (
@@ -220,23 +244,11 @@ export default function SkillsAndExpertiseManager() {
         confirmText="Delete"
       />
 
-      {showForm && (
-        <SkillsetForm
-          formData={formData}
-          editingId={editingId}
-          showSkillInput={showSkillInput}
-          tempSkillName={tempSkillName}
-          onFormChange={handleFormChange}
-          onSkillNameChange={setTempSkillName}
-          onAddSkill={handleAddSkill}
-          onRemoveSkill={handleRemoveSkill}
-          onShowSkillInput={setShowSkillInput}
-          onSubmit={handleSubmit}
-          onCancel={resetForm}
-        />
-      )}
+      {showForm && !editingId && form}
 
       <SkillsetList
+        editForm={showForm ? form : null}
+        onReordered={fetchSkillsets}
         skillsets={skillsets}
         editingId={editingId}
         showForm={showForm}

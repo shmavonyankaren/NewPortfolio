@@ -1,20 +1,28 @@
 "use client";
 
+import type { ReactNode } from "react";
+
+import ReorderableList from "../common/ReorderableList";
+
 import { Skillset } from "../types/skillset";
 import SkillsetCard from "./SkillsetCard";
 
 interface SkillsetListProps {
   skillsets: Skillset[];
+  editForm: ReactNode;
   editingId: string | null;
   showForm: boolean;
+  onReordered: () => Promise<void>;
   onEdit: (skillset: Skillset) => void;
   onDelete: (id: string) => void;
 }
 
 export default function SkillsetList({
   skillsets,
+  editForm,
   editingId,
   showForm,
+  onReordered,
   onEdit,
   onDelete,
 }: SkillsetListProps) {
@@ -29,9 +37,8 @@ export default function SkillsetList({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <ReorderableList items={skillsets} editingId={editingId} editForm={editForm} endpoint="/api/admin/skillsets" disabled={showForm} onReordered={onReordered}>
       {skillsets
-        .filter((s) => s._id !== editingId)
         .map((skillset, index) => (
           <SkillsetCard
             key={skillset._id || `skillset-${index}`}
@@ -42,6 +49,6 @@ export default function SkillsetList({
             onDelete={() => onDelete(skillset._id!)}
           />
         ))}
-    </div>
+    </ReorderableList>
   );
 }

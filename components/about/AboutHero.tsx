@@ -7,7 +7,7 @@ function getFilenameFromUrl(url: string, fallback: string) {
   try {
     const pathname = new URL(
       url,
-      typeof window !== "undefined" ? window.location.href : "http://localhost"
+      typeof window !== "undefined" ? window.location.href : "http://localhost",
     ).pathname;
     const last = pathname.split("/").filter(Boolean).pop();
     if (last && last.includes(".")) return last;
@@ -61,9 +61,8 @@ const AboutHero = ({ generalInfo, cvUrl }: AboutHeroProps) => {
   return (
     <section className="pt-30 py-12 sm:py-16 sm:pt-33 md:py-20 md:pt-36 min-h-screen flex items-center justify-center">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-        {/* Image */}
-        <div className="flex justify-center">
-          <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-3xl overflow-hidden shadow-2xl border-2 border-purple-500/30">
+        <div className="flex justify-center h-full mt-0 md:mt-52">
+          <div className="relative w-64 h-64 sm:w-96 sm:h-96 rounded-3xl overflow-hidden shadow-2xl border-2 border-purple-500/30">
             <Image
               src={userPhoto}
               alt="Profile"
@@ -73,7 +72,6 @@ const AboutHero = ({ generalInfo, cvUrl }: AboutHeroProps) => {
           </div>
         </div>
 
-        {/* Content */}
         <div className="space-y-4 sm:space-y-5 md:space-y-6">
           <h1 className="heading text-3xl sm:text-4xl md:text-5xl">
             <div className="inline-block">

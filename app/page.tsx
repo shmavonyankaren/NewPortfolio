@@ -15,7 +15,7 @@ async function fetchGeneralInfo() {
       }/api/admin/general-info`,
       {
         next: { revalidate: 60 },
-      }
+      },
     );
     if (!res.ok) return null;
     return res.json();
@@ -33,7 +33,7 @@ async function fetchProjects() {
       }/api/admin/projects`,
       {
         next: { revalidate: 60 },
-      }
+      },
     );
     if (!res.ok) return [];
     return res.json();
@@ -51,7 +51,7 @@ async function fetchJobs() {
       }/api/admin/jobs`,
       {
         next: { revalidate: 60 },
-      }
+      },
     );
     if (!res.ok) return [];
     return res.json();
@@ -69,7 +69,7 @@ async function fetchEducation() {
       }/api/admin/educations`,
       {
         next: { revalidate: 60 },
-      }
+      },
     );
     if (!res.ok) return [];
     return res.json();
@@ -87,7 +87,7 @@ async function fetchComments() {
       }/api/admin/comments`,
       {
         next: { revalidate: 60 },
-      }
+      },
     );
     if (!res.ok) return [];
     return res.json();
@@ -113,9 +113,7 @@ const Home = async () => {
         <Grid />
         <RecentProjects projects={projects} />
         <Clients insights={comments} />
-        {/* <Experience /> */}
         <ExperienceSection jobs={jobs} education={education} />
-        {/* <Approach /> */}
         <Footer />
       </div>
     </main>
