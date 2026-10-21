@@ -60,6 +60,12 @@ async function until(check) {
     ];
     for (const [tab, key, sections] of cases) {
       await page.getByRole("button", { name: tab, exact: true }).click();
+      if (key === "educations") {
+        const card = page.locator("[data-reorder-id]").first();
+        await card.getByRole("region", { name: "Key Learning Outcomes" }).waitFor();
+        assert.deepEqual(await card.getByRole("region", { name: "Key Learning Outcomes" }).locator("li").allTextContents(), ["Alpha", "Beta", "Gamma"]);
+        assert.equal(await card.getByText("Alpha description", { exact: true }).count(), 0);
+      }
       await page.locator("[data-reorder-id]").first().getByTitle("Edit", { exact: true }).click();
       const form = page.locator("form");
       const submit = form.locator('button[type="submit"]');
