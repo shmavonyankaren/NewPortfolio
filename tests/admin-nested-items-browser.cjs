@@ -30,6 +30,7 @@ async function until(check) {
       institution: "University", field: "Computing", degree: "BSc", description: "Existing description", shortDescription: "Summary",
       image: "/assets/images/logo1.png", logo: "/assets/images/logo1.png", startDate: "2020-01-01", endDate: "2022-01-01",
       status: "Live & Maintained", teamType: "solo", duration: "1 year", skills: named(),
+      learningOutcomes: ["Alpha", "Beta", "Gamma"],
       responsibilities: ["Alpha", "Beta", "Gamma"].map(name => ({ name })),
       technologies: ["Alpha", "Beta", "Gamma"].map(name => ({ name, icon: "/assets/images/logo1.png" })),
       features: ["Alpha", "Beta", "Gamma"].map(title => ({ title, description: title + " description" })),
@@ -53,7 +54,7 @@ async function until(check) {
     await page.goto("http://localhost:3000/admin-dashboard");
     const cases = [
       ["Skills & Expertise", "skillsets", [["Skills", "Skill", "skills", "name", "Skill Name"]]],
-      ["Education", "educations", [["Skills", "Skill", "skills", "name", "Skill Name"]]],
+      ["Education", "educations", [["Skills Learned", "Skill", "skills", "name", "Skill Name"], ["Key Learning Outcomes", "Learning Outcome", "learningOutcomes", "name", "Learning Outcome"]]],
       ["Jobs", "jobs", [["Skills", "Skill", "skills", "name", "Skill Name"], ["Responsibilities", "Responsibility", "responsibilities", "name", "Responsibility Description"]]],
       ["Projects", "projects", [["Technologies & Tools", "Technology", "technologies", "name", "Technology Name"], ["Key Features", "Feature", "features", "title", "Feature Title"], ["Challenges & Solutions", "Challenge", "challenges", "challenge", "Challenge"]]]
     ];
@@ -90,7 +91,7 @@ async function until(check) {
         assert.equal(await section.getByRole("button", { name: "Save " + singular, exact: true }).isDisabled(), true);
         await section.getByRole("textbox", { name: label + " *", exact: true }).fill("Edited Gamma");
         await section.getByRole("button", { name: "Save " + singular, exact: true }).click();
-        expected[field] = [base[field][0], { ...base[field][2], [primary]: "Edited Gamma" }, base[field][1]];
+        expected[field] = field === "learningOutcomes" ? ["Alpha", "Edited Gamma", "Beta"] : [base[field][0], { ...base[field][2], [primary]: "Edited Gamma" }, base[field][1]];
       }
       await until(() => submit.isEnabled());
       const before = saves.length;
@@ -106,6 +107,6 @@ async function until(check) {
       await page.locator("form").getByRole("button", { name: "Cancel", exact: true }).click();
     }
     assert.deepEqual(errors, []);
-    console.log("PASS: all seven nested lists support pointer/keyboard reordering, edit/cancel, validation, save/reload, and preservation of existing item fields.");
+    console.log("PASS: all nested lists support pointer/keyboard reordering, edit/cancel, validation, save/reload, and preservation of existing item fields.");
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

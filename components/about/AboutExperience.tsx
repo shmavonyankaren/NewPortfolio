@@ -1,3 +1,4 @@
+import DetailBulletList from "@/components/DetailBulletList";
 import React from "react";
 import ContentLogo from "@/components/ContentLogo";
 import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
@@ -12,6 +13,7 @@ interface AboutExperienceProps {
     endDate: string;
     isCurrentlyWorking: boolean;
     description: string;
+    responsibilities?: { name: string }[];
     skills?: { name: string }[];
   }[];
 }
@@ -19,6 +21,7 @@ interface AboutExperienceProps {
 const AboutExperience = ({ jobs }: AboutExperienceProps) => {
   const fallbackExperience = [
     {
+      responsibilities: [] as string[],
       title: "Senior Frontend Developer",
       logo: DEFAULT_CONTENT_IMAGE,
       company: "Tech Innovations Inc.",
@@ -34,6 +37,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
       ],
     },
     {
+      responsibilities: [] as string[],
       title: "Full Stack Developer",
       logo: DEFAULT_CONTENT_IMAGE,
       company: "StartUp Ventures LLC",
@@ -43,6 +47,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
       skills: ["Node.js", "React", "MongoDB", "PostgreSQL", "AWS"],
     },
     {
+      responsibilities: [] as string[],
       title: "Junior Frontend Developer",
       logo: DEFAULT_CONTENT_IMAGE,
       company: "Digital Solutions Co.",
@@ -71,6 +76,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
                 })
           }`,
           description: job.description,
+          responsibilities: job.responsibilities?.map(item => item.name) || [],
           skills: job.skills?.map((s: { name: string }) => s.name) || [],
         }))
       : fallbackExperience;
@@ -126,6 +132,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
                   </span>
                 ))}
               </div>
+              <DetailBulletList items={exp.responsibilities} title="Responsibilities" />
             </div>
           ))}
         </div>

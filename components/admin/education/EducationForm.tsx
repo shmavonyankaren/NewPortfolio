@@ -44,9 +44,10 @@ export default function EducationForm({
   onSubmit,
   onCancel,
 }: EducationFormProps) {
+  const [editingOutcome, setEditingOutcome] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   return (
-    <AdminForm complete={!!formData.logo?.trim()} pendingEdits={showSkillInput || editingSkillIndex !== null}
+    <AdminForm complete={!!formData.logo?.trim()} pendingEdits={showSkillInput || editingSkillIndex !== null || editingOutcome}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >
@@ -150,10 +151,18 @@ export default function EducationForm({
       </div>
 
       <NestedItemsEditor
-        title="Skills" singular="Skill"
-        items={formData.skills} fields={[{ key: "name", label: "Skill Name", required: true }, { key: "image", label: "Icon/Logo", kind: "image" }, { key: "description", label: "Description", kind: "textarea" }]}
+        title="Skills Learned" singular="Skill"
+        items={formData.skills} fields={[{ key: "name", label: "Skill Name", required: true }, { key: "image", label: "Icon/Logo", kind: "image" }]}
         onChange={skills => onFormChange({ skills })}
         onEditingChange={onShowSkillInput}
+      />
+
+      <NestedItemsEditor
+        title="Key Learning Outcomes" singular="Learning Outcome"
+        items={(formData.learningOutcomes || []).map(name => ({ name }))}
+        fields={[{ key: "name", label: "Learning Outcome", kind: "textarea", required: true }]}
+        onChange={items => onFormChange({ learningOutcomes: items.map(item => item.name) })}
+        onEditingChange={setEditingOutcome}
       />
 
       <div className="flex gap-2">

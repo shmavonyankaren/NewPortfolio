@@ -1,3 +1,4 @@
+import { normalizeLearningOutcomes } from "@/lib/learning-outcomes";
 import { orderHandler } from "@/lib/db/order-handler";
 import { OrderError, updateOrdered, deleteOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
@@ -15,6 +16,7 @@ type Education = {
   description: string;
   logo: string;
   isCurrentlyStudying: boolean;
+  learningOutcomes?: string[];
   skills: Array<{
     name: string;
     image?: string;
@@ -62,6 +64,14 @@ export async function PUT(
       return NextResponse.json({ error: "An institution or company logo is required." }, { status: 400 });
     }
     data.logo = data.logo.trim();
+    // Omission on update preserves outcomes saved by newer clients.
+    if (data.learningOutcomes !== undefined) {
+      try {
+        data.learningOutcomes = normalizeLearningOutcomes(data.learningOutcomes);
+      } catch {
+        return NextResponse.json({ error: "Learning outcomes must be an array of strings." }, { status: 400 });
+      }
+    }
 
     // Log incoming data for debugging
     console.log(

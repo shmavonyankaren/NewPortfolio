@@ -387,3 +387,35 @@ test("About education and jobs display saved logos and default images", () => {
     assert.ok(render("   ").includes('src="/assets/images/logo1.png"'));
   }
 });
+
+
+test("education outcomes validate, persist in order, and preserve legacy skills", async t => {
+  t.mock.method(console, "log", () => {});
+  const collection = require("../app/api/admin/educations/route.ts");
+  const item = require("../app/api/admin/educations/[id]/route.ts");
+  const request = payload => new Request("http://localhost", { method: "POST", body: JSON.stringify(payload) });
+  await collection.DELETE();
+  const data = { ...fixtures.educations, skills: [{ name: "TypeScript", image: "/custom-icon.svg", description: "Keep this description" }] };
+  const created = await collection.POST(request({ ...data, learningOutcomes: [" First ", "", "Second", "  "] }));
+  assert.equal(created.status, 201);
+  const body = await created.json();
+  assert.deepEqual(body.learningOutcomes, ["First", "Second"]);
+  const params = { params: Promise.resolve({ id: body._id }) };
+  const updated = await item.PUT(request({ ...data, learningOutcomes: ["Second", "Third", "First"] }), params);
+  assert.equal(updated.status, 200);
+  assert.deepEqual((await updated.json()).learningOutcomes, ["Second", "Third", "First"]);
+  await item.PUT(request(data), params);
+  let saved = await (await item.GET(request({}), params)).json();
+  assert.deepEqual(saved.learningOutcomes, ["Second", "Third", "First"]);
+  assert.equal(saved.skills[0].description, data.skills[0].description);
+  assert.equal(saved.skills[0].image, data.skills[0].image);
+  for (const invalid of [null, "text", [3], [{}]]) {
+    assert.equal((await item.PUT(request({ ...data, learningOutcomes: invalid }), params)).status, 400);
+    assert.equal((await collection.POST(request({ ...data, learningOutcomes: invalid }))).status, 400);
+  }
+  await Education.collection.updateOne({ _id: new mongoose.Types.ObjectId(body._id) }, { $unset: { learningOutcomes: "" } });
+  saved = await (await item.GET(request({}), params)).json();
+  assert.deepEqual(saved.learningOutcomes, []);
+  assert.equal(saved.skills[0].description, data.skills[0].description);
+  assert.equal((await Education.collection.findOne({ _id: new mongoose.Types.ObjectId(body._id) })).learningOutcomes, undefined, "read defaults do not mutate old records");
+});

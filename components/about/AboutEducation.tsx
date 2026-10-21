@@ -1,3 +1,4 @@
+import DetailBulletList from "@/components/DetailBulletList";
 import React from "react";
 import ContentLogo from "@/components/ContentLogo";
 import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
@@ -13,6 +14,7 @@ interface AboutEducationProps {
     endDate: string;
     isCurrentlyStudying: boolean;
     description: string;
+    learningOutcomes?: string[];
     skills?: {
       name: string;
       image?: string;
@@ -32,6 +34,7 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
       description:
         "Focused on software development, web technologies, and computer architecture. Achieved a 3.8 GPA with honors.",
       skills: [],
+      learningOutcomes: [],
     },
     {
       degree: "Master of Science",
@@ -42,6 +45,7 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
       description:
         "Specialized in full-stack development, cloud technologies, and modern web frameworks.",
       skills: [],
+      learningOutcomes: [],
     },
   ];
 
@@ -59,6 +63,7 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
           }`,
           description: edu.description,
           skills: edu.skills || [],
+          learningOutcomes: edu.learningOutcomes || [],
         }))
       : fallbackEducation;
 
@@ -106,51 +111,16 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
                 {edu.description}
               </p>
 
-              {edu.skills && edu.skills.length > 0 && (
-                <div className="mt-5 space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-300">
-                    Skills
-                  </h4>
-                  <div className="space-y-3">
-                    {edu.skills.map((skill, skillIdx) => {
-                      const logoSrc =
-                        skill.image && skill.image.trim() !== "" && skill.image;
-                      return (
-                        <div
-                          key={skillIdx}
-                          className="flex items-start gap-3 rounded-xl border border-gray-100 dark:border-purple-500/15 bg-gray-50/70 dark:bg-white/5 p-3"
-                        >
-                          {logoSrc ? (
-                            <div className="shrink-0 w-12 h-12 rounded-full bg-white dark:bg-[#161a31] border border-gray-100 dark:border-purple-500/20 flex items-center justify-center overflow-hidden">
-                              <Image
-                                src={logoSrc}
-                                alt={skill.name || "Skill logo"}
-                                width={48}
-                                height={48}
-                                className="object-contain p-2"
-                              />
-                            </div>
-                          ) : (
-                            <div className="p-3 w-6 h-6 rounded bg-purple-200 dark:bg-purple-700 flex items-center justify-center text-xs">
-                              ⚙️
-                            </div>
-                          )}
-                          <div className="space-y-1">
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {skill.name}
-                            </p>
-                            {skill.description && (
-                              <p className="text-sm text-gray-600 dark:text-[#bec1dd] leading-relaxed">
-                                {skill.description}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {edu.skills.some(skill => skill.name.trim()) && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {edu.skills.filter(skill => skill.name.trim()).map((skill, index) => (
+                    <span key={index} className="px-3 py-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm">
+                      {skill.name}
+                    </span>
+                  ))}
                 </div>
               )}
+              <DetailBulletList items={edu.learningOutcomes} title="Key Learning Outcomes" />
             </div>
           ))}
         </div>

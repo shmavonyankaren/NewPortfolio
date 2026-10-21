@@ -15,6 +15,7 @@ export interface IEducation extends Document {
     image?: string;
     description?: string;
   }>;
+  learningOutcomes: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -30,6 +31,7 @@ const EducationSchema = new Schema<IEducation>(
     description: { type: String, required: true },
     logo: { type: String, required: true, trim: true },
     isCurrentlyStudying: { type: Boolean, default: false },
+    learningOutcomes: { type: [String], default: [] },
     skills: {
       type: [
         {
@@ -46,7 +48,7 @@ const EducationSchema = new Schema<IEducation>(
 
 // Next.js hot reload can retain a model compiled before these fields existed.
 const cachedModel = mongoose.models.Education;
-if (cachedModel && (!cachedModel.schema.path("order") || cachedModel.schema.path("logo")?.options.required !== true)) {
+if (cachedModel && (!cachedModel.schema.path("learningOutcomes") || !cachedModel.schema.path("order") || cachedModel.schema.path("logo")?.options.required !== true)) {
   mongoose.deleteModel("Education");
 }
 

@@ -16,4 +16,5 @@ export interface Education {
   logo: string;
   isCurrentlyStudying: boolean;
   skills: Skill[];
+  learningOutcomes?: string[];
 }

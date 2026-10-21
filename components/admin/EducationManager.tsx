@@ -21,6 +21,7 @@ export default function EducationManager() {
     logo: DEFAULT_CONTENT_IMAGE,
     isCurrentlyStudying: false,
     skills: [],
+    learningOutcomes: [],
   });
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -61,6 +62,7 @@ export default function EducationManager() {
       // Prepare data with proper date formatting
       const dataToSubmit = {
         ...formData,
+        learningOutcomes: (formData.learningOutcomes || []).map(item => item.trim()).filter(Boolean),
         startDate: formData.startDate
           ? new Date(formData.startDate).toISOString()
           : new Date().toISOString(),
@@ -187,6 +189,7 @@ export default function EducationManager() {
       startDate: formatDate(education.startDate),
       endDate: formatDate(education.endDate),
       skills: education.skills || [],
+      learningOutcomes: education.learningOutcomes || [],
     });
     setEditingId(education._id || null);
     setShowForm(true);
@@ -203,6 +206,7 @@ export default function EducationManager() {
       logo: DEFAULT_CONTENT_IMAGE,
       isCurrentlyStudying: false,
       skills: [],
+      learningOutcomes: [],
     });
     setEditingId(null);
     setShowForm(false);

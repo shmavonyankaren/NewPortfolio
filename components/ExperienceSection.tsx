@@ -1,5 +1,8 @@
 "use client";
 
+import SkillIconList from "./SkillIconList";
+import DetailBulletList from "./DetailBulletList";
+
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -31,6 +34,7 @@ interface Job {
 }
 
 interface Education {
+  learningOutcomes?: string[];
   institution: string;
   degree?: string;
   field: string;
@@ -51,6 +55,7 @@ interface ExperienceCard {
   title: string;
   date: string;
   responsibilities?: string[];
+  learningOutcomes?: string[];
   skills?: Skill[];
   type: "job" | "education";
 }
@@ -94,7 +99,7 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
           review: edu.description || "",
           imgPath: "/exp1.svg",
           logoPath: edu.logo || "",
-          title: edu.field,
+          title: [edu.degree, edu.field].filter(Boolean).join(" - "),
           date: `${new Date(edu.startDate).toLocaleDateString("en-US", {
             month: "long",
             year: "numeric",
@@ -107,6 +112,7 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
                 })
           }`,
           skills: edu.skills || [],
+          learningOutcomes: edu.learningOutcomes || [],
           type: "education",
         }))
       : [];
@@ -223,7 +229,7 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
   return (
     <section
       id="experience"
-      className="flex justify-center items-center md:mt-40 mt-20 section-padding xl:px-0"
+      className="flex justify-center items-center md:mt-20 section-padding xl:px-0"
     >
       <div className="w-full h-full px-4 sm:px-5 md:px-10 lg:px-20">
         <h1 className="heading flex flex-col text-center gap-2 sm:gap-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
@@ -372,133 +378,25 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
                         <p className="my-3 sm:my-4 md:my-5 text-white-50 text-sm sm:text-base">
                           🗓️&nbsp;{card.date}
                         </p>
-                        {card.skills?.some(
-                          (skill) => skill.image?.trim() || skill.icon?.trim(),
-                        ) && (
-                          <>
-                            <p className="text-[#839CB5] italic text-sm md:text-base">
-                              {card.type === "job"
-                                ? "Skills"
-                                : "Skills Learned"}
-                            </p>
-
-                            <ul
-                              aria-label={
-                                card.type === "job"
-                                  ? "Work experience skills"
-                                  : "Education skills"
-                              }
-                              className="mt-3 sm:mt-4 md:mt-5 flex flex-wrap items-center gap-3 sm:gap-4 pb-2"
-                            >
-                              {card.skills.map((skill, skillIndex) => {
-                                const src =
-                                  skill.image?.trim() || skill.icon?.trim();
-                                if (!src) return null;
-
-                                return (
-                                  <li
-                                    key={skillIndex}
-                                    className="relative group/skill shrink-0"
-                                    tabIndex={0}
-                                    aria-label={skill.name}
-                                  >
-                                    <Image
-                                      src={src}
-                                      alt=""
-                                      width={40}
-                                      height={40}
-                                      unoptimized
-                                      className="
-            h-10 w-10 object-contain
-            transition-transform duration-300
-            group-hover/skill:scale-110
-          "
-                                    />
-
-                                    {/* Custom tooltip */}
-                                    <span
-                                      role="tooltip"
-                                      className="
-            pointer-events-none
-            absolute bottom-full left-1/2 z-50
-            mb-3 -translate-x-1/2 translate-y-1
-            whitespace-nowrap rounded-lg
-            px-3 py-1.5
-
-            bg-slate-900 text-white
-            dark:bg-purple-950 dark:text-purple-100
-
-            border border-purple-500/20
-            shadow-lg shadow-purple-500/10
-
-            text-xs font-medium
-
-            opacity-0 invisible
-            group-hover/skill:visible
-            group-hover/skill:opacity-100
-            group-hover/skill:translate-y-0
-
-            group-focus-within/skill:visible
-            group-focus-within/skill:opacity-100
-            group-focus-within/skill:translate-y-0
-
-            transition-all duration-200
-          "
-                                    >
-                                      {skill.name}
-
-                                      {/* Tooltip arrow */}
-                                      <span
-                                        className="
-              absolute top-full left-1/2
-              -translate-x-1/2 -mt-[1px]
-              h-2 w-2 rotate-45
-
-              bg-slate-900
-              dark:bg-purple-950
-              border-r border-b border-purple-500/20
-            "
-                                      />
-                                    </span>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          </>
-                        )}
-                        {/* Responsibilities Section */}
-                        {card.type === "job" &&
-                          card.responsibilities &&
-                          card.responsibilities.length > 0 && (
-                            <>
-                              <p className="mt-5 text-[#839CB5] italic text-sm md:text-base">
-                                {" "}
-                                Responsibilities
-                              </p>
-                              <ul className="list-disc ms-5 mt-3 sm:mt-4 md:mt-5 flex flex-col gap-2 sm:gap-3 md:gap-4 lg:gap-5 text-white-50">
-                                {card.responsibilities.map(
-                                  (responsibility: string, index: number) => (
-                                    <li
-                                      key={index}
-                                      className="text-sm sm:text-base md:text-lg"
-                                    >
-                                      {responsibility}
-                                    </li>
-                                  ),
-                                )}
-                              </ul>
-                            </>
-                          )}
-                        {/* {card.type === "education" && (
-                          <p className="text-[#839CB5] italic text-sm md:text-base mt-4">
-                            📚 Education
-                          </p>
-                        )}
-                        {card.type === "job" && (
-                          <p className="text-[#839CB5] italic text-sm md:text-base mt-4">
-                            💼 Work Experience
-                          </p>
-                        )} */}
+                        <SkillIconList
+                          skills={card.skills}
+                          title={
+                            card.type === "job" ? "Skills" : "Skills Learned"
+                          }
+                        />
+                        <DetailBulletList
+                          items={
+                            card.type === "job"
+                              ? card.responsibilities
+                              : card.learningOutcomes
+                          }
+                          title={
+                            card.type === "job"
+                              ? "Responsibilities"
+                              : "Key Learning Outcomes"
+                          }
+                          onToggle={() => ScrollTrigger.refresh()}
+                        />
                       </div>
                     </div>
                   </div>

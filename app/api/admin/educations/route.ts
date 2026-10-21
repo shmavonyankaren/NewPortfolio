@@ -1,3 +1,4 @@
+import { normalizeLearningOutcomes } from "@/lib/learning-outcomes";
 import { OrderError, listOrdered, createOrdered, clearOrdered } from "@/lib/db/ordering";
 import { connectDB } from "@/lib/db/connection";
 import { Education as EducationModel } from "@/lib/models/Education";
@@ -14,6 +15,7 @@ type Education = {
   description: string;
   logo: string;
   isCurrentlyStudying: boolean;
+  learningOutcomes?: string[];
   skills: Array<{
     name: string;
     image?: string;
@@ -44,6 +46,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "An institution or company logo is required." }, { status: 400 });
     }
     data.logo = data.logo.trim();
+    // Omission on update preserves outcomes saved by newer clients.
+    if (data.learningOutcomes !== undefined) {
+      try {
+        data.learningOutcomes = normalizeLearningOutcomes(data.learningOutcomes);
+      } catch {
+        return NextResponse.json({ error: "Learning outcomes must be an array of strings." }, { status: 400 });
+      }
+    }
 
     // Log incoming data for debugging
     console.log("Incoming education data:", JSON.stringify(data, null, 2));
