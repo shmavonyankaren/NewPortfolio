@@ -1,7 +1,9 @@
 "use client";
+import { usePublicText } from "@/i18n/text";
+
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 function getFilenameFromUrl(url: string, fallback: string) {
   try {
@@ -28,9 +30,10 @@ interface AboutHeroProps {
 }
 
 const AboutHero = ({ generalInfo, cvUrl }: AboutHeroProps) => {
+  const t = usePublicText();
   const description =
     generalInfo?.fullDescription ||
-    "Hi! I'm Karen, a passionate full-stack developer with a keen interest in creating beautiful and functional web applications. With over 5 years of experience in web development, I've worked with startups and established companies to bring their visions to life.";
+    t("Hi! I'm Karen, a passionate full-stack developer with a keen interest in creating beautiful and functional web applications. With over 5 years of experience in web development, I've worked with startups and established companies to bring their visions to life.");
   const userPhoto =
     generalInfo?.userPhoto && generalInfo.userPhoto.trim() !== ""
       ? generalInfo.userPhoto
@@ -65,7 +68,7 @@ const AboutHero = ({ generalInfo, cvUrl }: AboutHeroProps) => {
           <div className="relative w-64 h-64 sm:w-96 sm:h-96 rounded-3xl overflow-hidden shadow-2xl border-2 border-purple-500/30">
             <Image
               src={userPhoto}
-              alt="Profile"
+              alt={t("Profile")}
               fill
               className="object-cover"
             />
@@ -76,8 +79,7 @@ const AboutHero = ({ generalInfo, cvUrl }: AboutHeroProps) => {
           <h1 className="heading text-3xl sm:text-4xl md:text-5xl">
             <div className="inline-block">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 bg-clip-text text-transparent">
-                About Me
-              </h1>
+                {t("About Me")}</h1>
               <div className="h-1 w-full bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 rounded-full"></div>
             </div>
           </h1>
@@ -90,14 +92,12 @@ const AboutHero = ({ generalInfo, cvUrl }: AboutHeroProps) => {
               onClick={handleDownload}
               className="px-6 sm:px-8 py-2 sm:py-3 bg-purple-600 dark:bg-purple-500 hover:bg-purple-700 dark:hover:bg-purple-600 text-white rounded-lg font-semibold transition-colors inline-block text-sm sm:text-base"
             >
-              Download Resume
-            </a>
+              {t("Download Resume")}</a>
             <Link
               href="/contact"
               className="px-6 sm:px-8 py-2 sm:py-3 border-2 border-purple-600 dark:border-purple-500 text-purple-600 dark:text-purple-300 hover:bg-purple-600/10 rounded-lg font-semibold transition-colors inline-block text-sm sm:text-base"
             >
-              Contact Me
-            </Link>
+              {t("Contact Me")}</Link>
           </div>
         </div>
       </div>

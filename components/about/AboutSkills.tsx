@@ -1,3 +1,4 @@
+import { usePublicText, translateStatic } from "@/i18n/text";
 import ContentLogo from "@/components/ContentLogo";
 import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
 import Image from "next/image";
@@ -11,6 +12,7 @@ interface AboutSkillsProps {
 }
 
 const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
+  const t = usePublicText();
   const fallbackSkills = [
     {
       title: "Frontend Development",
@@ -93,7 +95,7 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
           image: skillset.image || DEFAULT_CONTENT_IMAGE,
           skills: skillset.skills?.map((s: { name: string }) => s.name) || [],
         }))
-      : fallbackSkills;
+      : translateStatic(fallbackSkills, t);
 
   return (
     <section className="py-12 sm:py-16 md:py-20">
@@ -104,10 +106,9 @@ const AboutSkills = ({ skillsets }: AboutSkillsProps) => {
               src="/assets/images/SkillsIcon.png"
               width={60}
               height={60}
-              alt="Skills"
+              alt={t("Skills")}
             />
-            Skills & Expertise
-          </span>
+            {t("Skills & Expertise")}</span>
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">

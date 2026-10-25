@@ -1,5 +1,6 @@
+import { usePublicText } from "@/i18n/text";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import React from "react";
 
 interface AboutProjectsProps {
@@ -13,6 +14,7 @@ interface AboutProjectsProps {
 }
 
 const AboutProjects = ({ projects }: AboutProjectsProps) => {
+  const t = usePublicText();
   const projectsData =
     projects && projects.length > 0
       ? projects.slice(0, 3).map((project) => ({
@@ -35,10 +37,9 @@ const AboutProjects = ({ projects }: AboutProjectsProps) => {
               src="/assets/images/CodingIcon.png"
               width={60}
               height={60}
-              alt="Certificates"
+              alt={t("Certificates")}
             />
-            Featured Projects
-          </span>
+            {t("Featured Projects")}</span>
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -64,7 +65,7 @@ const AboutProjects = ({ projects }: AboutProjectsProps) => {
                 ))}
               </div>
               <button className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold transition-colors text-sm sm:text-base">
-                <Link href={`/projects/${project._id}`}>View Project →</Link>
+                <Link href={`/projects/${project._id}`}>{t("View Project →")}</Link>
               </button>
             </div>
           ))}
@@ -75,8 +76,7 @@ const AboutProjects = ({ projects }: AboutProjectsProps) => {
             href="/projects"
             className="inline-block px-6 sm:px-8 py-2 sm:py-3 bg-purple-600 dark:bg-purple-500 hover:bg-purple-700 dark:hover:bg-purple-600 text-white rounded-lg font-semibold transition-colors text-sm sm:text-base"
           >
-            View All Projects
-          </Link>
+            {t("View All Projects")}</Link>
         </div>
       </div>
     </section>

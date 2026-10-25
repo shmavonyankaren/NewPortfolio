@@ -233,6 +233,8 @@ export function WebGLRendererConfig() {
     gl.setSize(size.width, size.height);
     gl.setClearColor(0xffaaff, 0);
     // Enable power preference for better performance
+    // Three.js exposes a mutable renderer configuration, not React state.
+    // eslint-disable-next-line react-hooks/immutability
     gl.info.autoReset = false;
   }, [gl, size.height, size.width]);
 

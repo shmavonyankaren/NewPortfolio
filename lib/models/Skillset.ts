@@ -1,6 +1,8 @@
+import type { Localized } from "../content/localization";
+import { addLocalization } from "./localization";
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface ISkillset extends Document {
+export interface ISkillset extends Document, Localized {
   order: number;
   image: string;
   /** Retained for old records; the UI uses image. */
@@ -30,6 +32,9 @@ const SkillsetSchema = new Schema<ISkillset>(
   },
   { timestamps: true }
 );
+
+addLocalization(SkillsetSchema, "Skillset");
+if (mongoose.models.Skillset && !mongoose.models.Skillset.schema.path("translations")) mongoose.deleteModel("Skillset");
 
 // Next.js hot reload can retain a model compiled before these fields existed.
 const cachedModel = mongoose.models.Skillset;

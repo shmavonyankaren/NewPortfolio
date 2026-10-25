@@ -1,11 +1,13 @@
 "use client";
+import { usePublicText } from "@/i18n/text";
+
 
 import { GoArrowUpRight } from "react-icons/go";
 import { FaGithub } from "react-icons/fa";
 
 import { CardContainer, CardBody, CardItem } from "./ui/3d-card";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { memo } from "react";
 import { ProjectItem } from "@/lib/types";
 
@@ -14,13 +16,14 @@ interface RecentProjectsProps {
 }
 
 const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
+  const t = usePublicText();
   const router = useRouter();
   const projectId = item._id || item.id;
 
   return (
     <CardContainer
       key={projectId}
-      className="min-w-80 flex justify-center items-center md:flex-none md:w-160 max-w-154"
+      className="min-w-0 max-w-full flex justify-center items-center md:flex-none md:w-160 max-w-154"
     >
       <CardBody
         className="h-auto w-full flex flex-col p-6 rounded-2xl shadow-[0_8px_16px_rgb(0_0_0/0.4)] border border-white/10 group-hover/pin:border-white/20 transition duration-700 cursor-pointer group"
@@ -46,7 +49,7 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
               width={500}
               height={300}
               src="/bg.png"
-              alt="background"
+              alt={t("background")}
               className="w-full h-full object-cover"
               sizes="(min-width: 1024px) 50vw, 90vw"
               priority={false}
@@ -192,7 +195,7 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
                 className="flex w-full sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] justify-center items-center text-gray-600 dark:text-gray-300 dark:hover:text-gray-400 hover:text-gray-800 px-4 py-2 sm:px-4 sm:py-2 rounded-xl"
               >
                 <FaGithub className="mr-2" size={20} />
-                <span className="text-xs sm:text-sm">Check Code</span>
+                <span className="text-xs sm:text-sm">{t("Check Code")}</span>
               </a>
             )}
             {item.demoUrl && item.demoUrl.trim() !== "" && (
@@ -207,7 +210,7 @@ const ProjectCard = memo(({ item }: { item: ProjectItem }) => {
                hover:text-purple-800 py-2 sm:px-4 sm:py-2 rounded-xl"
               >
                 <GoArrowUpRight className="mr-2" size={20} />
-                <span className="text-xs sm:text-sm">Check Live Site</span>
+                <span className="text-xs sm:text-sm">{t("Check Live Site")}</span>
               </a>
             )}
           </div>
@@ -232,6 +235,7 @@ const RecentProjectsContent: React.FC<{ projectsData: ProjectItem[] }> = ({
 };
 
 const RecentProjects = ({ projects }: RecentProjectsProps) => {
+  const t = usePublicText();
   const projectsData = projects && projects.length > 0 ? projects : [];
 
   return (
@@ -241,12 +245,9 @@ const RecentProjects = ({ projects }: RecentProjectsProps) => {
           src="/assets/images/CodingIcon.png"
           width={60}
           height={60}
-          alt="Projects"
+          alt={t("Projects")}
         />
-        Small Selection of{" "}
-        <span className="text-purple-500 dark:text-purple-300">
-          Recent Projects
-        </span>
+        {t.rich("A small selection of recent projects", {accent: chunks => <span className="text-purple-500 dark:text-purple-300">{chunks}</span>})}
       </h1>
       <RecentProjectsContent projectsData={projectsData} />
     </div>

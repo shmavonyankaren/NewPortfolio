@@ -8,6 +8,7 @@ import { CommentHeader, CommentForm, CommentList } from "./comments";
 export default function CommentsSectionManager() {
   const normalizeComment = (data: Partial<Comment> = {}): Comment => ({
     order: data.order,
+    translations: data.translations,
     _id: data._id,
     name: data.name ?? "",
     position: data.position ?? "",

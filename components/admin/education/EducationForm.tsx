@@ -47,7 +47,7 @@ export default function EducationForm({
   const [editingOutcome, setEditingOutcome] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   return (
-    <AdminForm complete={!!formData.logo?.trim()} pendingEdits={showSkillInput || editingSkillIndex !== null || editingOutcome}
+    <AdminForm contentType="Education" record={formData} onRecordChange={onFormChange} complete={!!formData.logo?.trim()} pendingEdits={showSkillInput || editingSkillIndex !== null || editingOutcome}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >
@@ -159,9 +159,9 @@ export default function EducationForm({
 
       <NestedItemsEditor
         title="Key Learning Outcomes" singular="Learning Outcome"
-        items={(formData.learningOutcomes || []).map(name => ({ name }))}
+        items={formData.outcomeItems || []}
         fields={[{ key: "name", label: "Learning Outcome", kind: "textarea", required: true }]}
-        onChange={items => onFormChange({ learningOutcomes: items.map(item => item.name) })}
+        onChange={items => onFormChange({ outcomeItems: items, learningOutcomes: items.map(item => item.name) })}
         onEditingChange={setEditingOutcome}
       />
 

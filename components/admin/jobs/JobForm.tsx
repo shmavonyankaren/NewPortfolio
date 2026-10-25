@@ -47,7 +47,7 @@ export default function JobForm({
 }: JobFormProps) {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   return (
-    <AdminForm complete={!!formData.logo?.trim()} pendingEdits={showSkillInput || showResponsibilityInput}
+    <AdminForm contentType="Job" record={formData} onRecordChange={onFormChange} complete={!!formData.logo?.trim()} pendingEdits={showSkillInput || showResponsibilityInput}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >

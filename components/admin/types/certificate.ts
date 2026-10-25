@@ -1,4 +1,5 @@
 export interface Certificate {
+  translations?: { de?: Record<string, string> };
   order?: number;
   logo?: string;
   _id?: string;

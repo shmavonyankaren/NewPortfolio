@@ -20,7 +20,7 @@ async function until(check) {
   const browser = await playwright.chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
   try {
     const context = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
-    await context.addCookies([{ name: "isAdmin", value: "true", domain: "localhost", path: "/" }]);
+    await context.addCookies([require("./browser-session.cjs")()]);
     const page = await context.newPage();
     const errors = [];
     page.on("pageerror", error => errors.push(error.message));
@@ -36,6 +36,7 @@ async function until(check) {
       features: ["Alpha", "Beta", "Gamma"].map(title => ({ title, description: title + " description" })),
       challenges: ["Alpha", "Beta", "Gamma"].map(challenge => ({ challenge, solution: challenge + " solution" }))
     };
+    for (const key of ["skills", "responsibilities", "technologies", "features", "challenges"]) base[key] = base[key].map((item,index) => ({...item,_id:String(index+1).padStart(24,"0")}));
     const records = Object.fromEntries(["skillsets", "educations", "jobs", "projects"].map(key => [key, structuredClone(base)]));
     const saves = [];
     await page.route("**/api/admin/**", async route => {

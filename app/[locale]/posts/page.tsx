@@ -1,3 +1,7 @@
+import { useFormatter } from "next-intl";
+import { pageMetadata } from "@/lib/seo";
+import { getPublicText } from "@/i18n/text-server";
+import { publicContent } from "@/lib/content/public";
 import Image from "next/image";
 import { Fragment } from "react";
 
@@ -19,25 +23,10 @@ const normalizePost = (data: Partial<BlogPost> = {}): BlogPost => ({
   updatedAt: data.updatedAt,
 });
 
-const formatDate = (value?: string) => {
-  if (!value) return "—";
-  const d = new Date(value);
-  return d.toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-};
 
 async function getPosts(): Promise<BlogPost[]> {
-  const res = await fetch(
-    `${
-      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-    }/api/admin/posts`,
-    {
-      cache: "no-store",
-    }
-  );
+  const content = await publicContent("posts", true);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
 
   if (!res.ok) {
     console.error("Failed to fetch posts", res.status);
@@ -49,6 +38,7 @@ async function getPosts(): Promise<BlogPost[]> {
 }
 
 function PostCard({ post }: { post: BlogPost }) {
+ const format = useFormatter();
   return (
     <article className="p-5 group rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-slate-900/60 shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
       <div className="relative space-y-4 md:space-y-3 md:after:content-[''] md:after:block md:after:clear-both">
@@ -71,7 +61,7 @@ function PostCard({ post }: { post: BlogPost }) {
         </div>
         <div className="space-y-3 wrap-break-words min-w-0 text-left">
           <div className="flex items-center text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-300/90">
-            <span>{formatDate(post.createdAt)}</span>
+            <span>{post.createdAt && !Number.isNaN(new Date(post.createdAt).getTime()) ? format.dateTime(new Date(post.createdAt), {month: "short", day: "numeric", year: "numeric"}) : "—"}</span>
           </div>
           <h3 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white leading-tight">
             {post.title}
@@ -86,6 +76,7 @@ function PostCard({ post }: { post: BlogPost }) {
 }
 
 export default async function PostsPage() {
+  const t = await getPublicText();
   const posts = await getPosts();
 
   return (
@@ -101,28 +92,22 @@ export default async function PostsPage() {
           <h1 className="heading text-3xl sm:text-4xl md:text-5xl">
             <div className="inline-block">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 bg-clip-text text-transparent">
-                Posts
-              </h1>
+                {t("Posts")}</h1>
               <div className="h-1 w-full bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 rounded-full"></div>
             </div>
           </h1>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Fresh insights, updates, and stories
-          </h1>
+            {t("Fresh insights, updates, and stories")}</h1>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-base sm:text-lg">
-            Dive into project retrospectives, behind-the-scenes notes, and ideas
-            we are exploring. Posts sync automatically from the admin.
-          </p>
+            {t("Dive into project retrospectives, behind-the-scenes notes, and ideas we are exploring. Posts sync automatically from the admin.")}</p>
         </header>
 
         {posts.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-6 py-12 text-center space-y-3 shadow-sm backdrop-blur">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-              No posts yet
-            </h2>
+              {t("No posts yet")}</h2>
             <p className="text-slate-600 dark:text-slate-400 text-sm">
-              When new posts are published, they will appear here automatically.
-            </p>
+              {t("When new posts are published, they will appear here automatically.")}</p>
           </div>
         ) : (
           <div className="space-y-15">
@@ -140,3 +125,5 @@ export default async function PostsPage() {
     </main>
   );
 }
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}) { return pageMetadata((await params).locale, "posts"); }

@@ -1,3 +1,4 @@
+import { usePublicText } from "@/i18n/text";
 import React from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { HiSparkles } from "react-icons/hi";
@@ -15,13 +16,13 @@ type ProjectFeaturesProps = {
 };
 
 export function ProjectFeatures({ features }: ProjectFeaturesProps) {
+  const t = usePublicText();
   return (
     <div className="mb-16">
       <div className="flex items-center gap-3 mb-6">
         <HiSparkles className="text-3xl text-purple-600 dark:text-purple-400" />
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
-          Key Features
-        </h2>
+          {t("Key Features")}</h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {features.map((feature, index) => {

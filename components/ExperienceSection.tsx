@@ -1,4 +1,7 @@
 "use client";
+import { useFormatter } from "next-intl";
+import { usePublicText, translateStatic } from "@/i18n/text";
+
 
 import SkillIconList from "./SkillIconList";
 import DetailBulletList from "./DetailBulletList";
@@ -58,6 +61,7 @@ interface ExperienceCard {
   learningOutcomes?: string[];
   skills?: Skill[];
   type: "job" | "education";
+  sortDate?: number;
 }
 
 interface ExperienceSectionProps {
@@ -66,24 +70,22 @@ interface ExperienceSectionProps {
 }
 
 const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
+  const t = usePublicText();
+  const format = useFormatter();
+  const dateLabel = (value: string, month: "long" | "short") => { const date = new Date(value); return Number.isNaN(date.getTime()) ? t("N/A") : format.dateTime(date, {month, year: "numeric"}); };
   const jobCards: ExperienceCard[] =
     jobs && jobs.length > 0
       ? jobs.map((job) => ({
           company: job.company,
+          sortDate: new Date(job.startDate).getTime(),
           review: job.description || "",
           imgPath: "/exp1.svg",
           logoPath: job.logo || "",
           title: job.position,
-          date: `${new Date(job.startDate).toLocaleDateString("en-US", {
-            month: "long",
-            year: "numeric",
-          })} - ${
+          date: `${dateLabel(job.startDate, "long")} - ${
             job.isCurrentlyWorking
-              ? "Present"
-              : new Date(job.endDate).toLocaleDateString("en-US", {
-                  month: "long",
-                  year: "numeric",
-                })
+              ? t("Present")
+              : dateLabel(job.endDate, "long")
           }`,
           skills: job.skills || [],
           responsibilities: job.responsibilities?.map((r) => r.name) || [],
@@ -96,20 +98,15 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
     education && education.length > 0
       ? education.map((edu) => ({
           institution: edu.institution,
+          sortDate: new Date(edu.startDate).getTime(),
           review: edu.description || "",
           imgPath: "/exp1.svg",
           logoPath: edu.logo || "",
           title: [edu.degree, edu.field].filter(Boolean).join(" - "),
-          date: `${new Date(edu.startDate).toLocaleDateString("en-US", {
-            month: "long",
-            year: "numeric",
-          })} - ${
+          date: `${dateLabel(edu.startDate, "long")} - ${
             edu.isCurrentlyStudying
-              ? "Present"
-              : new Date(edu.endDate).toLocaleDateString("en-US", {
-                  month: "long",
-                  year: "numeric",
-                })
+              ? t("Present")
+              : dateLabel(edu.endDate, "long")
           }`,
           skills: edu.skills || [],
           learningOutcomes: edu.learningOutcomes || [],
@@ -124,11 +121,9 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
   const experienceCards: ExperienceCard[] =
     allCards.length > 0
       ? allCards.sort((a, b) => {
-          const dateA = new Date(a.date.split(" - ")[0]);
-          const dateB = new Date(b.date.split(" - ")[0]);
-          return dateB.getTime() - dateA.getTime();
+          return (b.sortDate || 0) - (a.sortDate || 0);
         })
-      : expCards.map((card) => ({ ...card, type: "job" as const }));
+      : translateStatic(expCards, t).map((card) => ({ ...card, type: "job" as const }));
 
   useGSAP(() => {
     // Optimize ScrollTrigger settings
@@ -238,29 +233,16 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
               src="/assets/images/EducationIcon.png"
               width={60}
               height={60}
-              alt="Education"
+              alt={t("Education")}
             />
             <Image
               src="/assets/images/WorkExperienceIcon.png"
               width={60}
               height={60}
-              alt="Experience"
+              alt={t("Experience")}
             />
           </div>
-          <p>
-            My
-            <span className="text-purple-500 dark:text-purple-300">
-              {" "}
-              Work Experience
-            </span>
-          </p>
-          <p>
-            and
-            <span className="text-purple-500 dark:text-purple-300">
-              {" "}
-              Education
-            </span>
-          </p>
+          <p>{t.rich("My work experience and education", {accent: chunks => <span className="text-purple-500 dark:text-purple-300">{chunks}</span>})}</p>
         </h1>
         <div className="mt-12 sm:mt-16 md:mt-24 lg:mt-32 relative">
           {/* Central Timeline - visible across all cards */}
@@ -376,12 +358,12 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
                           {card.company || card.institution}
                         </p>
                         <p className="my-3 sm:my-4 md:my-5 text-white-50 text-sm sm:text-base">
-                          🗓️&nbsp;{card.date}
+                          {t("🗓️&nbsp;")}{card.date}
                         </p>
-                        <SkillIconList
+                        <SkillIconList kind={card.type === "job" ? "work" : "education"}
                           skills={card.skills}
                           title={
-                            card.type === "job" ? "Skills" : "Skills Learned"
+                            card.type === "job" ? t("Skills") : t("Skills Learned")
                           }
                         />
                         <DetailBulletList
@@ -392,8 +374,8 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
                           }
                           title={
                             card.type === "job"
-                              ? "Responsibilities"
-                              : "Key Learning Outcomes"
+                              ? t("Responsibilities")
+                              : t("Key Learning Outcomes")
                           }
                           onToggle={() => ScrollTrigger.refresh()}
                         />

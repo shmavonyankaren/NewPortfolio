@@ -1,3 +1,4 @@
+import { usePublicText } from "@/i18n/text";
 import React from "react";
 import Image from "next/image";
 import { FaCode } from "react-icons/fa";
@@ -14,13 +15,13 @@ type ProjectTechnologiesProps = {
 export function ProjectTechnologies({
   technologies,
 }: ProjectTechnologiesProps) {
+  const t = usePublicText();
   return (
     <div className="mb-16">
       <div className="flex items-center gap-3 mb-6">
         <FaCode className="text-3xl text-purple-600 dark:text-purple-400" />
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
-          Technologies Used
-        </h2>
+          {t("Technologies Used")}</h2>
       </div>
       <div className="flex flex-wrap gap-4">
         {technologies

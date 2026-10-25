@@ -1,5 +1,6 @@
 "use client";
 
+import { newItemId } from "@/lib/content/identity";
 import { useState, useEffect } from "react";
 import { DEFAULT_CONTENT_IMAGE } from "@/lib/content-images";
 import ConfirmDialog from "./ConfirmDialog";
@@ -190,6 +191,7 @@ export default function EducationManager() {
       endDate: formatDate(education.endDate),
       skills: education.skills || [],
       learningOutcomes: education.learningOutcomes || [],
+      outcomeItems: education.outcomeItems || (education.learningOutcomes || []).map(name => ({ _id: newItemId(), name })),
     });
     setEditingId(education._id || null);
     setShowForm(true);

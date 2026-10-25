@@ -8,21 +8,25 @@ import OrderField from "../common/OrderField";
 import FileUploader from "../FileUploader";
 
 interface Technology {
+  translations?: { de?: Record<string, string> };
   name: string;
   icon?: string;
 }
 
 interface Feature {
+  translations?: { de?: Record<string, string> };
   title: string;
   description: string;
 }
 
 interface Challenge {
+  translations?: { de?: Record<string, string> };
   challenge: string;
   solution: string;
 }
 
 interface Project {
+  translations?: { de?: Record<string, string> };
   order?: number;
   _id?: string;
   title: string;
@@ -86,7 +90,7 @@ export default function ProjectForm({
   onShowChallengeInput,
 }: ProjectFormProps) {
   return (
-    <AdminForm complete={!!formData.image?.trim()} pendingEdits={showTechInput || showFeatureInput || showChallengeInput}
+    <AdminForm contentType="Project" record={formData} onRecordChange={onFormDataChange} complete={!!formData.image?.trim()} pendingEdits={showTechInput || showFeatureInput || showChallengeInput}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-6"
     >

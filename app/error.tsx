@@ -1,7 +1,9 @@
 "use client";
+import { usePublicText } from "@/i18n/text";
+
 
 import { useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import * as Sentry from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,7 @@ type ErrorProps = {
 };
 
 export default function Error({ error, reset }: ErrorProps) {
+  const t = usePublicText();
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
@@ -29,25 +32,20 @@ export default function Error({ error, reset }: ErrorProps) {
 
       <section className="relative z-10 max-w-2xl space-y-6 text-center">
         <p className="text-xs uppercase tracking-[0.35em] text-rose-500/80 dark:text-rose-200/80">
-          Unexpected error
-        </p>
+          {t("Unexpected error")}</p>
         <h1 className="text-4xl font-semibold sm:text-5xl">
-          Something went wrong
-        </h1>
+          {t("Something went wrong")}</h1>
         <p className="leading-relaxed text-slate-600 dark:text-zinc-300">
-          We have logged the issue. You can retry the last action or head back
-          to the homepage while we sort this out.
-        </p>
+          {t("We have logged the issue. You can retry the last action or head back to the homepage while we sort this out.")}</p>
         <pre className="mx-auto max-h-44 overflow-auto rounded-lg border border-slate-200 bg-white/70 p-4 text-left text-sm text-slate-800 shadow-sm backdrop-blur dark:border-white/10 dark:bg-black/40 dark:text-zinc-200">
           {error.message}
         </pre>
 
         <div className="flex flex-wrap justify-center gap-3">
           <Button onClick={reset} className="px-6">
-            Try again
-          </Button>
+            {t("Try again")}</Button>
           <Button asChild variant="outline" className="px-6">
-            <Link href="/">Go home</Link>
+            <Link href="/">{t("Go home")}</Link>
           </Button>
         </div>
       </section>

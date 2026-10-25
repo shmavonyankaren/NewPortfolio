@@ -1,6 +1,8 @@
+import type { Localized } from "../content/localization";
+import { addLocalization } from "./localization";
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IEducation extends Document {
+export interface IEducation extends Document, Localized {
   order: number;
   institution: string;
   degree?: string;
@@ -16,6 +18,7 @@ export interface IEducation extends Document {
     description?: string;
   }>;
   learningOutcomes: string[];
+  outcomeItems?: import("../content/localization").OutcomeItem[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -45,6 +48,9 @@ const EducationSchema = new Schema<IEducation>(
   },
   { timestamps: true }
 );
+
+addLocalization(EducationSchema, "Education");
+if (mongoose.models.Education && !mongoose.models.Education.schema.path("translations")) mongoose.deleteModel("Education");
 
 // Next.js hot reload can retain a model compiled before these fields existed.
 const cachedModel = mongoose.models.Education;

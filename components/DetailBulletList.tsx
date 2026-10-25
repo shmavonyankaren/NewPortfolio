@@ -1,4 +1,6 @@
 "use client";
+import { usePublicText } from "@/i18n/text";
+
 
 import { useId, useState } from "react";
 
@@ -7,6 +9,7 @@ export default function DetailBulletList({ title, items = [], onToggle }: {
   items?: string[];
   onToggle?: () => void;
 }) {
+  const t = usePublicText();
   const [expanded, setExpanded] = useState(false);
   const id = useId();
   const details = items.filter(item => item.trim());
@@ -19,7 +22,7 @@ export default function DetailBulletList({ title, items = [], onToggle }: {
     {details.length > 4 && <button type="button" aria-expanded={expanded} aria-controls={id}
       className="rounded text-sm font-semibold text-purple-700 dark:text-purple-300 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-500"
       onClick={() => { setExpanded(value => !value); if (onToggle) requestAnimationFrame(onToggle); }}>
-      {expanded ? "Show less" : "Show more"}<span className="sr-only"> {title.toLowerCase()}</span>
+      {expanded ? t("Show less") : t("Show more")}<span className="sr-only"> {title.toLowerCase()}</span>
     </button>}
   </section>;
 }

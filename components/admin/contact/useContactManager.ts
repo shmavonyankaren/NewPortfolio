@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 export interface Contact {
+  translations?: { de?: Record<string, string> };
   _id?: string;
   email: string;
   phone: string;
@@ -22,6 +23,7 @@ interface ConfirmDialogState {
 export function useContactManager() {
   const normalizeContact = (contact: Partial<Contact>): Contact => ({
     _id: contact._id,
+    translations: contact.translations,
     email: contact.email ?? "",
     phone: contact.phone ?? "",
     location: contact.location ?? "",
@@ -74,6 +76,7 @@ export function useContactManager() {
     e.preventDefault();
     try {
       const payload = {
+        translations: formData.translations,
         email: formData.email,
         phone: formData.phone,
         location: formData.location,

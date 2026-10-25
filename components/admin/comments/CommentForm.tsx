@@ -25,7 +25,7 @@ export default function CommentForm({
   onCancel,
 }: CommentFormProps) {
   return (
-    <AdminForm
+    <AdminForm contentType="Comment" record={formData} onRecordChange={onFormChange}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >

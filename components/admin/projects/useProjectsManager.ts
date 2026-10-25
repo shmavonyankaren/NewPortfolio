@@ -1,21 +1,25 @@
 import { useState, useEffect } from "react";
 
 export interface Technology {
+  translations?: { de?: Record<string, string> };
   name: string;
   icon?: string;
 }
 
 export interface Feature {
+  translations?: { de?: Record<string, string> };
   title: string;
   description: string;
 }
 
 export interface Challenge {
+  translations?: { de?: Record<string, string> };
   challenge: string;
   solution: string;
 }
 
 export interface Project {
+  translations?: { de?: Record<string, string> };
   order?: number;
   _id?: string;
   title: string;

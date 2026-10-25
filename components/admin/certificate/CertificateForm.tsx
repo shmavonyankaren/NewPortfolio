@@ -31,7 +31,7 @@ export default function CertificateForm({
   const normalizeDate = (value: string) => value || "";
 
   return (
-    <AdminForm complete={!!formData.fileUrl?.trim()}
+    <AdminForm contentType="Certificate" record={formData} onRecordChange={onFormChange} complete={!!formData.fileUrl?.trim()}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >

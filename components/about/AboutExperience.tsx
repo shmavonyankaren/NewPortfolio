@@ -1,3 +1,5 @@
+import { useFormatter } from "next-intl";
+import { usePublicText, translateStatic } from "@/i18n/text";
 import DetailBulletList from "@/components/DetailBulletList";
 import React from "react";
 import ContentLogo from "@/components/ContentLogo";
@@ -19,6 +21,9 @@ interface AboutExperienceProps {
 }
 
 const AboutExperience = ({ jobs }: AboutExperienceProps) => {
+  const t = usePublicText();
+  const format = useFormatter();
+  const dateLabel = (value: string, month: "long" | "short") => { const date = new Date(value); return Number.isNaN(date.getTime()) ? t("N/A") : format.dateTime(date, {month, year: "numeric"}); };
   const fallbackExperience = [
     {
       responsibilities: [] as string[],
@@ -64,22 +69,16 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
           title: job.position,
           logo: job.logo?.trim() || DEFAULT_CONTENT_IMAGE,
           company: job.company,
-          duration: `${new Date(job.startDate).toLocaleDateString("en-US", {
-            month: "short",
-            year: "numeric",
-          })} - ${
+          duration: `${dateLabel(job.startDate, "short")} - ${
             job.isCurrentlyWorking
-              ? "Present"
-              : new Date(job.endDate).toLocaleDateString("en-US", {
-                  month: "short",
-                  year: "numeric",
-                })
+              ? t("Present")
+              : dateLabel(job.endDate, "short")
           }`,
           description: job.description,
           responsibilities: job.responsibilities?.map(item => item.name) || [],
           skills: job.skills?.map((s: { name: string }) => s.name) || [],
         }))
-      : fallbackExperience;
+      : translateStatic(fallbackExperience, t);
 
   return (
     <section className="py-12 sm:py-16 md:py-20">
@@ -90,10 +89,9 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
               src="/assets/images/WorkExperienceIcon.png"
               width={60}
               height={60}
-              alt="Experience"
+              alt={t("Experience")}
             />
-            Work Experience
-          </span>
+            {t("Work Experience")}</span>
         </h2>
 
         <div className="space-y-6 md:space-y-8">
@@ -132,7 +130,7 @@ const AboutExperience = ({ jobs }: AboutExperienceProps) => {
                   </span>
                 ))}
               </div>
-              <DetailBulletList items={exp.responsibilities} title="Responsibilities" />
+              <DetailBulletList items={exp.responsibilities} title={t("Responsibilities")} />
             </div>
           ))}
         </div>

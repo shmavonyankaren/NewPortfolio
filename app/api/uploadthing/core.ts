@@ -1,4 +1,11 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { UploadThingError } from "uploadthing/server";
+import { isAdmin } from "@/lib/auth/admin";
+
+async function authorizeUpload() {
+  if (!await isAdmin()) throw new UploadThingError("UNAUTHORIZED");
+  return { admin: true };
+}
 
 const f = createUploadthing();
 
@@ -13,7 +20,7 @@ export const ourFileRouter = {
       maxFileSize: "4MB",
       maxFileCount: 1,
     },
-  }).onUploadComplete(async ({ file }) => {
+  }).middleware(authorizeUpload).onUploadComplete(async ({ file }) => {
     // This code RUNS ON YOUR SERVER after upload
 
     console.log("file url", file.url);
@@ -26,7 +33,7 @@ export const ourFileRouter = {
       maxFileSize: "8MB",
       maxFileCount: 1,
     },
-  }).onUploadComplete(async ({ file }) => {
+  }).middleware(authorizeUpload).onUploadComplete(async ({ file }) => {
     return { url: file.url };
   }),
   certificateUploader: f({
@@ -38,7 +45,7 @@ export const ourFileRouter = {
       maxFileSize: "8MB",
       maxFileCount: 1,
     },
-  }).onUploadComplete(async ({ file }) => {
+  }).middleware(authorizeUpload).onUploadComplete(async ({ file }) => {
     console.log("Certificate uploaded:", file.url);
     return { url: file.url };
   }),

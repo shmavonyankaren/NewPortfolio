@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 // npm exec --yes --package=playwright --package=esbuild -- node tests/experience-browser.cjs
 // Bundles the actual components with fixture props; never writes to content APIs.
 const assert = require("node:assert/strict");
@@ -13,6 +12,9 @@ function tool(name) {
 (async () => {
   const source = [
     'import React from "react";',
+    'import {NextIntlClientProvider} from "next-intl";',
+    'import messages from "./messages/en.json";',
+    'import germanMessages from "./messages/de.json";',
     'import {createRoot} from "react-dom/client";',
     'import AboutEducation from "./components/about/AboutEducation";',
     'import AboutExperience from "./components/about/AboutExperience";',
@@ -21,7 +23,8 @@ function tool(name) {
     'const common = {startDate:"2020-01-01",endDate:"2024-01-01",logo:"/assets/images/logo1.png",description:"Full description remains visible.",skills};',
     'const educations = [{...common, degree:"BSc",field:"Computing",institution:"University",learningOutcomes:["One","Two","Three","Four","Five","Six"]},{...common,degree:"Legacy",field:"Legacy program",institution:"Legacy school"}];',
     'const jobs = [{...common,company:"Company",position:"Engineer",responsibilities:["A","B","C","D","E"].map(name=>({name}))}];',
-    'createRoot(document.getElementById("fixture")).render(<><div id="about"><AboutEducation educations={educations}/><AboutExperience jobs={jobs}/></div><Experience jobs={jobs} education={educations}/></>);'
+    'const root = createRoot(document.getElementById("fixture")); root.render(<NextIntlClientProvider locale="en" messages={messages} timeZone="UTC"><div id="about"><AboutEducation educations={educations}/><AboutExperience jobs={jobs}/></div><Experience jobs={jobs} education={educations}/></NextIntlClientProvider>);'
+    ,'window.renderTimeline = locale => root.render(<NextIntlClientProvider key={locale} locale={locale} messages={locale === "de" ? germanMessages : messages} timeZone="UTC"><Experience jobs={[{...jobs[0],position:"Earlier",startDate:"2019-01-01"},{...jobs[0],position:"Later",startDate:"2024-03-01"}]} /></NextIntlClientProvider>);'
   ].join("\n");
   const bundle = await tool("esbuild").build({ stdin: { contents: source, resolveDir: process.cwd(), loader:"tsx" }, bundle:true, write:false, platform:"browser", jsx:"automatic", define:{"process.env": "{}", "process.env.NODE_ENV":'"development"'}, alias:{"@":process.cwd()} });
   const executablePath = ["C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"].find(file=>fs.existsSync(file));
@@ -84,6 +87,12 @@ function tool(name) {
       assert.ok(Math.abs(before.x-after.x)<1,"expansion preserves timeline horizontal alignment");
       assert.equal(await detail.locator("li").count(),6);
       await detail.getByRole("button",{name:/Show less/}).click();
+    }
+    for (const locale of ["de", "en"]) {
+      await page.evaluate(locale => window.renderTimeline(locale), locale);
+      await page.getByRole("heading", {name:"Later",exact:true}).waitFor();
+      assert.deepEqual(await page.locator(".expText h1").allTextContents(), ["Later", "Earlier"], "raw date ordering stays unchanged in " + locale);
+      assert.ok((await page.locator("#experience").innerText()).includes(locale === "de" ? "M\u00e4rz 2024" : "March 2024"));
     }
     assert.deepEqual(errors,[]);
     console.log("PASS: public components, legacy records, independent expansion, restored hover/focus tooltips and About name badges, 40px icons, mobile wrapping, light/dark themes, and timeline alignment.");

@@ -53,6 +53,7 @@ export default function GeneralInformationManager() {
         body: JSON.stringify(formData),
       });
       const updated = await res.json();
+      if (!res.ok) throw new Error(updated.error || "Failed to save general information");
       setInfo(updated);
       setFormData(updated);
       setIsEditing(false);

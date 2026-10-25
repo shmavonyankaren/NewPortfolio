@@ -166,7 +166,12 @@ test("deleting all resets the next position to one", async () => {
 const Module = require("node:module");
 const path = require("node:path");
 const originalLoad = Module._load;
+process.env.ADMIN_SESSION_SECRET = "isolated-ordering-test-secret-not-for-production";
+const { createSession } = require("../lib/auth/session.ts");
+let testAuthenticated = true;
 Module._load = function(request, parent, isMain) {
+  if (request === "next/headers") return { cookies: async () => ({get: () => testAuthenticated ? {value: createSession()} : undefined}) };
+  if (request === "next/cache") return {revalidatePath: () => {}, revalidateTag: () => {}};
   if (request === "@/lib/db/connection") return { connectDB: async () => mongoose };
   if (request.startsWith("@/")) request = path.join(__dirname, "..", request.slice(2));
   return originalLoad.call(this, request, parent, isMain);
@@ -381,7 +386,7 @@ test("About education and jobs display saved logos and default images", () => {
     ["AboutExperience", "jobs", fixtures.jobs],
   ]) {
     const Component = require("../components/about/" + file + ".tsx").default;
-    const render = logo => renderToStaticMarkup(React.createElement(Component, { [prop]: [{ ...fixture, logo }] }));
+    const render = logo => renderToStaticMarkup(React.createElement(require("next-intl").NextIntlClientProvider, {locale:"en",messages:require("../messages/en.json"),timeZone:"UTC"}, React.createElement(Component, { [prop]: [{ ...fixture, logo }] })));
     assert.ok(render("/custom-logo.png").includes('src="/custom-logo.png"'));
     assert.ok(render(undefined).includes('src="/assets/images/logo1.png"'));
     assert.ok(render("   ").includes('src="/assets/images/logo1.png"'));
@@ -418,4 +423,107 @@ test("education outcomes validate, persist in order, and preserve legacy skills"
   assert.deepEqual(saved.learningOutcomes, []);
   assert.equal(saved.skills[0].description, data.skills[0].description);
   assert.equal((await Education.collection.findOne({ _id: new mongoose.Types.ObjectId(body._id) })).learningOutcomes, undefined, "read defaults do not mutate old records");
+});
+
+const { resolveContent, mergeContent } = require("../lib/content/localization.ts");
+const { verifySession } = require("../lib/auth/session.ts");
+
+test("signed sessions reject forged, modified and expired cookies", () => {
+  const token = createSession();
+  assert.equal(verifySession(token), true);
+  assert.equal(verifySession("true"), false);
+  assert.equal(verifySession(token.slice(0,-4) + "AAAA"), false);
+  assert.equal(verifySession(createSession(Date.now() - 90000000)), false);
+});
+test("every CMS mutation requires a session; public reads remain available", async () => {
+  testAuthenticated = false;
+  try {
+    for (const section of [...Object.keys(fixtures), "contacts", "general-info"]) {
+      const collection = require("../app/api/admin/" + section + "/route.ts");
+      for (const method of ["POST", "DELETE", ...(section === "general-info" ? ["PUT"] : [])]) {
+        const response = await collection[method](new Request("http://localhost/api/admin/" + section, {method, ...(method !== "DELETE" ? {body:"{}"} : {})}));
+        assert.equal(response.status,401, section + " " + method);
+      }
+      assert.equal((await collection.GET()).status,200);
+      if (section !== "general-info") {
+        const item = require("../app/api/admin/" + section + "/[id]/route.ts");
+        for (const method of ["PUT", "DELETE", ...(item.PATCH ? ["PATCH"] : [])]) assert.equal((await item[method](new Request("http://localhost",{method}), {params:Promise.resolve({id:new mongoose.Types.ObjectId().toString()})})).status,401);
+      }
+    }
+  } finally { testAuthenticated = true; }
+});
+test("authenticated cross-origin writes are rejected", async () => {
+ const posts = require("../app/api/admin/posts/route.ts");
+ assert.equal((await posts.POST(new Request("http://localhost/api/admin/posts",{method:"POST",headers:{Origin:"https://attacker.invalid"},body:JSON.stringify(fixtures.posts)}))).status,403);
+});
+for (const [section, data] of Object.entries({...fixtures, contacts:{email:"test@example.com",phone:"+1",location:"City"}, "general-info":{fullName:"Person",shortAbout:"Short",fullDescription:"Full"}})) {
+ test(section + " preserves English and German across independent edits", async () => {
+  const collection = require("../app/api/admin/" + section + "/route.ts");
+  await collection.DELETE();
+  const field = section === "educations" ? "field" : section === "jobs" ? "position" : section === "comments" ? "insight" : section === "comments-section" ? "comment" : section === "contacts" ? "location" : section === "general-info" ? "shortAbout" : "title";
+  const request = value => new Request("http://localhost", {method:"POST",body:JSON.stringify(value)});
+  const created = await collection.POST(request(data)); assert.equal(created.status,201);
+  const original = await created.json();
+  const item = section === "general-info" ? collection : require("../app/api/admin/" + section + "/[id]/route.ts");
+  const context = {params:Promise.resolve({id:original._id})};
+  const translated = await item.PUT(request({translations:{de:{[field]:"Deutscher Inhalt"}}}),context);
+  assert.equal(translated.status,200);
+  let saved = await translated.json(); assert.equal(saved[field],data[field]); assert.equal(resolveContent(saved,"de")[field],"Deutscher Inhalt");
+  const english = await item.PUT(request({...data,[field]:"Updated English"}),context);assert.equal(english.status,200);
+  saved = await english.json(); assert.equal(saved.translations.de[field],"Deutscher Inhalt");assert.equal(saved[field],"Updated English");
+  assert.equal(saved._id,original._id);assert.equal(saved.createdAt,original.createdAt);assert.equal(saved.order,original.order);
+  for(const key of ["image","logo","fileUrl","dateIssued","startDate","cvUrl"]) if(original[key] !== undefined)assert.equal(saved[key],original[key]);
+  assert.equal((await item.PUT(request({translations:{de:{[field]:42}}}),context)).status,400);
+ });
+}
+test("nested translations follow IDs through edits, reorder and deletion", async () => {
+ const {Project} = require("../lib/models/Project.ts");
+ await clearOrdered(Project);
+ const row = await createOrdered(Project,{...fixtures.projects,features:[{title:"A",description:"First",translations:{de:{title:"A DE",description:"Erste"}}},{title:"B",description:"Second",translations:{de:{title:"B DE",description:"Zweite"}}}]});
+ const [a,b] = row.toObject().features;
+ const updated = await updateOrdered(Project,String(row._id),{features:[{_id:b._id,title:"B changed",description:"Second"},{_id:a._id,title:"A",description:"First"}]});
+ assert.equal(updated.features[0].translations.de.title,"B DE"); assert.equal(String(updated.features[0]._id),String(b._id));
+ const reduced = await updateOrdered(Project,String(row._id),{features:[{_id:b._id,title:"B changed",description:"Second"}]});
+ assert.equal(reduced.features.length,1);assert.equal(reduced.features[0].translations.de.description,"Zweite");
+ await assert.rejects(updateOrdered(Project,String(row._id),{features:[{title:"Stale altered item",description:"Second"}]}),/Refresh/);
+});
+test("fallback does not mutate English and keeps paired fields together", () => {
+ const source={title:"English",translations:{de:{title:" "}},features:[{title:"Feature",description:"Description",translations:{de:{title:"Funktion"}}}],skills:[{name:"Computer Science",image:"/icon.svg"}]};
+ const result=resolveContent(source,"de");assert.equal(result.title,"English");assert.equal(result.features[0].title,"Feature");assert.equal(result.skills[0].name,"Informatik");assert.equal(result.skills[0].image,"/icon.svg");assert.equal(source.skills[0].name,"Computer Science");
+ assert.equal(mergeContent({translations:{de:{title:"Titel",description:"Text"}}},{translations:{de:{title:"Neu"}}}).translations.de.description,"Text");
+});
+test("learning outcome companions preserve translations without index matching", async () => {
+ await clearOrdered(Education);
+ const row=await createOrdered(Education,{...fixtures.educations,learningOutcomes:["One","Two"]});
+ const [a,b]=row.toObject().outcomeItems;
+ const translated=await updateOrdered(Education,String(row._id),{outcomeItems:[{...a,translations:{de:{name:"Eins"}}},{...b,translations:{de:{name:"Zwei"}}}]});
+ const reordered=await updateOrdered(Education,String(row._id),{outcomeItems:[translated.toObject().outcomeItems[1],translated.toObject().outcomeItems[0]]});
+ assert.deepEqual(reordered.learningOutcomes,["Two","One"]);assert.deepEqual(resolveContent(reordered.toObject(),"de").learningOutcomes,["Zwei","Eins"]);
+ const legacy=await updateOrdered(Education,String(row._id),{learningOutcomes:["One"]});assert.equal(legacy.outcomeItems[0].translations.de.name,"Eins");
+});
+test("localization migration is dry-run safe, backed up, additive and repeatable", async () => {
+ const {migrate}=require("../scripts/migrations/004-content-localization.cjs");
+ const db=mongoose.connection.db,client=mongoose.connection.getClient();
+ for(const collection of ["projects","jobs","educations","skillsets"])await db.collection(collection).deleteMany({});
+ const raw={_id:new mongoose.Types.ObjectId(),institution:"School",order:1,startDate:new Date("2020-01-01"),createdAt:new Date("2020-01-01"),updatedAt:new Date("2020-01-01"),logo:"/same.svg",learningOutcomes:["Original English","Two"],skills:[{name:"CS",image:"/same.svg"}]};
+ await db.collection("educations").insertOne(raw);
+ const preview=await migrate(client,db);assert.equal(preview.find(row=>row.collection==="educations").recordsToUpdate,1);
+ assert.deepEqual(await db.collection("educations").findOne({_id:raw._id}),raw);
+ const backup=path.join(require("node:os").tmpdir(),"portfolio-localization-test-"+Date.now()+".json");
+ try {
+  await migrate(client,db,{dryRun:false,backupPath:backup});
+  const saved=await db.collection("educations").findOne({_id:raw._id});
+  for(const key of ["_id","order","startDate","createdAt","updatedAt","logo","learningOutcomes"])assert.deepEqual(saved[key],raw[key]);
+  assert.equal(saved.skills[0].image,raw.skills[0].image);
+  assert.deepEqual(saved.outcomeItems.map(item=>item.name),raw.learningOutcomes);
+  assert.equal((await migrate(client,db)).every(row=>row.recordsToUpdate===0),true);
+  assert.ok(fs.readFileSync(backup,"utf8").includes("Original English"));
+ } finally {if(fs.existsSync(backup))fs.unlinkSync(backup);}
+});
+
+test("all upload routes require a verified session before accepting files", async () => {
+ const {ourFileRouter}=require("../app/api/uploadthing/core.ts");
+ testAuthenticated=false;
+ try {for(const route of Object.values(ourFileRouter)) await assert.rejects(route.middleware(), /UNAUTHORIZED/);} finally {testAuthenticated=true;}
+ for(const route of Object.values(ourFileRouter)) assert.deepEqual(await route.middleware(), {admin:true});
 });

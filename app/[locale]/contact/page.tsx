@@ -1,3 +1,5 @@
+import { pageMetadata } from "@/lib/seo";
+import { publicContent } from "@/lib/content/public";
 export const revalidate = 60;
 
 import React from "react";
@@ -7,14 +9,8 @@ import { ContactForm } from "@/components/contact/ContactForm";
 
 async function fetchContactInfo() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/contacts`,
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const content = await publicContent("contacts", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return null;
     const contacts = await res.json();
     return contacts[0] || null; // Get the first contact
@@ -38,7 +34,7 @@ async function ContactPage() {
         <div className="flex flex-col gap-10 sm:gap-12">
           <ContactHeader />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <QuickActions email={EMAIL} phone={PHONE} cvLink={CV_LINK} />
+            <QuickActions email={EMAIL} phone={PHONE} cvLink={CV_LINK} location={contactInfo?.location} />
             <ContactForm />
           </div>
         </div>
@@ -48,3 +44,5 @@ async function ContactPage() {
 }
 
 export default ContactPage;
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}) { return pageMetadata((await params).locale, "contact"); }

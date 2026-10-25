@@ -1,6 +1,8 @@
+import type { Localized } from "../content/localization";
+import { addLocalization } from "./localization";
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface ICertificate extends Document {
+export interface ICertificate extends Document, Localized {
   order: number;
   logo?: string;
   title: string;
@@ -28,6 +30,9 @@ const CertificateSchema = new Schema<ICertificate>(
   },
   { timestamps: true }
 );
+
+addLocalization(CertificateSchema, "Certificate");
+if (mongoose.models.Certificate && !mongoose.models.Certificate.schema.path("translations")) mongoose.deleteModel("Certificate");
 
 // Next.js hot reload can retain a model compiled before these fields existed.
 const cachedModel = mongoose.models.Certificate;

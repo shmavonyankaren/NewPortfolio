@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { mergeContent } from "../content/localization";
 import mongoose, { type Model, type ClientSession } from "mongoose";
 
 export class OrderError extends Error {}
@@ -40,7 +41,7 @@ export async function createOrdered(model: Model<any>, data: Record<string, any>
   return transaction(model, async session => {
     const docs = await orderedForWrite(model, session);
     const order = position(data.order, docs.length + 1, docs.length + 1);
-    const clean: Record<string, any> = { ...data, order };
+    const clean: Record<string, any> = { ...mergeContent(null, data), order };
     delete clean._id;
     const doc = new model(clean);
     await doc.validate();
@@ -57,7 +58,7 @@ export async function updateOrdered(model: Model<any>, id: string, data: Record<
     if (!doc) return null;
     const previous = doc.order;
     const order = position(data.order, previous, docs.length);
-    const clean: Record<string, any> = { ...data, order };
+    const clean: Record<string, any> = { ...mergeContent(doc, data), order };
     delete clean._id;
     for (const [key, value] of Object.entries(clean)) {
       if (!key.startsWith("$") && !key.includes(".") && !["createdAt", "updatedAt", "__v"].includes(key)) doc.set(key, value);

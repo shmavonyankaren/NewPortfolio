@@ -1,7 +1,12 @@
+import createNextIntlPlugin from "next-intl/plugin";
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Await project metadata/lookup before sending headers, including to browsers.
+  // This lets a missing project return HTTP 404 instead of a streamed HTTP 200.
+  htmlLimitedBots: /.*/,
   /* config options here */
   images: {
     remotePatterns: [
@@ -44,7 +49,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withNextIntl(nextConfig), {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 

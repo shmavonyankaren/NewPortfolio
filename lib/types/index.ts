@@ -18,7 +18,7 @@ export type ProjectItem = {
   demoUrl?: string;
   githubUrl?: string;
   teamType: "solo" | "team";
-  status: "Live & Maintained" | "Completed" | "In Progress";
+  status: "Live & Maintained" | "In Development" | "Planned";
   duration: string;
 };
 

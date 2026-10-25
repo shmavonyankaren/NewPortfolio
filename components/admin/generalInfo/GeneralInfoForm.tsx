@@ -23,7 +23,7 @@ export default function GeneralInfoForm({
   isLoading = false,
 }: GeneralInfoFormProps) {
   return (
-    <AdminForm busy={isLoading}
+    <AdminForm contentType="GeneralInfo" record={formData} onRecordChange={onFormChange} busy={isLoading}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >

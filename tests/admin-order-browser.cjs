@@ -30,7 +30,7 @@ expect.poll = check => ({ toBe: value => waitForAssertion(async () => (await che
   const browser = await playwright.chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
   try {
     const context = await browser.newContext({ viewport: { width: 1280, height: 1100 }, hasTouch: true });
-    await context.addCookies([{ name: "isAdmin", value: "true", domain: "localhost", path: "/" }]);
+    await context.addCookies([require("./browser-session.cjs")()]);
     const page = await context.newPage();
     const errors = [];
     page.on("pageerror", error => errors.push(error.message));

@@ -36,7 +36,7 @@ export default function SkillsetForm({
 }: SkillsetFormProps) {
   const [uploading, setUploading] = useState(false);
   return (
-    <AdminForm complete={!!formData.image?.trim()} pendingEdits={showSkillInput}
+    <AdminForm contentType="Skillset" record={formData} onRecordChange={onFormChange} complete={!!formData.image?.trim()} pendingEdits={showSkillInput}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >

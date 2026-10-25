@@ -1,4 +1,6 @@
 "use client";
+import { usePublicText } from "@/i18n/text";
+
 
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -12,7 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function ModeToggle() {
-  const { setTheme } = useTheme();
+  const t = usePublicText();
+  const { theme, setTheme } = useTheme();
 
   return (
     <DropdownMenu modal={false}>
@@ -24,7 +27,7 @@ export function ModeToggle() {
         >
           <Sun className="h-5 w-5 transition-transform duration-300 ease-out scale-100 rotate-0 dark:scale-0 dark:-rotate-90" />
           <Moon className="absolute h-5 w-5 transition-transform duration-300 ease-out scale-0 rotate-90 dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
+          <span className="sr-only">{t("Toggle theme")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -33,22 +36,25 @@ export function ModeToggle() {
         sideOffset={8}
       >
         <DropdownMenuItem
+          aria-current={theme === "light" ? "true" : undefined}
           onClick={() => setTheme("light")}
           className="text-gray-700 hover:bg-purple-100! focus:bg-purple-100! hover:text-purple-700! focus:text-purple-700! dark:text-gray-200 dark:hover:bg-purple-500/20! dark:focus:bg-purple-500/20! dark:hover:text-purple-300! dark:focus:text-purple-300! cursor-pointer rounded-lg"
         >
-          Light
+          {t("Light")}{theme === "light" ? " ✓" : ""}
         </DropdownMenuItem>
         <DropdownMenuItem
+          aria-current={theme === "dark" ? "true" : undefined}
           onClick={() => setTheme("dark")}
           className="text-gray-700 hover:bg-purple-100! focus:bg-purple-100! hover:text-purple-700! focus:text-purple-700! dark:text-gray-200 dark:hover:bg-purple-500/20! dark:focus:bg-purple-500/20! dark:hover:text-purple-300! dark:focus:text-purple-300! cursor-pointer rounded-lg"
         >
-          Dark
+          {t("Dark")}{theme === "dark" ? " ✓" : ""}
         </DropdownMenuItem>
         <DropdownMenuItem
+          aria-current={theme === "system" ? "true" : undefined}
           onClick={() => setTheme("system")}
           className="text-gray-700 hover:bg-purple-100! focus:bg-purple-100! hover:text-purple-700! focus:text-purple-700! dark:text-gray-200 dark:hover:bg-purple-500/20! dark:focus:bg-purple-500/20! dark:hover:text-purple-300! dark:focus:text-purple-300! cursor-pointer rounded-lg"
         >
-          System
+          {t("System")}{theme === "system" ? " ✓" : ""}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

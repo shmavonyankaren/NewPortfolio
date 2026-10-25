@@ -2,18 +2,25 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { useEffect, useRef } from "react";
+import { useLocale, useTranslations } from "next-intl";
 
-function createWidget() {
-  return Sentry.getFeedback()?.createWidget();
-}
+type Widget = ReturnType<NonNullable<ReturnType<typeof Sentry.getFeedback>>["createWidget"]>;
 
 function useFeedbackWidget(shouldMount: boolean) {
-  const widgetRef = useRef<ReturnType<typeof createWidget> | null>(null);
+  const locale = useLocale();
+  const t = useTranslations("Feedback");
+  const widgetRef = useRef<Widget | null>(null);
 
   useEffect(() => {
     if (shouldMount) {
       if (!widgetRef.current) {
-        widgetRef.current = createWidget() ?? null;
+        widgetRef.current = Sentry.getFeedback()?.createWidget({
+          triggerLabel: t("triggerLabel"), triggerAriaLabel: t("triggerLabel"), formTitle: t("triggerLabel"),
+          cancelButtonLabel: t("cancel"), submitButtonLabel: t("submit"), confirmButtonLabel: t("confirm"),
+          emailLabel: t("email"), emailPlaceholder: t("emailPlaceholder"), nameLabel: t("name"), namePlaceholder: t("namePlaceholder"),
+          messageLabel: t("message"), messagePlaceholder: t("messagePlaceholder"), successMessageText: t("success"), isRequiredLabel: t("required"),
+          addScreenshotButtonLabel: t("addScreenshot"), removeScreenshotButtonLabel: t("removeScreenshot"), highlightToolText: t("highlight"), hideToolText: t("hide"), removeHighlightText: t("removeHighlight"),
+        }) ?? null;
       }
     } else if (widgetRef.current) {
       widgetRef.current.removeFromDom();
@@ -26,7 +33,7 @@ function useFeedbackWidget(shouldMount: boolean) {
         widgetRef.current = null;
       }
     };
-  }, [shouldMount]);
+  }, [shouldMount, locale, t]);
 }
 
 export default function SentryFeedbackWidget() {

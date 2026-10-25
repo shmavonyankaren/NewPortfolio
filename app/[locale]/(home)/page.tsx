@@ -1,3 +1,5 @@
+import { pageMetadata } from "@/lib/seo";
+import { publicContent } from "@/lib/content/public";
 export const revalidate = 60;
 
 import Hero from "@/components/Hero";
@@ -9,14 +11,8 @@ import RecentProjects from "@/components/RecentProjects";
 
 async function fetchGeneralInfo() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/general-info`,
-      {
-        next: { revalidate: 60 },
-      },
-    );
+    const content = await publicContent("general-info", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return null;
     return res.json();
   } catch (error) {
@@ -27,14 +23,8 @@ async function fetchGeneralInfo() {
 
 async function fetchProjects() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/projects`,
-      {
-        next: { revalidate: 60 },
-      },
-    );
+    const content = await publicContent("projects", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -45,14 +35,8 @@ async function fetchProjects() {
 
 async function fetchJobs() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/jobs`,
-      {
-        next: { revalidate: 60 },
-      },
-    );
+    const content = await publicContent("jobs", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -63,14 +47,8 @@ async function fetchJobs() {
 
 async function fetchEducation() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/educations`,
-      {
-        next: { revalidate: 60 },
-      },
-    );
+    const content = await publicContent("educations", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -81,14 +59,8 @@ async function fetchEducation() {
 
 async function fetchComments() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/comments`,
-      {
-        next: { revalidate: 60 },
-      },
-    );
+    const content = await publicContent("comments", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -121,3 +93,5 @@ const Home = async () => {
 };
 
 export default Home;
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}) { return pageMetadata((await params).locale, ""); }

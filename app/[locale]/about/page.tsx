@@ -1,3 +1,5 @@
+import { pageMetadata } from "@/lib/seo";
+import { publicContent } from "@/lib/content/public";
 export const revalidate = 60;
 
 import AboutHero from "@/components/about/AboutHero";
@@ -11,14 +13,8 @@ import AboutCTA from "@/components/about/AboutCTA";
 
 async function fetchGeneralInfo() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/general-info`,
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const content = await publicContent("general-info", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return null;
     return res.json();
   } catch (error) {
@@ -29,14 +25,8 @@ async function fetchGeneralInfo() {
 
 async function fetchEducations() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/educations`,
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const content = await publicContent("educations", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -47,14 +37,8 @@ async function fetchEducations() {
 
 async function fetchJobs() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/jobs`,
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const content = await publicContent("jobs", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -65,14 +49,8 @@ async function fetchJobs() {
 
 async function fetchSkillsets() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/skillsets`,
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const content = await publicContent("skillsets", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -83,14 +61,8 @@ async function fetchSkillsets() {
 
 async function fetchCertificates() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/certificates`,
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const content = await publicContent("certificates", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -101,14 +73,8 @@ async function fetchCertificates() {
 
 async function fetchProjects() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/projects`,
-      {
-        cache: "no-store",
-      }
-    );
+    const content = await publicContent("projects", true);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -119,14 +85,8 @@ async function fetchProjects() {
 
 async function fetchComments() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/comments-section`,
-      {
-        cache: "no-store",
-      }
-    );
+    const content = await publicContent("comments-section", true);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -137,14 +97,8 @@ async function fetchComments() {
 
 async function fetchContactInfo() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/contacts`,
-      {
-        next: { revalidate: 60 },
-      }
-    );
+    const content = await publicContent("contacts", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return null;
     const contacts = await res.json();
     return contacts[0] || null;
@@ -194,3 +148,5 @@ async function AboutMePage() {
 }
 
 export default AboutMePage;
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}) { return pageMetadata((await params).locale, "about"); }

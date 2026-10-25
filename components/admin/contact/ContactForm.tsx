@@ -5,6 +5,7 @@ import AdminForm, { AdminSaveButton } from "../common/AdminForm";
 import CVUploader from "../CVUploader";
 
 interface Contact {
+  translations?: { de?: Record<string, string> };
   _id?: string;
   email: string;
   phone: string;
@@ -32,7 +33,7 @@ export default function ContactForm({
   onCancel,
 }: ContactFormProps) {
   return (
-    <AdminForm
+    <AdminForm contentType="Contact" record={formData} onRecordChange={onFormDataChange}
       onSubmit={onSubmit}
       className="bg-white border border-slate-200 dark:bg-white/5 dark:border-white/10 rounded-lg p-6 space-y-4"
     >

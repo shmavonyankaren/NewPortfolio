@@ -1,6 +1,8 @@
+import type { Localized } from "../content/localization";
+import { addLocalization } from "./localization";
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IContact extends Document {
+export interface IContact extends Document, Localized {
   email: string;
   phone: string;
   location: string;
@@ -26,6 +28,9 @@ const ContactSchema = new Schema<IContact>(
   },
   { timestamps: true }
 );
+
+addLocalization(ContactSchema, "Contact");
+if (mongoose.models.Contact && !mongoose.models.Contact.schema.path("translations")) mongoose.deleteModel("Contact");
 
 export const Contact =
   mongoose.models.Contact || mongoose.model<IContact>("Contact", ContactSchema);

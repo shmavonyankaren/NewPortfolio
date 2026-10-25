@@ -1,10 +1,9 @@
+import { getLocale, getMessages } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { FloatingNav } from "@/components/ui/FloatingNavbar";
-import { navItems } from "@/data";
-import SentryFeedbackWidget from "@/components/ReportBugButton";
 const inter = Inter({ subsets: ["latin"] });
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
@@ -24,14 +23,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
     <html
-      lang="en"
+      lang={locale}
       suppressHydrationWarning={true}
       style={{ scrollBehavior: "smooth" }}
     >
@@ -46,20 +47,18 @@ export default function RootLayout({
         }}
       >
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+        <NextIntlClientProvider locale={locale} messages={messages} timeZone="UTC">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <header>
-            <FloatingNav navItems={navItems} />
-          </header>
           {children}
           {/* <Footer /> */}
 
-          <SentryFeedbackWidget />
         </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

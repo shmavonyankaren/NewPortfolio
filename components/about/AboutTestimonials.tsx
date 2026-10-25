@@ -1,3 +1,4 @@
+import { usePublicText } from "@/i18n/text";
 import React from "react";
 import Image from "next/image";
 import { Comment } from "../admin/types/comment";
@@ -7,6 +8,7 @@ interface AboutTestimonialsProps {
 }
 
 const AboutTestimonials = ({ comments }: AboutTestimonialsProps) => {
+  const t = usePublicText();
   const testimonialData =
     comments &&
     comments.map((comment) => ({
@@ -26,8 +28,7 @@ const AboutTestimonials = ({ comments }: AboutTestimonialsProps) => {
         <h2 className="heading text-2xl! sm:text-3xl! md:text-4xl!">
           <span className="text-purple-500 dark:text-purple-300">
             {" "}
-            🗣️ What People Say
-          </span>
+            {t("🗣️ What People Say")}</span>
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">

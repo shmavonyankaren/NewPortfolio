@@ -1,3 +1,4 @@
+import { usePublicText } from "@/i18n/text";
 import React from "react";
 import { FaLightbulb } from "react-icons/fa";
 
@@ -11,13 +12,13 @@ type ProjectChallengesProps = {
 };
 
 export function ProjectChallenges({ challenges }: ProjectChallengesProps) {
+  const t = usePublicText();
   return (
     <div className="mb-16">
       <div className="flex items-center gap-3 mb-6">
         <FaLightbulb className="text-3xl text-purple-600 dark:text-purple-400" />
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
-          Challenges & Solutions
-        </h2>
+          {t("Challenges & Solutions")}</h2>
       </div>
       <div className="space-y-6">
         {challenges.map((challenge, index) => (

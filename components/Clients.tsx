@@ -1,4 +1,6 @@
 "use client";
+import { usePublicText, translateStatic } from "@/i18n/text";
+
 
 import React from "react";
 
@@ -17,6 +19,7 @@ interface ClientsProps {
 }
 
 const Clients = ({ insights }: ClientsProps) => {
+  const t = usePublicText();
   // Transform insights/comments from API to match testimonials format
   const insightsData =
     insights && insights.length > 0
@@ -26,7 +29,7 @@ const Clients = ({ insights }: ClientsProps) => {
           title: insight.position,
           img: insight.image || "",
         }))
-      : testimonials;
+      : translateStatic(testimonials, t);
 
   return (
     <section id="testimonials" className="py-20">
@@ -35,13 +38,9 @@ const Clients = ({ insights }: ClientsProps) => {
           src="/assets/images/NotesIcon.png"
           width={60}
           height={60}
-          alt="Insights"
+          alt={t("Insights")}
         />
-        Insights from
-        <span className="text-purple-500 dark:text-purple-300">
-          {" "}
-          Famous People
-        </span>
+        {t.rich("Insights from famous people", {accent: chunks => <span className="text-purple-500 dark:text-purple-300">{chunks}</span>})}
       </h1>
 
       <div className="flex flex-col items-center max-lg:mt-10">

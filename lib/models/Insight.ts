@@ -1,6 +1,8 @@
+import type { Localized } from "../content/localization";
+import { addLocalization } from "./localization";
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IInsight extends Document {
+export interface IInsight extends Document, Localized {
   order: number;
   name: string;
   position: string;
@@ -20,6 +22,9 @@ const InsightSchema = new Schema<IInsight>(
   },
   { timestamps: true }
 );
+
+addLocalization(InsightSchema, "Insight");
+if (mongoose.models.Insight && !mongoose.models.Insight.schema.path("translations")) mongoose.deleteModel("Insight");
 
 // Next.js hot reload can retain a model compiled before these fields existed.
 const cachedModel = mongoose.models.Insight;

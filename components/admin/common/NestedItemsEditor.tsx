@@ -5,6 +5,7 @@ import useDragPreview from "./useDragPreview";
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
 import { AdminSaveButton } from "./AdminForm";
 import FileUploader from "../FileUploader";
+import { newItemId } from "@/lib/content/identity";
 
 type Field<T> = { key: keyof T & string; label: string; kind?: "textarea" | "image"; required?: boolean };
 
@@ -37,7 +38,7 @@ export default function NestedItemsEditor<T extends object>({ title, singular, i
   function save() {
     if (!draft || !valid) return;
     // Preserve identifiers and fields outside this editor when updating an item.
-    const next = { ...draft };
+    const next = { ...draft, ...(!(draft as { _id?: string })._id ? { _id: newItemId() } : {}) };
     for (const field of fields) next[field.key] = String(draft[field.key] ?? "").trim() as T[typeof field.key];
     onChange(editing === null ? [...items, next] : items.map((item, index) => index === editing ? next : item));
     close();

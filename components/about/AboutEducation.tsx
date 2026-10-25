@@ -1,3 +1,4 @@
+import { usePublicText, translateStatic } from "@/i18n/text";
 import DetailBulletList from "@/components/DetailBulletList";
 import React from "react";
 import ContentLogo from "@/components/ContentLogo";
@@ -24,6 +25,7 @@ interface AboutEducationProps {
 }
 
 const AboutEducation = ({ educations }: AboutEducationProps) => {
+  const t = usePublicText();
   const fallbackEducation = [
     {
       degree: "Bachelor of Science",
@@ -58,14 +60,14 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
           logo: edu.logo?.trim() || DEFAULT_CONTENT_IMAGE,
           duration: `${new Date(edu.startDate).getFullYear()} - ${
             edu.isCurrentlyStudying
-              ? "Present"
+              ? t("Present")
               : new Date(edu.endDate).getFullYear()
           }`,
           description: edu.description,
           skills: edu.skills || [],
           learningOutcomes: edu.learningOutcomes || [],
         }))
-      : fallbackEducation;
+      : translateStatic(fallbackEducation, t);
 
   return (
     <section className="py-12 sm:py-16 md:py-20">
@@ -76,10 +78,9 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
               src="/assets/images/EducationIcon.png"
               width={60}
               height={60}
-              alt="Education"
+              alt={t("Education")}
             />
-            Education
-          </span>
+            {t("Education")}</span>
         </h2>
 
         <div className="columns-1 md:columns-2 gap-6 md:gap-8 space-y-6 md:space-y-8">
@@ -120,7 +121,7 @@ const AboutEducation = ({ educations }: AboutEducationProps) => {
                   ))}
                 </div>
               )}
-              <DetailBulletList items={edu.learningOutcomes} title="Key Learning Outcomes" />
+              <DetailBulletList items={edu.learningOutcomes} title={t("Key Learning Outcomes")} />
             </div>
           ))}
         </div>

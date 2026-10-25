@@ -1,3 +1,6 @@
+import { pageMetadata } from "@/lib/seo";
+import { getPublicText } from "@/i18n/text-server";
+import { publicContent } from "@/lib/content/public";
 export const revalidate = 60;
 
 import RecentProjects from "@/components/RecentProjects";
@@ -6,14 +9,8 @@ import { FaCode, FaRocket, FaLayerGroup } from "react-icons/fa";
 
 async function fetchProjects() {
   try {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-      }/api/admin/projects`,
-      {
-        next: { revalidate: 60 },
-      },
-    );
+    const content = await publicContent("projects", false);
+    const res = { ok: content !== null, json: async () => content, status: content === null ? 404 : 200 };
     if (!res.ok) return [];
     return res.json();
   } catch (error) {
@@ -23,6 +20,7 @@ async function fetchProjects() {
 }
 
 async function MyProjects() {
+  const t = await getPublicText();
   const projects = await fetchProjects();
   const projectCount = projects.length > 0 ? `${projects.length}+` : "5+";
 
@@ -31,7 +29,7 @@ async function MyProjects() {
     projects.length > 0
       ? new Set(
           projects.flatMap(
-            (p: any) => p.technologies?.map((t: any) => t.name) || [],
+            (p: {technologies?: {name: string}[]}) => p.technologies?.map((t: {name: string}) => t.name) || [],
           ),
         ).size
       : 20;
@@ -43,14 +41,11 @@ async function MyProjects() {
         <div className="text-center mb-16 mt-10">
           <div className="inline-block">
             <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.1] font-bold mb-4 bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 bg-clip-text text-transparent">
-              My Projects
-            </h1>
+              {t("My Projects")}</h1>
             <div className="h-1 w-full bg-linear-to-r from-purple-600 via-purple-500 to-pink-500 dark:from-purple-400 dark:via-purple-300 dark:to-pink-400 rounded-full"></div>
           </div>
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mt-6 max-w-3xl mx-auto leading-relaxed">
-            Explore my portfolio of innovative projects showcasing modern web
-            development, creative solutions, and cutting-edge technologies.
-          </p>
+            {t("Explore my portfolio of innovative projects showcasing modern web development, creative solutions, and cutting-edge technologies.")}</p>
         </div>
 
         {/* Stats Section */}
@@ -67,8 +62,7 @@ async function MyProjects() {
                     {projectCount}
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Projects Completed
-                  </p>
+                    {t("Projects Completed")}</p>
                 </div>
               </div>
             </div>
@@ -86,8 +80,7 @@ async function MyProjects() {
                     {uniqueTechs}+
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Technologies Used
-                  </p>
+                    {t("Technologies Used")}</p>
                 </div>
               </div>
             </div>
@@ -105,8 +98,7 @@ async function MyProjects() {
                     100%
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Success Rate
-                  </p>
+                    {t("Success Rate")}</p>
                 </div>
               </div>
             </div>
@@ -121,3 +113,5 @@ async function MyProjects() {
 }
 
 export default MyProjects;
+
+export async function generateMetadata({params}: {params: Promise<{locale: string}>}) { return pageMetadata((await params).locale, "projects"); }

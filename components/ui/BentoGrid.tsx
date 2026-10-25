@@ -1,4 +1,6 @@
 "use client";
+import { usePublicText } from "@/i18n/text";
+
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { IoCopyOutline } from "react-icons/io5";
@@ -54,6 +56,7 @@ export const BentoGridItem = ({
   titleClassName?: string;
   spareImg?: string;
 }) => {
+  const t = usePublicText();
   const leftLists = ["ReactJS", "Express", "Typescript", "MongoDB"];
   const rightLists = ["NextJS", "MySQL", "NodeJS", "TailwindCSS"];
 
@@ -96,22 +99,22 @@ export const BentoGridItem = ({
     setCopyError("");
     try {
       const response = await fetch("/api/admin/contacts", { cache: "no-store" });
-      if (!response.ok) throw new Error("Could not load the contact email. Please try again.");
+      if (!response.ok) throw new Error(t("Could not load the contact email. Please try again."));
       const contacts = await response.json();
       const email = Array.isArray(contacts) && typeof contacts[0]?.email === "string"
         ? contacts[0].email.trim() : "";
-      if (!email) throw new Error("No contact email is available yet.");
+      if (!email) throw new Error(t("No contact email is available yet."));
       await navigator.clipboard.writeText(email);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       setCopyError(error instanceof Error && error.message.startsWith("Could not load")
         ? error.message : error instanceof Error && error.message.startsWith("No contact")
-          ? error.message : "Could not copy the email. Please allow clipboard access and try again.");
+          ? error.message : t("Could not copy the email. Please allow clipboard access and try again."));
     } finally {
       setCopying(false);
     }
-  }, []);
+  }, [t]);
 
   return (
     <div
@@ -232,7 +235,7 @@ export const BentoGridItem = ({
               </div>
 
               <MagicButton
-                title={copying ? "Copying..." : copied ? "Email is Copied!" : "Copy my email address"}
+                title={copying ? t("Copying...") : copied ? t("Email is Copied!") : t("Copy my email address")}
                 disabled={copying}
                 icon={<IoCopyOutline />}
                 position="left"

@@ -1,4 +1,6 @@
+import { usePublicText } from "@/i18n/text";
 export default function Loading() {
+  const t = usePublicText();
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_25%_20%,#e0f2fe,transparent_34%),radial-gradient(circle_at_80%_10%,#f5d0fe,transparent_30%),linear-gradient(135deg,#f8fafc,#e2e8f0)] px-6 text-slate-900 dark:bg-[linear-gradient(90deg,rgba(4,7,29,1)_0%,rgba(12,14,35,1)_100%)] dark:text-white">
       <div
@@ -13,15 +15,12 @@ export default function Loading() {
       <section className="relative z-10 flex flex-col items-center gap-4 text-center">
         <div
           className="h-12 w-12 rounded-full border-2 border-slate-300 border-t-cyan-500 animate-spin dark:border-white/20 dark:border-t-cyan-400"
-          aria-label="Loading"
+          aria-label={t("Loading")}
         />
         <p className="text-xs uppercase tracking-[0.3em] text-slate-500 dark:text-zinc-400">
-          Loading portfolio
-        </p>
+          {t("Loading portfolio")}</p>
         <p className="max-w-md leading-relaxed text-slate-600 dark:text-zinc-200">
-          Fetching the latest updates and experiences. This will only take a
-          moment.
-        </p>
+          {t("Fetching the latest updates and experiences. This will only take a moment.")}</p>
       </section>
     </main>
   );

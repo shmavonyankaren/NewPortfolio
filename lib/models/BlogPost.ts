@@ -1,6 +1,8 @@
+import type { Localized } from "../content/localization";
+import { addLocalization } from "./localization";
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IBlogPost extends Document {
+export interface IBlogPost extends Document, Localized {
   order: number;
   title: string;
   content: string;
@@ -27,6 +29,9 @@ const BlogPostSchema = new Schema<IBlogPost>(
   },
   { timestamps: true }
 );
+
+addLocalization(BlogPostSchema, "BlogPost");
+if (mongoose.models.BlogPost && !mongoose.models.BlogPost.schema.path("translations")) mongoose.deleteModel("BlogPost");
 
 // Next.js hot reload can retain a model compiled before these fields existed.
 const cachedModel = mongoose.models.BlogPost;

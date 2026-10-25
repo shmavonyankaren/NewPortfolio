@@ -1,9 +1,6 @@
-import { cookies } from "next/headers";
+import { isAdmin } from "@/lib/auth/admin";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const isAdmin = cookieStore.get("isAdmin")?.value === "true";
-
-  return NextResponse.json({ isAdmin });
+  return NextResponse.json({ isAdmin: await isAdmin() });
 }

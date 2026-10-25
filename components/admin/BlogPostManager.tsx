@@ -7,6 +7,7 @@ import { PostForm, PostHeader, PostList } from "./blog";
 
 const normalizePost = (data: Partial<BlogPost> = {}): BlogPost => ({
   order: data.order,
+    translations: data.translations,
   title: data.title ?? "",
   content: data.content ?? "",
   imageUrl: data.imageUrl ?? "",
@@ -54,8 +55,9 @@ export default function BlogPostManager() {
 
     const payload = {
       order: formData.order,
-      title: formData.title.trim(),
-      content: formData.content.trim(),
+      translations: formData.translations,
+      title: formData.title,
+      content: formData.content,
       imageUrl: formData.imageUrl?.trim() || "",
     };
 

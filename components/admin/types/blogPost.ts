@@ -1,4 +1,5 @@
 export interface BlogPost {
+  translations?: { de?: Record<string, string> };
   order?: number;
   _id?: string;
   title: string;
