@@ -2,7 +2,6 @@
 import { useFormatter } from "next-intl";
 import { usePublicText, translateStatic } from "@/i18n/text";
 
-
 import SkillIconList from "./SkillIconList";
 import DetailBulletList from "./DetailBulletList";
 
@@ -72,7 +71,12 @@ interface ExperienceSectionProps {
 const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
   const t = usePublicText();
   const format = useFormatter();
-  const dateLabel = (value: string, month: "long" | "short") => { const date = new Date(value); return Number.isNaN(date.getTime()) ? t("N/A") : format.dateTime(date, {month, year: "numeric"}); };
+  const dateLabel = (value: string, month: "long" | "short") => {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+      ? t("N/A")
+      : format.dateTime(date, { month, year: "numeric" });
+  };
   const jobCards: ExperienceCard[] =
     jobs && jobs.length > 0
       ? jobs.map((job) => ({
@@ -123,7 +127,10 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
       ? allCards.sort((a, b) => {
           return (b.sortDate || 0) - (a.sortDate || 0);
         })
-      : translateStatic(expCards, t).map((card) => ({ ...card, type: "job" as const }));
+      : translateStatic(expCards, t).map((card) => ({
+          ...card,
+          type: "job" as const,
+        }));
 
   useGSAP(() => {
     // Optimize ScrollTrigger settings
@@ -242,7 +249,15 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
               alt={t("Experience")}
             />
           </div>
-          <p>{t.rich("My work experience and education", {accent: chunks => <span className="text-purple-500 dark:text-purple-300">{chunks}</span>})}</p>
+          <p>
+            {t.rich("My work experience and education", {
+              accent: (chunks) => (
+                <span className="text-purple-500 dark:text-purple-300">
+                  {chunks}
+                </span>
+              ),
+            })}
+          </p>
         </h1>
         <div className="mt-12 sm:mt-16 md:mt-24 lg:mt-32 relative">
           {/* Central Timeline - visible across all cards */}
@@ -358,12 +373,16 @@ const Experience = ({ jobs = [], education = [] }: ExperienceSectionProps) => {
                           {card.company || card.institution}
                         </p>
                         <p className="my-3 sm:my-4 md:my-5 text-white-50 text-sm sm:text-base">
-                          {t("🗓️&nbsp;")}{card.date}
+                          {t("🗓️ ")}
+                          {card.date}
                         </p>
-                        <SkillIconList kind={card.type === "job" ? "work" : "education"}
+                        <SkillIconList
+                          kind={card.type === "job" ? "work" : "education"}
                           skills={card.skills}
                           title={
-                            card.type === "job" ? t("Skills") : t("Skills Learned")
+                            card.type === "job"
+                              ? t("Skills")
+                              : t("Skills Learned")
                           }
                         />
                         <DetailBulletList
