@@ -10,15 +10,15 @@ type ProjectStatsProps = {
 };
 
 export function ProjectStats({ stats }: ProjectStatsProps) {
- const t = usePublicText();
+  const t = usePublicText();
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
       {Object.entries(stats).map(([key, value]) => (
-        <div key={t(key[0].toUpperCase() + key.slice(1))} className="relative group">
+        <div key={key} className="relative group">
           <div className="absolute inset-0 bg-linear-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
           <div className="relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 dark:border-white/10 shadow-lg">
             <p className="text-sm text-slate-600 dark:text-slate-400 mb-2 capitalize">
-              {key}
+              {t(key[0].toUpperCase() + key.slice(1))}
             </p>
             <p className="text-2xl font-bold text-slate-900 dark:text-white">
               {value}
